@@ -1,9 +1,15 @@
 {
   "name": "@vuepkg/calendar",
   "private": false,
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Vue 3 schedule calendar — Month / Week / Day / List views, zero extra dependencies",
-  "keywords": ["vue", "vue3", "calendar", "schedule", "scheduler"],
+  "keywords": [
+    "vue",
+    "vue3",
+    "calendar",
+    "schedule",
+    "scheduler"
+  ],
   "homepage": "https://github.com/vuepkg/calendar",
   "repository": {
     "type": "git",

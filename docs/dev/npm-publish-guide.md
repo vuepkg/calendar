@@ -76,11 +76,9 @@ npm run build:lib
 ### Step 3. npm org 및 패키지명 확인
 
 ```bash
-# @vup org 가용 여부 확인 (브라우저에서 확인하거나 CLI로)
+# 패키지명 중복 확인
 npm view @vuepkg/calendar
-
-# 존재하지 않으면 org 생성 후 배포 가능
-# https://www.npmjs.com/org/create → org명: vup
+# "npm ERR! 404" 가 나오면 사용 가능 → 배포 진행
 ```
 
 ### Step 4. README 영문 섹션 추가 (공개 배포 시)

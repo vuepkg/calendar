@@ -7,6 +7,7 @@ import dts from 'vite-plugin-dts'
 const projectRoot = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
+  publicDir: false,
   resolve: {
     alias: {
       '@': path.resolve(projectRoot, 'src'),

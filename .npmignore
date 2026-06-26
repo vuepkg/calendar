@@ -1,0 +1,6 @@
+# 앱 전용 public 자산 (npm 패키지에 불필요)
+dist/favicon.svg
+dist/icons.svg
+
+# 소스맵 (배포 크기 절감 — 필요 시 제거)
+dist/**/*.map

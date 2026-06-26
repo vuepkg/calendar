@@ -6,6 +6,8 @@
   "keywords": [
     "vue",
     "vue3",
+    "vue3-calendar",
+    "calendar-component",
     "calendar",
     "schedule",
     "scheduler"
@@ -64,12 +66,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@primeuix/themes": "^2.0.3",
-    "primeicons": "^7.0.0",
-    "primevue": "^4.5.5",
     "vue": "^3.5.34",
     "@playwright/test": "^1.52.0",
-    "@primevue/auto-import-resolver": "^4.5.5",
     "@types/node": "^24.12.3",
     "@vitejs/plugin-vue": "^6.0.6",
     "@vue/eslint-config-prettier": "^10.2.0",
@@ -83,7 +81,6 @@
     "prettier": "^3.8.4",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.61.0",
-    "unplugin-vue-components": "^32.1.0",
     "vite": "^8.0.12",
     "vite-plugin-dts": "^5.0.2",
     "vitest": "^3.2.4",

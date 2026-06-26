@@ -30,7 +30,6 @@ export default defineConfigWithVueTs(
       'node_modules/**',
       'playwright-report/**',
       'test-results/**',
-      'components.d.ts',
     ],
   },
 )

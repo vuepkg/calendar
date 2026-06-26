@@ -13,7 +13,7 @@
   "homepage": "https://github.com/vuepkg/calendar",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vuepkg/calendar.git"
+    "url": "git+https://github.com/vuepkg/calendar.git"
   },
   "bugs": {
     "url": "https://github.com/vuepkg/calendar/issues"

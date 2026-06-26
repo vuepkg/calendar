@@ -1,0 +1,56 @@
+/**
+ * ScheduleCalendar 전용 스크롤·그리드 유틸리티.
+ * `.schedule-calendar` 내부와 body로 teleport되는 `.month-overflow-popover`에만 적용됩니다.
+ * 호스트 앱의 전역 스크롤바 스타일(`*`, `html` 등)과 격리됩니다.
+ */
+
+.schedule-calendar .calendar-days-track {
+  display: grid;
+  grid-template-columns: repeat(var(--day-count), minmax(0, 1fr));
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.schedule-calendar .calendar-grid-row {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+}
+
+.schedule-calendar .calendar-scroll,
+.month-overflow-popover .calendar-scroll {
+  --calendar-scrollbar-size: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+  scrollbar-gutter: auto;
+}
+
+/* Week/Day 헤더·All Day·시간축 열 정렬용 — 스크롤 없을 때도 gutter 예약 */
+.schedule-calendar .timed-grid-header-shell.calendar-scroll,
+.schedule-calendar .all-day-scroll.calendar-scroll,
+.schedule-calendar .timed-grid-scroll.calendar-scroll {
+  scrollbar-gutter: stable;
+}
+
+.schedule-calendar .calendar-scroll::-webkit-scrollbar,
+.month-overflow-popover .calendar-scroll::-webkit-scrollbar {
+  width: var(--calendar-scrollbar-size);
+  height: var(--calendar-scrollbar-size);
+}
+
+.schedule-calendar .calendar-scroll::-webkit-scrollbar-track,
+.month-overflow-popover .calendar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.schedule-calendar .calendar-scroll::-webkit-scrollbar-thumb,
+.month-overflow-popover .calendar-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+.schedule-calendar .calendar-scroll::-webkit-scrollbar-thumb:hover,
+.month-overflow-popover .calendar-scroll::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

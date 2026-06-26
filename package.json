@@ -38,19 +38,18 @@
     "test:e2e:responsive": "playwright test e2e/calendar-responsive.spec.ts",
     "test:e2e:host": "playwright test e2e/calendar-host-integration.spec.ts",
     "test:e2e:ui": "playwright test --ui",
-    "test:all": "npm run test && npm run build && npm run test:e2e"
+    "test:all": "npm run test && npm run build && npm run test:e2e",
+    "release": "npm run build:lib && npm publish --access public && git push origin main --tags"
   },
   "peerDependencies": {
     "vue": "^3.5.0"
   },
-  "dependencies": {
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@primeuix/themes": "^2.0.3",
     "primeicons": "^7.0.0",
     "primevue": "^4.5.5",
-    "vue": "^3.5.34"
-  },
-  "devDependencies": {
-    "@eslint/js": "^10.0.1",
+    "vue": "^3.5.34",
     "@playwright/test": "^1.52.0",
     "@primevue/auto-import-resolver": "^4.5.5",
     "@types/node": "^24.12.3",

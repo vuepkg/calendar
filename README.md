@@ -110,7 +110,7 @@ const typeOptions: ScheduleTypeOption[] = [
 />
 ```
 
-> 기본값 `false`. 활성화하려면 `VITE_` 없이 `DATA_GO_KR_SERVICE_KEY` 환경 변수에 [공공데이터포털](https://www.data.go.kr/data/15012690/openapi.do) Decoding 키를 설정하세요.
+> 기본값 `false`. 활성화 시 내부적으로 `/api/spcde/getRestDeInfo` (same-origin BFF/proxy) 경로를 호출합니다. 서버에서 [공공데이터포털](https://www.data.go.kr/data/15012690/openapi.do) 인증키를 주입하는 BFF를 구성하거나, `VITE_SPCDE_API_URL` 환경변수로 API URL을 오버라이드하세요. 클라이언트에서 직접 호출할 경우 `usePublicHolidays({ serviceKey: '...' })`를 대신 사용하세요.
 
 ---
 
@@ -133,14 +133,14 @@ const typeOptions: ScheduleTypeOption[] = [
 
 | 이벤트 | 페이로드 | 설명 |
 | ------ | -------- | ---- |
-| `view-change` | `{ view: CalendarView }` | 뷰 탭 전환 |
-| `date-select` | `{ date: Date, source: string }` | 날짜 클릭 |
-| `navigate` | `{ date: Date }` | ‹ › · Today 네비 |
-| `overflow-click` | `{ date: Date }` | 월간 +N 클릭 |
-| `schedule-click` | `{ schedule: Schedule, date?: Date }` | 일정 클릭 |
-| `time-slot-select` | `{ start: Date, end: Date }` | Week/Day 빈 셀 클릭 (1시간 단위) |
+| `view-change` | `{ view: CalendarView, previousView: CalendarView }` | 뷰 탭 전환 |
+| `date-select` | `{ date: Date, source: 'month-cell' \| 'week-day-header' }` | 날짜 클릭 |
+| `navigate` | `{ action: CalendarNavigateAction, date: Date }` | ‹ › · Today 네비 |
+| `overflow-click` | `{ date: Date, hiddenCount: number, schedules: Schedule[], visibleSchedules: Schedule[] }` | 월간 +N 클릭 |
+| `schedule-click` | `{ schedule: Schedule, source: ScheduleClickSource, date?: Date }` | 일정 클릭 |
+| `time-slot-select` | `{ date: Date, start: Date, end: Date, source: TimeSlotSelectSource }` | Week/Day 빈 셀 클릭 (1시간 단위) |
 | `list-filter-clear` | — | List 날짜 필터 해제 |
-| `query-change` | `{ viewScope: ViewScope, scheduleTypes: string[] \| null }` | 범위·타입 필터 변경 |
+| `query-change` | `ScheduleQueryChangePayload` | 범위·타입·기간 필터 변경 (API 조회용) |
 
 > **emit-only** 구조입니다. `view-change`·`navigate`·`date-select` 핸들러를 연결하지 않으면 탭·네비가 동작하지 않습니다. `useScheduleCalendarHost`를 사용하면 모든 핸들러가 자동으로 연결됩니다.
 
@@ -166,7 +166,7 @@ import type {
 
 - Vue 3 + TypeScript
 - 커스텀 HTML/CSS (PrimeVue 없음)
-- Vitest (205) · Playwright E2E (126)
+- Vitest · Playwright E2E
 
 ---
 

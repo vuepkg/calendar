@@ -343,7 +343,7 @@ onUnmounted(() => {
   max-height: var(--all-day-max-height);
   overflow-y: auto;
   overflow-x: hidden;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--vp-grid-line);
 }
 
 .all-day-layout {
@@ -363,26 +363,26 @@ onUnmounted(() => {
 .time-axis {
   width: var(--gutter-width);
   flex-shrink: 0;
-  border-right: 1px solid #e2e8f0;
+  border-right: 1px solid var(--vp-grid-line);
 }
 
 .time-gutter {
   width: var(--gutter-width);
   flex-shrink: 0;
   font-size: 10px;
-  color: #64748b;
-  border-right: 1px solid #e2e8f0;
+  color: var(--vp-color-text-muted);
+  border-right: 1px solid var(--vp-grid-line);
 }
 
 .header-gutter {
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--vp-grid-line);
 }
 
 .day-header {
   text-align: left;
   padding: 10px 12px;
-  border-right: 1px solid #e2e8f0;
-  border-bottom: 1px solid #e2e8f0;
+  border-right: 1px solid var(--vp-grid-line);
+  border-bottom: 1px solid var(--vp-grid-line);
 }
 
 .day-header.clickable {
@@ -390,7 +390,7 @@ onUnmounted(() => {
 }
 
 .day-header.clickable:hover {
-  background: #f8fafc;
+  background: var(--vp-nav-btn-bg-hover);
 }
 
 .day-header.is-last-column {
@@ -398,11 +398,11 @@ onUnmounted(() => {
 }
 
 .day-header.sunday .day-number {
-  color: #d32f2f;
+  color: var(--vp-color-sunday);
 }
 
 .day-header.saturday .day-number {
-  color: #1565c0;
+  color: var(--vp-color-saturday);
 }
 
 .day-number {
@@ -410,7 +410,7 @@ onUnmounted(() => {
   font-size: 24px;
   font-weight: 600;
   line-height: 1.1;
-  color: #1e293b;
+  color: var(--vp-color-text);
   margin-bottom: 2px;
 }
 
@@ -419,7 +419,7 @@ onUnmounted(() => {
   font-size: 12px;
   font-weight: 400;
   line-height: 1.3;
-  color: #64748b;
+  color: var(--vp-color-text-muted);
 }
 
 .all-day-label {
@@ -453,7 +453,7 @@ onUnmounted(() => {
   gap: 2px;
   min-width: 0;
   padding: 0 1px;
-  border-right: 1px solid #e2e8f0;
+  border-right: 1px solid var(--vp-grid-line);
 }
 
 .holiday-column.is-last-column {
@@ -472,7 +472,7 @@ onUnmounted(() => {
 }
 
 .all-day-column-divider {
-  border-right: 1px solid #e2e8f0;
+  border-right: 1px solid var(--vp-grid-line);
   pointer-events: none;
 }
 
@@ -493,7 +493,7 @@ onUnmounted(() => {
 .time-slot-label {
   height: var(--hour-height);
   font-size: 10px;
-  color: #64748b;
+  color: var(--vp-color-text-muted);
   padding-right: 6px;
   text-align: right;
   box-sizing: border-box;
@@ -513,8 +513,8 @@ onUnmounted(() => {
 
 .day-column {
   position: relative;
-  border-right: 1px solid #e2e8f0;
-  background-image: linear-gradient(to bottom, #edf2f7 1px, transparent 1px);
+  border-right: 1px solid var(--vp-grid-line);
+  background-image: linear-gradient(to bottom, var(--vp-grid-hour-stripe) 1px, transparent 1px);
   background-size: 100% var(--hour-height);
   cursor: pointer;
 }
@@ -524,8 +524,8 @@ onUnmounted(() => {
   left: 2px;
   right: 2px;
   z-index: 0;
-  border: 2px solid #ef4444;
-  background: rgb(239 68 68 / 12%);
+  border: 2px solid var(--vp-color-danger);
+  background: var(--vp-color-danger-subtle);
   box-sizing: border-box;
   pointer-events: none;
 }
@@ -550,7 +550,7 @@ onUnmounted(() => {
   left: 0;
   right: 0;
   z-index: 3;
-  border-top: 2px solid #3b82f6;
+  border-top: 2px solid var(--vp-current-time-color);
   pointer-events: none;
 }
 
@@ -562,7 +562,7 @@ onUnmounted(() => {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #3b82f6;
+  background: var(--vp-current-time-color);
 }
 
 .current-time-badge {
@@ -573,8 +573,8 @@ onUnmounted(() => {
   text-align: right;
   font-size: 10px;
   font-weight: 700;
-  color: #fff;
-  background: #3b82f6;
+  color: var(--vp-today-badge-text);
+  background: var(--vp-current-time-color);
   border-radius: 4px;
   padding: 2px 6px;
   box-sizing: border-box;

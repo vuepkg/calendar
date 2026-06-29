@@ -46,7 +46,7 @@ const emit = defineEmits<{
 }
 
 .all-day-bar-chip:hover {
-  filter: brightness(0.97);
+  filter: var(--vp-all-day-bar-hover);
 }
 
 .event-title {

@@ -146,19 +146,19 @@ function onRowClick(row: CalendarListRow) {
   gap: 12px;
   margin-bottom: 10px;
   padding: 8px 12px;
-  border: 1px solid #bfdbfe;
-  border-radius: 4px;
-  background: #eff6ff;
-  color: #1e3a8a;
+  border: 1px solid var(--vp-list-filter-border);
+  border-radius: var(--vp-chip-radius);
+  background: var(--vp-list-filter-bg);
+  color: var(--vp-list-filter-text);
   font-size: 12px;
   flex-shrink: 0;
 }
 
 .clear-filter-btn {
-  border: 1px solid #93c5fd;
-  background: #fff;
-  color: #1d4ed8;
-  border-radius: 4px;
+  border: 1px solid var(--vp-list-filter-btn-border);
+  background: var(--vp-color-bg);
+  color: var(--vp-list-filter-btn-text);
+  border-radius: var(--vp-chip-radius);
   padding: 4px 10px;
   font-size: 12px;
   cursor: pointer;
@@ -175,12 +175,12 @@ function onRowClick(row: CalendarListRow) {
   table-layout: fixed;
   border-collapse: collapse;
   font-size: 12px;
-  color: #334155;
+  color: var(--vp-color-text-secondary);
 }
 
 .list-table thead tr {
-  background: #f8fafc;
-  border-bottom: 2px solid #e2e8f0;
+  background: var(--vp-list-header-bg);
+  border-bottom: 2px solid var(--vp-grid-line);
 }
 
 .list-table th {
@@ -188,13 +188,13 @@ function onRowClick(row: CalendarListRow) {
   text-align: left;
   font-weight: 600;
   font-size: 11px;
-  color: #64748b;
+  color: var(--vp-color-text-muted);
   white-space: nowrap;
 }
 
 .list-table td {
   padding: 7px 10px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--vp-grid-line);
   vertical-align: middle;
 }
 
@@ -204,33 +204,33 @@ function onRowClick(row: CalendarListRow) {
 }
 
 .list-row:hover {
-  background: #f0f9ff;
+  background: var(--vp-list-row-hover-bg);
 }
 
 .list-row:focus-visible {
-  outline: 2px solid #0277bd;
+  outline: var(--vp-focus-ring);
   outline-offset: -2px;
 }
 
 .list-row.striped {
-  background: #fafbfc;
+  background: var(--vp-list-row-stripe-bg);
 }
 
 .list-row.striped:hover {
-  background: #f0f9ff;
+  background: var(--vp-list-row-hover-bg);
 }
 
 .list-empty td {
   padding: 24px;
   text-align: center;
-  color: #94a3b8;
+  color: var(--vp-color-text-muted);
   font-size: 13px;
   cursor: default;
 }
 
 .col-no {
   width: 48px;
-  color: #94a3b8;
+  color: var(--vp-color-text-muted);
   font-size: 11px;
 }
 
@@ -263,10 +263,10 @@ function onRowClick(row: CalendarListRow) {
 }
 
 .page-btn {
-  border: 1px solid #cbd5e1;
-  background: #fff;
-  color: #334155;
-  border-radius: 4px;
+  border: 1px solid var(--vp-nav-btn-border);
+  background: var(--vp-nav-btn-bg);
+  color: var(--vp-nav-btn-text);
+  border-radius: var(--vp-chip-radius);
   width: 28px;
   height: 28px;
   font-size: 16px;
@@ -275,11 +275,11 @@ function onRowClick(row: CalendarListRow) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.1s;
+  transition: background var(--vp-transition-fast);
 }
 
 .page-btn:hover:not(:disabled) {
-  background: #f1f5f9;
+  background: var(--vp-nav-btn-bg-hover);
 }
 
 .page-btn:disabled {
@@ -289,7 +289,7 @@ function onRowClick(row: CalendarListRow) {
 
 .page-info {
   font-size: 12px;
-  color: #475569;
+  color: var(--vp-color-text-secondary);
   min-width: 48px;
   text-align: center;
 }

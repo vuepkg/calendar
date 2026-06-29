@@ -45,9 +45,9 @@ const emit = defineEmits<{
 }
 
 .calendar-month-nav-btn {
-  border: 1px solid #cbd5e1;
-  background: #fff;
-  color: #334155;
+  border: 1px solid var(--vp-nav-btn-border);
+  background: var(--vp-nav-btn-bg);
+  color: var(--vp-nav-btn-text);
   border-radius: 4px;
   cursor: pointer;
   width: 32px;
@@ -58,7 +58,7 @@ const emit = defineEmits<{
 }
 
 .calendar-month-nav-btn:hover {
-  background: #f8fafc;
+  background: var(--vp-nav-btn-bg-hover);
 }
 
 .calendar-month-nav-title {
@@ -67,6 +67,6 @@ const emit = defineEmits<{
   text-align: center;
   font-size: 18px;
   font-weight: 600;
-  color: #334155;
+  color: var(--vp-nav-title-text);
 }
 </style>

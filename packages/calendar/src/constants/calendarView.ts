@@ -36,12 +36,6 @@ export const MONTH_CELL_DATE_AREA_PX = 18
 /** 월간 일자 셀 고정 높이(px) */
 export const MONTH_CELL_HEIGHT_PX = 128
 
-/** 월간 공휴일 칩 — 연한 붉은 배경 */
-export const HOLIDAY_CHIP_BACKGROUND = '#ffebee'
-
-/** 월간 공휴일 칩 — 붉은 텍스트 */
-export const HOLIDAY_CHIP_COLOR = '#c62828'
-
 // ── Day View ──────────────────────────────────────────────────────────
 export const DAY_VIEW_START_HOUR = TIMED_VIEW_START_HOUR
 export const DAY_VIEW_END_HOUR = TIMED_VIEW_END_HOUR

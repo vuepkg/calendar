@@ -39,17 +39,17 @@ const viewTabs: Array<{ key: CalendarView; label: string }> = [
 .calendar-toolbar {
   display: flex;
   align-items: center;
-  padding: 10px 12px;
-  border-bottom: 1px solid #d7dee8;
-  background: #fff;
+  padding: var(--vp-toolbar-padding);
+  border-bottom: 1px solid var(--vp-toolbar-border);
+  background: var(--vp-toolbar-bg);
 }
 
 .view-tabs {
   display: inline-flex;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--vp-tab-track-border);
   border-radius: 6px;
   overflow: hidden;
-  background: #f1f5f9;
+  background: var(--vp-tab-track-bg);
   padding: 3px;
   gap: 2px;
 }
@@ -57,35 +57,33 @@ const viewTabs: Array<{ key: CalendarView; label: string }> = [
 .view-tab {
   border: none;
   background: transparent;
-  color: #64748b;
+  color: var(--vp-tab-text);
   padding: 5px 14px;
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   border-radius: 4px;
   transition:
-    background 0.15s,
-    color 0.15s,
-    box-shadow 0.15s;
+    background var(--vp-transition-base),
+    color var(--vp-transition-base),
+    box-shadow var(--vp-transition-base);
   white-space: nowrap;
 }
 
 .view-tab:hover:not(.active) {
-  background: #e2e8f0;
-  color: #334155;
+  background: var(--vp-tab-bg-hover);
+  color: var(--vp-tab-text-hover);
 }
 
 .view-tab.active {
-  background: #fff;
-  color: #0f172a;
+  background: var(--vp-tab-active-bg);
+  color: var(--vp-tab-active-text);
   font-weight: 600;
-  box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.1),
-    0 1px 2px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--vp-tab-active-shadow);
 }
 
 .view-tab:focus-visible {
-  outline: 2px solid #0277bd;
+  outline: var(--vp-focus-ring);
   outline-offset: 1px;
 }
 

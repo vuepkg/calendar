@@ -231,16 +231,20 @@ function handleTimeSlotSelect(payload: CalendarTimeSlotSelectPayload) {
   </div>
 </template>
 
+<style>
+@import '@vuepkg/theme/index.css';
+</style>
+
 <style scoped>
 .schedule-calendar {
   display: flex;
   flex-direction: column;
   width: 100%;
   height: 100%;
-  min-height: 480px;
-  background: #fff;
-  border: 1px solid #d7dee8;
-  border-radius: 4px;
+  min-height: var(--vp-calendar-min-height);
+  background: var(--vp-calendar-bg);
+  border: 1px solid var(--vp-calendar-border);
+  border-radius: var(--vp-calendar-radius);
   overflow: hidden;
 }
 

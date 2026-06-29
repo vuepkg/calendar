@@ -190,7 +190,7 @@ onUnmounted(() => {
 .month-overflow-popover-root {
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  z-index: var(--vp-popover-z-index);
   pointer-events: none;
 }
 
@@ -208,10 +208,10 @@ onUnmounted(() => {
   width: 100%;
   display: flex;
   flex-direction: column;
-  border: 1px solid #334155;
-  border-radius: 4px;
-  background: #fff;
-  box-shadow: 0 8px 24px rgb(15 23 42 / 18%);
+  border: 1px solid var(--vp-popover-border);
+  border-radius: var(--vp-calendar-radius);
+  background: var(--vp-popover-bg);
+  box-shadow: var(--vp-popover-shadow);
   pointer-events: auto;
   overflow: hidden;
   box-sizing: border-box;
@@ -223,8 +223,8 @@ onUnmounted(() => {
   justify-content: space-between;
   gap: 8px;
   padding: 8px 10px;
-  background: #e8f0fe;
-  border-bottom: 1px solid #cbd5e1;
+  background: var(--vp-popover-header-bg);
+  border-bottom: 1px solid var(--vp-color-border);
   flex-shrink: 0;
 }
 
@@ -232,13 +232,13 @@ onUnmounted(() => {
   margin: 0;
   font-size: 13px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--vp-color-text);
 }
 
 .month-overflow-close {
   border: none;
   background: transparent;
-  color: #475569;
+  color: var(--vp-color-text-secondary);
   font-size: 18px;
   line-height: 1;
   cursor: pointer;
@@ -246,7 +246,7 @@ onUnmounted(() => {
 }
 
 .month-overflow-close:hover {
-  color: #1e293b;
+  color: var(--vp-color-text);
 }
 
 .month-overflow-list {
@@ -265,23 +265,23 @@ onUnmounted(() => {
 .month-overflow-item {
   width: 100%;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--vp-chip-radius);
   padding: 6px 8px;
   text-align: left;
   font-size: 11px;
   line-height: 1.35;
-  color: #1e293b;
-  background: #f1f5f9;
+  color: var(--vp-color-text);
+  background: var(--vp-popover-item-bg);
   cursor: pointer;
 }
 
 .month-overflow-item.highlighted {
-  color: #1565c0;
-  background: #e3f2fd;
+  color: var(--vp-popover-item-highlighted-text);
+  background: var(--vp-popover-item-highlighted-bg);
   font-weight: 600;
 }
 
 .month-overflow-item:hover {
-  filter: brightness(0.98);
+  background: var(--vp-popover-item-bg-hover);
 }
 </style>

@@ -268,7 +268,7 @@ const weekdayLabels = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
   min-height: 0;
   display: flex;
   flex-direction: column;
-  border: 1px solid #d7dee8;
+  border: 1px solid var(--vp-calendar-border);
 }
 
 .month-weeks-body {
@@ -296,9 +296,9 @@ const weekdayLabels = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
   font-size: 12px;
   font-weight: 600;
   padding: 8px 4px;
-  background: #f8fafc;
-  border-bottom: 1px solid #d7dee8;
-  border-right: 1px solid #d7dee8;
+  background: var(--vp-month-header-bg);
+  border-bottom: 1px solid var(--vp-calendar-border);
+  border-right: 1px solid var(--vp-calendar-border);
 }
 
 .weekday-header:nth-child(7n) {
@@ -306,16 +306,16 @@ const weekdayLabels = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 }
 
 .weekday-header.sunday {
-  color: #d32f2f;
+  color: var(--vp-color-sunday);
 }
 
 .weekday-header.saturday {
-  color: #1565c0;
+  color: var(--vp-color-saturday);
 }
 
 .month-week {
   position: relative;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--vp-grid-line);
 }
 
 .month-week:last-child {
@@ -325,10 +325,10 @@ const weekdayLabels = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 .month-cell {
   height: 100%;
   min-height: 0;
-  border-right: 1px solid #e2e8f0;
+  border-right: 1px solid var(--vp-grid-line);
   padding: 4px;
   cursor: pointer;
-  background: #fff;
+  background: var(--vp-month-cell-bg);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -340,15 +340,15 @@ const weekdayLabels = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 }
 
 .month-cell.outside {
-  background: #fafbfc;
+  background: var(--vp-month-cell-outside-bg);
 }
 
 .month-cell.outside .cell-date {
-  color: #b0bac5;
+  color: var(--vp-month-cell-outside-text);
 }
 
 .month-cell.selected {
-  background: #e3f2fd;
+  background: var(--vp-month-cell-selected-bg);
 }
 
 .month-cell.today .cell-date {
@@ -358,16 +358,16 @@ const weekdayLabels = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
   border-radius: 50%;
   align-items: center;
   justify-content: center;
-  background: #4db6ac;
-  color: #fff !important;
+  background: var(--vp-today-badge-bg);
+  color: var(--vp-today-badge-text) !important;
 }
 
 .month-cell.sunday .cell-date {
-  color: #d32f2f;
+  color: var(--vp-color-sunday);
 }
 
 .month-cell.saturday .cell-date {
-  color: #1565c0;
+  color: var(--vp-color-saturday);
 }
 
 .cell-date {
@@ -460,15 +460,15 @@ const weekdayLabels = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 
 .more-events {
   border: none;
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--vp-popover-item-bg);
+  color: var(--vp-color-text-secondary);
   font-size: 10px;
   font-weight: 600;
   height: var(--month-chip-height);
   min-height: var(--month-chip-height);
   line-height: calc(var(--month-chip-height) - 2px);
   padding: 1px 6px;
-  border-radius: 4px;
+  border-radius: var(--vp-chip-radius);
   text-align: left;
   cursor: pointer;
   flex-shrink: 0;
@@ -476,6 +476,6 @@ const weekdayLabels = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 }
 
 .more-events:hover {
-  background: #e2e8f0;
+  background: var(--vp-popover-item-bg-hover);
 }
 </style>

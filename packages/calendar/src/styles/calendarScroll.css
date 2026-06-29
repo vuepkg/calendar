@@ -20,9 +20,9 @@
 
 .schedule-calendar .calendar-scroll,
 .month-overflow-popover .calendar-scroll {
-  --calendar-scrollbar-size: 6px;
+  --calendar-scrollbar-size: var(--vp-scrollbar-size, 6px);
   scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
+  scrollbar-color: var(--vp-scrollbar-thumb, #cbd5e1) transparent;
   scrollbar-gutter: auto;
 }
 
@@ -46,11 +46,11 @@
 
 .schedule-calendar .calendar-scroll::-webkit-scrollbar-thumb,
 .month-overflow-popover .calendar-scroll::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--vp-scrollbar-thumb, #cbd5e1);
   border-radius: 999px;
 }
 
 .schedule-calendar .calendar-scroll::-webkit-scrollbar-thumb:hover,
 .month-overflow-popover .calendar-scroll::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--vp-scrollbar-thumb-hover, #94a3b8);
 }

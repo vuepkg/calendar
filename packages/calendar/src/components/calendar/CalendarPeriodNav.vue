@@ -39,15 +39,15 @@ const emit = defineEmits<{
   align-items: center;
   gap: 8px;
   padding: 10px 0;
-  border-bottom: 1px solid #e2e8f0;
-  background: #fff;
+  border-bottom: 1px solid var(--vp-grid-line);
+  background: var(--vp-color-bg);
   flex-shrink: 0;
 }
 
 .nav-btn {
-  border: 1px solid #cbd5e1;
-  background: #fff;
-  color: #334155;
+  border: 1px solid var(--vp-nav-btn-border);
+  background: var(--vp-nav-btn-bg);
+  color: var(--vp-nav-btn-text);
   border-radius: 4px;
   cursor: pointer;
   font-size: 13px;
@@ -74,7 +74,7 @@ const emit = defineEmits<{
   margin-left: 4px;
   font-size: 14px;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--vp-color-text);
   white-space: nowrap;
 }
 </style>

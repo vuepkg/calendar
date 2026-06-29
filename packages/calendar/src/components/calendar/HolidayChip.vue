@@ -1,17 +1,11 @@
 <script setup lang="ts">
-import { HOLIDAY_CHIP_BACKGROUND, HOLIDAY_CHIP_COLOR } from '@/constants/calendarView'
-
 defineProps<{
   name: string
 }>()
 </script>
 
 <template>
-  <div
-    class="holiday-chip"
-    :style="{ color: HOLIDAY_CHIP_COLOR, backgroundColor: HOLIDAY_CHIP_BACKGROUND }"
-    :title="name"
-  >
+  <div class="holiday-chip" :title="name">
     <span class="holiday-chip-label">{{ name }}</span>
   </div>
 </template>
@@ -19,7 +13,7 @@ defineProps<{
 <style scoped>
 .holiday-chip {
   width: 100%;
-  border-radius: 4px;
+  border-radius: var(--vp-chip-radius);
   padding: 1px 6px;
   font-size: 10px;
   line-height: calc(var(--month-chip-height, 18px) - 2px);
@@ -29,6 +23,8 @@ defineProps<{
   text-overflow: ellipsis;
   white-space: nowrap;
   flex-shrink: 0;
+  color: var(--vp-holiday-chip-color);
+  background-color: var(--vp-holiday-chip-bg);
 }
 
 .holiday-chip-label {

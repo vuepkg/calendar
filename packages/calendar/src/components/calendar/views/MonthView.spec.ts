@@ -107,7 +107,7 @@ describe('MonthView', () => {
     })
   })
 
-  it('renders holiday chips with red styling on matching dates', () => {
+  it('renders holiday chips on matching dates', () => {
     const wrapper = mountMonthView(startOfDay(new Date(2026, 3, 1)), mockCompanyHolidays)
     const aprilFirstCell = wrapper
       .findAll('.month-cell:not(.outside)')
@@ -116,8 +116,8 @@ describe('MonthView', () => {
 
     expect(holidayChip?.exists()).toBe(true)
     expect(holidayChip?.text()).toBe('회사 창립기념일')
-    expect(holidayChip?.attributes('style')).toContain('background-color: rgb(255, 235, 238)')
-    expect(holidayChip?.attributes('style')).toContain('color: rgb(198, 40, 40)')
+    // colors are applied via CSS variables (--vp-holiday-chip-bg / --vp-holiday-chip-color) in scoped styles
+    expect(holidayChip?.attributes('style')).toBeUndefined()
   })
 
   it('emits date-select when empty area of month cell is clicked', async () => {

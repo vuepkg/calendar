@@ -280,6 +280,23 @@ const scheduleTypeOptions: ScheduleTypeOption[] = [
 />
 ```
 
+### 테마 커스터마이징
+
+모든 색상·크기·간격은 CSS 변수(`--vp-*`)로 정의되어 있습니다. `:root`에서 원하는 값만 덮어쓰세요:
+
+```css
+:root {
+  --vp-color-primary: #7c3aed;       /* 강조 색상 */
+  --vp-today-badge-bg: #7c3aed;      /* 오늘 뱃지 */
+  --vp-holiday-chip-bg: #fef3c7;     /* 공휴일 칩 배경 */
+  --vp-holiday-chip-color: #92400e;  /* 공휴일 칩 텍스트 */
+}
+```
+
+다크 모드는 시스템 설정(`prefers-color-scheme: dark`) 자동 반영 또는 `.vp-dark` 클래스로 수동 전환할 수 있습니다.
+
+토큰 전체 목록과 다크 모드 설정법은 [테마 커스터마이징 가이드](./theming.md)를 참고하세요.
+
 ---
 
 ## 전체 예시 (실전 패턴)
@@ -358,5 +375,6 @@ const filteredSchedules = computed(() =>
 | 문서 | 내용 |
 | ---- | ---- |
 | [통합 가이드](./integration.md) | 소스 복사 이식, 공휴일 프록시 설정 |
+| [테마 커스터마이징](./theming.md) | CSS 변수 토큰 전체 목록, 다크 모드 설정 |
 | [API 레퍼런스](../dev/architecture.md) | 전체 Props · Emits · 타입 정의 |
 | [배포 가이드](../dev/npm-publish-guide.md) | npm 배포 체크리스트 |

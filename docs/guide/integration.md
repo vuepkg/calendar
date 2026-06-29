@@ -262,6 +262,18 @@ export default defineConfig({
 
 `calendarScroll.css`는 `ScheduleCalendar.vue`가 자동 import합니다. 호스트 `main.ts`에 별도 추가 불필요.
 
+**테마(CSS 변수)**: 캘린더의 모든 색상·크기·간격은 `--vp-*` CSS 변수로 정의됩니다. `@vuepkg/theme` 토큰이 `style.css`에 번들링되므로 별도 설치 없이 바로 커스터마이징할 수 있습니다:
+
+```css
+/* 브랜드 색상 오버라이드 (호스트 global CSS) */
+:root {
+  --vp-color-primary: #0f7f3b;
+  --vp-today-badge-bg: #0f7f3b;
+}
+```
+
+다크 모드는 시스템 설정(`prefers-color-scheme: dark`) 자동 반영 또는 `document.documentElement.classList.toggle('vp-dark')`로 수동 전환합니다. 전체 토큰 목록은 [테마 커스터마이징 가이드](./theming.md)를 참고하세요.
+
 **호스트 전역 스크롤바 충돌 방지**: 캘린더 스타일은 `.schedule-calendar` 스코프로 한정됩니다.
 
 ### Step 4 — 레이아웃 (중요)

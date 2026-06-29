@@ -35,7 +35,7 @@
 | ---- | ---- | -------------------------- |
 | **Zero runtime deps** | `vue` peer 외 런타임 의존성 0 | ✅ (PrimeVue 제거 완료) |
 | **Controlled / emit-only** | 상태는 소비자가 소유, 컴포넌트는 표현+emit | ✅ (`v-model` + 핸들러) |
-| **CSS-variable 테마** | 런타임 JS 테마 엔진 없이 CSS 변수로 테마 | ⚠️ 부분 (색상 하드코딩 잔존) |
+| **CSS-variable 테마** | 런타임 JS 테마 엔진 없이 CSS 변수로 테마 | ✅ (Phase 1 완료) |
 | **Type-safe public API** | 모든 공개 타입 `types/` 단일 출처 | ✅ |
 | **Headless-friendly** | 로직(composable) / 표현(styled) 분리 가능 | ⚠️ 부분 (`useCalendar` 내부 전용) |
 | **A11y by default** | role/aria/keyboard 기본 제공 | ⚠️ 부분 (toolbar·list만) |
@@ -109,7 +109,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 > 각 Phase는 **독립 출시 가능**하도록 설계. 중간에 멈춰도 calendar는 항상 동작.
 > 난이도: 🟢 낮음 · 🟡 중간 · 🔴 높음
 
-### Phase 0 — Monorepo & Core 추출 (기반 공사)
+### Phase 0 — Monorepo & Core 추출 (기반 공사) ✅ 완료
 
 **목표**: 단일 레포 → 워크스페이스. `core` 패키지 분리. calendar는 그대로 동작 유지.
 
@@ -129,19 +129,19 @@ component     --vp-chip-bg: var(--vp-color-surface);
 
 ---
 
-### Phase 1 — 디자인 토큰 & 테마 시스템
+### Phase 1 — 디자인 토큰 & 테마 시스템 ✅ 완료 (2026-06-29)
 
 **목표**: 하드코딩 색상/치수 제거 → CSS 변수 계약. light/dark 지원. 소비자 테마 오버라이드 가능.
 
-| ID | 작업 | 난이도 | 비고 |
+| ID | 작업 | 난이도 | 상태 |
 | -- | ---- | ------ | ---- |
-| F1-1 | 토큰 스펙 설계 (primitive/semantic/component 3계층, 네이밍 `--vp-*`) | 🟡 | RFC 문서 1건 |
-| F1-2 | `@vuepkg/theme` 생성: `base.css` + `light.css` + `dark.css` | 🟡 | 순수 CSS |
-| F1-3 | calendar 하드코딩 상수 → component 토큰 마이그레이션 (`constants/calendarView.ts`) | 🟡 | 시각 회귀 주의 |
-| F1-4 | calendar 컴포넌트 CSS의 리터럴 색상 → `var(--vp-*)` 치환 | 🟡 | 전 `.vue` `<style>` |
-| F1-5 | `prefers-color-scheme` + `.vp-dark` 클래스 토글 둘 다 지원 | 🟢 | |
-| F1-6 | 테마 커스터마이징 가이드 + 토큰 레퍼런스 문서 | 🟢 | |
-| F1-7 | Visual regression 기준선 캡처 (토큰 전환 전/후 비교) | 🟡 | Playwright screenshot |
+| F1-1 | 토큰 스펙 설계 (primitive/semantic/component 3계층, 네이밍 `--vp-*`) | 🟡 | ✅ |
+| F1-2 | `@vuepkg/theme` 생성: `base.css` + `dark.css` + `index.css` | 🟡 | ✅ |
+| F1-3 | calendar 하드코딩 상수 → component 토큰 마이그레이션 (`HOLIDAY_CHIP_*` 삭제) | 🟡 | ✅ |
+| F1-4 | calendar 컴포넌트 CSS의 리터럴 색상 → `var(--vp-*)` 치환 | 🟡 | ✅ |
+| F1-5 | `prefers-color-scheme` + `.vp-dark` 클래스 토글 둘 다 지원 | 🟢 | ✅ |
+| F1-6 | 테마 커스터마이징 가이드 + 토큰 레퍼런스 문서 | 🟢 | ✅ (`docs/guide/theming.md`) |
+| F1-7 | Visual regression 기준선 캡처 (토큰 전환 전/후 비교) | 🟡 | ⏳ 미착수 |
 
 **완료 기준**: calendar에 다크모드 적용. 소비자가 `--vp-color-primary` 한 줄 덮어써서 브랜드 컬러 변경 가능. 시각 회귀 0건(의도된 변경 제외).
 
@@ -242,13 +242,13 @@ component     --vp-chip-bg: var(--vp-color-surface);
 
 ## 5. 성공 지표 (KPI)
 
-| 지표 | 현재 (2026-06) | Phase 2 목표 | Phase 4 목표 |
-| ---- | -------------- | ------------ | ------------ |
-| 패키지 수 | 1 (calendar) | 4 (core/theme/ui/calendar) | 6+ |
+| 지표 | 현재 (2026-06-29) | Phase 2 목표 | Phase 4 목표 |
+| ---- | ----------------- | ------------ | ------------ |
+| 패키지 수 | 3 (core/theme/calendar) | 4 (core/theme/ui/calendar) | 6+ |
 | 실 주간 다운로드(봇 제외) | ~0 (배포 직후 크롤러 484) | 측정 체계 구축 | 의미 있는 유입 |
 | 컴포넌트 수 | 1 (calendar) | 5+ primitive | 15+ |
-| calendar 번들 사이즈 (gzip) | 초기 ~17.2KB / 전체 ~20.2KB | core 분리로 ↓ | budget 내 유지 |
-| 문서 커버리지 | docs/ 내부 문서 | 사이트 + 자동 API | 전 컴포넌트 라이브 데모 |
+| calendar 번들 사이즈 (gzip) | 초기 ~18.4KB / 전체 ~21.4KB (Phase 1 테마 포함) | core 분리로 ↓ | budget 내 유지 |
+| 문서 커버리지 | docs/ 내부 문서 + theming.md | 사이트 + 자동 API | 전 컴포넌트 라이브 데모 |
 | a11y | 부분 | primitive 키보드 100% | axe 통과 |
 | 테스트 | Vitest 205 / E2E 126 | 패키지별 유지·증가 | + 시각 회귀 |
 
@@ -256,8 +256,10 @@ component     --vp-chip-bg: var(--vp-color-surface);
 
 ### 5.1 번들 사이즈 기준선 (baseline)
 
-> 측정: 2026-06-29 · `@vuepkg/calendar@0.0.4` · `npm run build:lib` (ESM, `vite 8.0.16`)
+> Phase 0 기준 측정: 2026-06-29 · `@vuepkg/calendar@0.0.4` · `pnpm turbo run build:lib` (ESM, `vite 8.0.16`)
 > Vue는 peer dependency라 제외. Phase 4 `F4-4`의 size-limit CI 게이트 기준값으로 사용.
+
+**Phase 0 완료 직후 (테마 토큰 이전)**
 
 | 산출물 | Raw | Gzip | 비고 |
 | ------ | ---: | ---: | ---- |
@@ -266,14 +268,23 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | `ListView-*.js` | 3.7 KB | 1.6 KB | List 탭 진입 시 지연 로드 (`defineAsyncComponent`) |
 | `CalendarMonthNav-*.js` | 3.7 KB | 1.4 KB | 분리 청크 |
 
-**소비자 체감 (gzip)**
-- 초기 로드 (List 미진입): `index.js` + `style.css` ≈ **17.2 KB**
-- 전체 (List 포함): ≈ **20.2 KB**
+**Phase 1 완료 후 (테마 토큰 포함)**
+
+| 산출물 | Raw | Gzip | 비고 |
+| ------ | ---: | ---: | ---- |
+| `index.js` (메인) | 48.5 KB | **13.6 KB** | 변동 없음 |
+| `style.css` | **26.89 KB** | **4.84 KB** | `@vuepkg/theme` 토큰 번들링됨 |
+| `ListView-*.js` | 3.7 KB | 1.6 KB | 변동 없음 |
+| `CalendarMonthNav-*.js` | 3.7 KB | 1.4 KB | 변동 없음 |
+
+**소비자 체감 (gzip, Phase 1 기준)**
+- 초기 로드 (List 미진입): `index.js` + `style.css` ≈ **18.4 KB**
+- 전체 (List 포함): ≈ **21.4 KB**
 
 **관찰**
 - UI 컴포넌트치고 매우 가벼움 (FullCalendar ~100KB+, toast-ui ~70KB+ gzip 대비). zero-dep 포지셔닝이 수치로 증명됨.
-- CSS(18KB raw)가 JS 대비 비중 큼 → Phase 1 토큰화 시 중복 색상/스타일 정리로 감축 여지.
-- Phase 0에서 `@vuepkg/core` 분리 시 `utils/*` 등이 빠져 calendar 단독 번들은 추가로 감소 예상.
+- Phase 1 이후 CSS(26.89KB raw)가 증가했으나 — 테마 토큰을 `style.css`에 포함해 소비자가 별도 패키지를 설치하지 않아도 테마가 적용되는 UX 설계 선택.
+- Phase 0에서 `@vuepkg/core` 분리 시 `utils/*` 등이 빠져 calendar JS 번들은 추가로 감소 예상.
 
 ---
 

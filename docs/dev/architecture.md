@@ -28,6 +28,10 @@ vue3-calendar/                   # monorepo 루트 (pnpm workspace)
 │   │       ├── composables/
 │   │       │   └── useControllableState.ts  # controlled/uncontrolled 패턴
 │   │       └── index.ts               # barrel
+│   ├── theme/                   # @vuepkg/theme — 순수 CSS 디자인 토큰 (JS 0)
+│   │   ├── base.css                   # 라이트 테마 (primitive/semantic/component 3계층)
+│   │   ├── dark.css                   # 다크 오버라이드 (prefers-color-scheme + .vp-dark)
+│   │   └── index.css                  # 진입점
 │   └── calendar/                # @vuepkg/calendar — 배포 패키지
 │       └── src/
 │           ├── (기존 src/ 내용 — 아래 §1.1 참고)

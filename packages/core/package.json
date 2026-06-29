@@ -1,9 +1,13 @@
 {
   "name": "@vuepkg/core",
   "private": false,
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Core utilities, composables, and types for @vuepkg",
-  "keywords": ["vue", "vue3", "vuepkg"],
+  "keywords": [
+    "vue",
+    "vue3",
+    "vuepkg"
+  ],
   "homepage": "https://github.com/vuepkg/calendar",
   "repository": {
     "type": "git",
@@ -57,7 +61,9 @@
       }
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build:lib": "vue-tsc --noEmit -p tsconfig.app.json && vite build --config vite.lib.config.ts",
     "typecheck": "vue-tsc --noEmit -p tsconfig.app.json",

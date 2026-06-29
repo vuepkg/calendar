@@ -1,9 +1,16 @@
 {
   "name": "@vuepkg/theme",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "private": false,
   "description": "CSS variable design tokens for @vuepkg",
-  "keywords": ["vue", "vue3", "vuepkg", "theme", "design-tokens", "css-variables"],
+  "keywords": [
+    "vue",
+    "vue3",
+    "vuepkg",
+    "theme",
+    "design-tokens",
+    "css-variables"
+  ],
   "homepage": "https://github.com/vuepkg/calendar",
   "repository": {
     "type": "git",

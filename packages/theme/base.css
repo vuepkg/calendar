@@ -1,0 +1,177 @@
+/**
+ * @vuepkg/theme — 라이트 테마 (기본값)
+ *
+ * 3계층 구조:
+ *   primitive  → 팔레트 원시값 (--vp-palette-*)
+ *   semantic   → 의미 기반 토큰 (--vp-color-*)
+ *   component  → 컴포넌트별 토큰 (--vp-calendar-*, --vp-chip-* …)
+ *
+ * 소비자는 semantic 계층만 덮어써도 전체 테마가 변경됩니다:
+ *   :root { --vp-color-primary: #your-brand; }
+ */
+
+:root {
+  /* ── Primitive: 팔레트 ───────────────────────────────────────────── */
+
+  --vp-palette-white: #ffffff;
+
+  /* Slate */
+  --vp-palette-slate-50:  #f8fafc;
+  --vp-palette-slate-100: #f1f5f9;
+  --vp-palette-slate-200: #e2e8f0;
+  --vp-palette-slate-300: #cbd5e1;
+  --vp-palette-slate-400: #94a3b8;
+  --vp-palette-slate-500: #64748b;
+  --vp-palette-slate-600: #475569;
+  --vp-palette-slate-700: #334155;
+  --vp-palette-slate-800: #1e293b;
+  --vp-palette-slate-900: #0f172a;
+
+  /* Blue */
+  --vp-palette-blue-50:  #eff6ff;
+  --vp-palette-blue-100: #dbeafe;
+  --vp-palette-blue-200: #bfdbfe;
+  --vp-palette-blue-300: #93c5fd;
+  --vp-palette-blue-400: #60a5fa;
+  --vp-palette-blue-500: #3b82f6;
+  --vp-palette-blue-700: #1d4ed8;
+  --vp-palette-blue-800: #1565c0;
+  --vp-palette-blue-900: #1e3a8a;
+
+  /* Red */
+  --vp-palette-red-50:  #ffebee;
+  --vp-palette-red-100: #fef2f2;
+  --vp-palette-red-400: #ef4444;
+  --vp-palette-red-600: #d32f2f;
+  --vp-palette-red-700: #c62828;
+
+  /* Teal */
+  --vp-palette-teal-300: #4db6ac;
+
+  /* ── Semantic: 의미 기반 ──────────────────────────────────────────── */
+
+  /* 배경 */
+  --vp-color-bg:        var(--vp-palette-white);
+  --vp-color-bg-subtle: var(--vp-palette-slate-50);
+  --vp-color-bg-muted:  var(--vp-palette-slate-100);
+  --vp-color-bg-raised: var(--vp-palette-white);
+
+  /* 테두리 */
+  --vp-color-border:        #d7dee8;
+  --vp-color-border-subtle: var(--vp-palette-slate-200);
+  --vp-color-border-strong: var(--vp-palette-slate-700);
+
+  /* 텍스트 */
+  --vp-color-text:             var(--vp-palette-slate-800);
+  --vp-color-text-secondary:   var(--vp-palette-slate-700);
+  --vp-color-text-muted:       var(--vp-palette-slate-500);
+  --vp-color-text-placeholder: var(--vp-palette-slate-400);
+  --vp-color-text-on-primary:  var(--vp-palette-white);
+
+  /* Primary (포커스·강조) */
+  --vp-color-primary:        #0277bd;
+  --vp-color-primary-subtle: var(--vp-palette-blue-50);
+  --vp-color-primary-border: var(--vp-palette-blue-200);
+
+  /* Danger */
+  --vp-color-danger:        var(--vp-palette-red-400);
+  --vp-color-danger-subtle: rgb(239 68 68 / 12%);
+
+  /* 요일 색상 */
+  --vp-color-sunday:   var(--vp-palette-red-600);
+  --vp-color-saturday: var(--vp-palette-blue-800);
+
+  /* 선택·강조 */
+  --vp-color-selected-bg: #e3f2fd;
+
+  /* ── Component: 캘린더 컨테이너 ──────────────────────────────────── */
+  --vp-calendar-bg:         var(--vp-color-bg);
+  --vp-calendar-border:     var(--vp-color-border);
+  --vp-calendar-radius:     4px;
+  --vp-calendar-min-height: 480px;
+
+  /* ── Component: 툴바 ─────────────────────────────────────────────── */
+  --vp-toolbar-bg:      var(--vp-color-bg);
+  --vp-toolbar-border:  var(--vp-color-border);
+  --vp-toolbar-padding: 10px 12px;
+
+  /* ── Component: 뷰 탭 (SegmentedControl) ─────────────────────────── */
+  --vp-tab-track-bg:     var(--vp-color-bg-muted);
+  --vp-tab-track-border: var(--vp-palette-slate-300);
+  --vp-tab-text:         var(--vp-palette-slate-500);
+  --vp-tab-text-hover:   var(--vp-palette-slate-700);
+  --vp-tab-bg-hover:     var(--vp-palette-slate-200);
+  --vp-tab-active-bg:    var(--vp-color-bg);
+  --vp-tab-active-text:  var(--vp-palette-slate-900);
+  --vp-tab-active-shadow: 0 1px 3px rgb(0 0 0 / 10%), 0 1px 2px rgb(0 0 0 / 6%);
+
+  /* ── Component: 네비게이션 버튼 (‹ › Today) ─────────────────────── */
+  --vp-nav-btn-bg:        var(--vp-color-bg);
+  --vp-nav-btn-bg-hover:  var(--vp-color-bg-subtle);
+  --vp-nav-btn-border:    var(--vp-palette-slate-300);
+  --vp-nav-btn-text:      var(--vp-palette-slate-700);
+  --vp-nav-title-text:    var(--vp-palette-slate-700);
+
+  /* ── Component: 그리드 선 ────────────────────────────────────────── */
+  --vp-grid-line:        var(--vp-color-border-subtle);
+  --vp-grid-bg-hour:     var(--vp-color-bg-subtle);
+  --vp-grid-hour-stripe: var(--vp-palette-slate-100);
+
+  /* ── Component: 현재 시간 표시선 ─────────────────────────────────── */
+  --vp-current-time-color: var(--vp-palette-blue-500);
+
+  /* ── Component: 오늘 날짜 뱃지 ──────────────────────────────────── */
+  --vp-today-badge-bg:   var(--vp-palette-teal-300);
+  --vp-today-badge-text: var(--vp-palette-white);
+
+  /* ── Component: 월간 셀 ──────────────────────────────────────────── */
+  --vp-month-cell-bg:          var(--vp-color-bg);
+  --vp-month-cell-outside-bg:  #fafbfc;
+  --vp-month-cell-outside-text: var(--vp-palette-slate-400);
+  --vp-month-cell-selected-bg: var(--vp-color-selected-bg);
+  --vp-month-header-bg:        var(--vp-color-bg-subtle);
+
+  /* ── Component: 이벤트 칩 ────────────────────────────────────────── */
+  --vp-chip-radius:   4px;
+  --vp-chip-text-sub: 0.85;    /* opacity for participant/time */
+
+  /* ── Component: 공휴일 칩 ────────────────────────────────────────── */
+  --vp-holiday-chip-bg:    var(--vp-palette-red-50);
+  --vp-holiday-chip-color: var(--vp-palette-red-700);
+
+  /* ── Component: All Day 바 ───────────────────────────────────────── */
+  --vp-all-day-bar-hover: brightness(0.97);
+
+  /* ── Component: 팝오버 ───────────────────────────────────────────── */
+  --vp-popover-bg:      var(--vp-color-bg);
+  --vp-popover-border:  var(--vp-color-border-strong);
+  --vp-popover-shadow:  0 8px 24px rgb(15 23 42 / 18%);
+  --vp-popover-header-bg: #e8f0fe;
+  --vp-popover-item-bg:   var(--vp-color-bg-muted);
+  --vp-popover-item-bg-hover: var(--vp-palette-slate-200);
+  --vp-popover-item-highlighted-bg:   #e3f2fd;
+  --vp-popover-item-highlighted-text: var(--vp-palette-blue-800);
+  --vp-popover-z-index: 1000;
+
+  /* ── Component: List 뷰 ──────────────────────────────────────────── */
+  --vp-list-filter-bg:     var(--vp-palette-blue-50);
+  --vp-list-filter-border: var(--vp-palette-blue-200);
+  --vp-list-filter-text:   var(--vp-palette-blue-900);
+  --vp-list-filter-btn-border: var(--vp-palette-blue-300);
+  --vp-list-filter-btn-text:   var(--vp-palette-blue-700);
+  --vp-list-row-hover-bg:  #f0f9ff;
+  --vp-list-row-stripe-bg: var(--vp-color-bg-subtle);
+  --vp-list-header-bg:     var(--vp-color-bg-subtle);
+
+  /* ── Component: 스크롤바 ─────────────────────────────────────────── */
+  --vp-scrollbar-size:        6px;
+  --vp-scrollbar-thumb:       var(--vp-palette-slate-300);
+  --vp-scrollbar-thumb-hover: var(--vp-palette-slate-400);
+
+  /* ── Component: 포커스 ───────────────────────────────────────────── */
+  --vp-focus-ring: 2px solid var(--vp-color-primary);
+
+  /* ── Component: 트랜지션 ─────────────────────────────────────────── */
+  --vp-transition-fast: 0.1s;
+  --vp-transition-base: 0.15s;
+}

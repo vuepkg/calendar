@@ -1,0 +1,111 @@
+/**
+ * @vuepkg/theme — 다크 테마
+ *
+ * 적용 방법 (둘 중 하나):
+ *   1. 시스템 설정 자동: @media (prefers-color-scheme: dark) { … }
+ *   2. 수동 토글: <html class="vp-dark"> 또는 <div class="vp-dark">
+ *
+ * base.css를 먼저 import한 후 이 파일을 import하세요.
+ */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --vp-color-bg:        #0f172a;
+    --vp-color-bg-subtle: #1e293b;
+    --vp-color-bg-muted:  #1e293b;
+    --vp-color-bg-raised: #1e293b;
+
+    --vp-color-border:        #334155;
+    --vp-color-border-subtle: #1e293b;
+    --vp-color-border-strong: #475569;
+
+    --vp-color-text:             #e2e8f0;
+    --vp-color-text-secondary:   #cbd5e1;
+    --vp-color-text-muted:       #94a3b8;
+    --vp-color-text-placeholder: #64748b;
+
+    --vp-color-primary:        #38bdf8;
+    --vp-color-primary-subtle: #0c4a6e;
+    --vp-color-primary-border: #0369a1;
+
+    --vp-color-selected-bg: #1e3a5f;
+
+    --vp-month-cell-bg:          #0f172a;
+    --vp-month-cell-outside-bg:  #080f1c;
+    --vp-month-cell-outside-text: #475569;
+    --vp-month-cell-selected-bg: #1e3a5f;
+    --vp-month-header-bg:        #1e293b;
+
+    --vp-popover-header-bg: #1e3a5f;
+    --vp-popover-item-bg:   #1e293b;
+    --vp-popover-item-bg-hover: #334155;
+    --vp-popover-item-highlighted-bg:   #1e3a5f;
+    --vp-popover-item-highlighted-text: #60a5fa;
+
+    --vp-list-filter-bg:     #0c2a4a;
+    --vp-list-filter-border: #1e4976;
+    --vp-list-filter-text:   #93c5fd;
+    --vp-list-filter-btn-border: #1d4ed8;
+    --vp-list-filter-btn-text:   #60a5fa;
+    --vp-list-row-hover-bg:  #0c2a4a;
+    --vp-list-row-stripe-bg: #1a2540;
+    --vp-list-header-bg:     #1e293b;
+
+    --vp-grid-hour-stripe: #1a2333;
+    --vp-current-time-color: #60a5fa;
+    --vp-today-badge-bg:   #0d9488;
+
+    --vp-holiday-chip-bg:    #4a1515;
+    --vp-holiday-chip-color: #fca5a5;
+  }
+}
+
+.vp-dark {
+  --vp-color-bg:        #0f172a;
+  --vp-color-bg-subtle: #1e293b;
+  --vp-color-bg-muted:  #1e293b;
+  --vp-color-bg-raised: #1e293b;
+
+  --vp-color-border:        #334155;
+  --vp-color-border-subtle: #1e293b;
+  --vp-color-border-strong: #475569;
+
+  --vp-color-text:             #e2e8f0;
+  --vp-color-text-secondary:   #cbd5e1;
+  --vp-color-text-muted:       #94a3b8;
+  --vp-color-text-placeholder: #64748b;
+
+  --vp-color-primary:        #38bdf8;
+  --vp-color-primary-subtle: #0c4a6e;
+  --vp-color-primary-border: #0369a1;
+
+  --vp-color-selected-bg: #1e3a5f;
+
+  --vp-month-cell-bg:          #0f172a;
+  --vp-month-cell-outside-bg:  #080f1c;
+  --vp-month-cell-outside-text: #475569;
+  --vp-month-cell-selected-bg: #1e3a5f;
+  --vp-month-header-bg:        #1e293b;
+
+  --vp-popover-header-bg: #1e3a5f;
+  --vp-popover-item-bg:   #1e293b;
+  --vp-popover-item-bg-hover: #334155;
+  --vp-popover-item-highlighted-bg:   #1e3a5f;
+  --vp-popover-item-highlighted-text: #60a5fa;
+
+  --vp-list-filter-bg:     #0c2a4a;
+  --vp-list-filter-border: #1e4976;
+  --vp-list-filter-text:   #93c5fd;
+  --vp-list-filter-btn-border: #1d4ed8;
+  --vp-list-filter-btn-text:   #60a5fa;
+  --vp-list-row-hover-bg:  #0c2a4a;
+  --vp-list-row-stripe-bg: #1a2540;
+  --vp-list-header-bg:     #1e293b;
+
+  --vp-grid-hour-stripe: #1a2333;
+  --vp-current-time-color: #60a5fa;
+  --vp-today-badge-bg:   #0d9488;
+
+  --vp-holiday-chip-bg:    #4a1515;
+  --vp-holiday-chip-color: #fca5a5;
+}

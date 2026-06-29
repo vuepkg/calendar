@@ -1,7 +1,7 @@
 {
   "name": "@vuepkg/core",
   "private": false,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Core utilities, composables, and types for @vuepkg",
   "keywords": [
     "vue",

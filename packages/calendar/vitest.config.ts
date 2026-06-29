@@ -10,6 +10,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(projectRoot, 'src'),
+      '@vuepkg/core': path.resolve(projectRoot, '../core/src'),
     },
   },
   test: {

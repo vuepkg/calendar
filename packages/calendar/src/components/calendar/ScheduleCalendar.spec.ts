@@ -439,7 +439,7 @@ describe('ScheduleCalendar public holiday fetching', () => {
     ])
   })
 
-  it('defaults fetchPublicHolidays to true', () => {
+  it('defaults fetchPublicHolidays to false', () => {
     const wrapper = mount(ScheduleCalendar, {
       props: {
         schedules: mockSchedules,
@@ -451,7 +451,7 @@ describe('ScheduleCalendar public holiday fetching', () => {
       },
     })
 
-    expect(wrapper.props('fetchPublicHolidays')).toBe(true)
+    expect(wrapper.props('fetchPublicHolidays')).toBe(false)
   })
 
   it('fetches the current year once on mount when fetchPublicHolidays is true', async () => {

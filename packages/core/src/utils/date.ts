@@ -1,5 +1,3 @@
-import type { CalendarNavigateAction } from '@/types/calendarEvents'
-
 export function startOfDay(date: Date): Date {
   const result = new Date(date)
   result.setHours(0, 0, 0, 0)
@@ -148,28 +146,4 @@ export function clampDateToRange(date: Date, rangeStart: Date, rangeEnd: Date): 
     return new Date(rangeEnd)
   }
   return date
-}
-
-export function resolveCalendarNavigateDate(
-  currentDate: Date,
-  action: CalendarNavigateAction,
-): Date {
-  const base = startOfDay(currentDate)
-
-  switch (action) {
-    case 'today':
-      return startOfDay(new Date())
-    case 'prev-day':
-      return startOfDay(addDays(base, -1))
-    case 'next-day':
-      return startOfDay(addDays(base, 1))
-    case 'prev-week':
-      return startOfDay(addDays(base, -7))
-    case 'next-week':
-      return startOfDay(addDays(base, 7))
-    case 'prev-month':
-      return startOfDay(addMonths(base, -1))
-    case 'next-month':
-      return startOfDay(addMonths(base, 1))
-  }
 }

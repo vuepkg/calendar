@@ -1,5 +1,8 @@
 import type { ComputedRef, MaybeRefOrGetter, Ref } from 'vue'
 import type { MonthDayCell } from './layout'
+import type { Holiday, HolidayKind } from '@vuepkg/core'
+
+export type { Holiday, HolidayKind }
 
 /** Month / Week / Day / List 탭 식별자 */
 export type CalendarView = 'month' | 'week' | 'day' | 'list'
@@ -77,17 +80,6 @@ export interface ScheduleDraft {
   allDay: boolean
 }
 
-/** 공휴일 출처 */
-export type HolidayKind = 'public' | 'company'
-
-/** 월간 셀에 표시할 공휴일·회사 기념일 */
-export interface Holiday {
-  id: string
-  /** `YYYY-MM-DD` */
-  dateKey: string
-  name: string
-  kind: HolidayKind
-}
 
 /** `useCalendar` 옵션 */
 export interface UseCalendarOptions {

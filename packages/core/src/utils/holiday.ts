@@ -1,5 +1,5 @@
-import type { Holiday } from '@/types/schedule'
-import { toDateKey } from '@/utils/date'
+import type { Holiday } from '../types/holiday'
+import { toDateKey } from './date'
 
 export function groupHolidaysByDateKey(holidays: Holiday[]): Map<string, Holiday[]> {
   const map = new Map<string, Holiday[]>()

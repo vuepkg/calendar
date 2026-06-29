@@ -1,90 +1,29 @@
 {
-  "name": "@vuepkg/calendar",
-  "private": false,
-  "version": "0.0.4",
-  "description": "Vue 3 schedule calendar — Month / Week / Day / List views, zero extra dependencies",
-  "keywords": [
-    "vue",
-    "vue3",
-    "vue3-calendar",
-    "calendar-component",
-    "calendar",
-    "schedule",
-    "scheduler"
-  ],
-  "homepage": "https://github.com/vuepkg/calendar",
+  "name": "@vuepkg/root",
+  "private": true,
+  "version": "0.0.0",
+  "description": "vuepkg monorepo — Vue 3 UI framework",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vuepkg/calendar.git"
   },
-  "bugs": {
-    "url": "https://github.com/vuepkg/calendar/issues"
-  },
-  "author": "vuepkg",
-  "license": "MIT",
-  "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/src/components/calendar/index.d.ts",
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/src/components/calendar/index.d.ts",
-        "default": "./dist/index.js"
-      },
-      "require": {
-        "types": "./dist/src/components/calendar/index.d.ts",
-        "default": "./dist/index.cjs"
-      }
-    },
-    "./style.css": "./dist/style.css"
-  },
-  "files": [
-    "dist"
-  ],
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc -b && vite build",
-    "build:lib": "vue-tsc --noEmit -p tsconfig.app.json && vite build --config vite.lib.config.ts",
-    "preview": "vite preview",
-    "typecheck": "vue-tsc --noEmit -p tsconfig.app.json",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "format": "prettier --write . && eslint . --fix",
-    "format:check": "prettier --check . && eslint .",
-    "test": "vitest run --config vitest.config.ts",
-    "test:watch": "vitest --config vitest.config.ts",
-    "test:e2e": "playwright test",
-    "test:e2e:responsive": "playwright test e2e/calendar-responsive.spec.ts",
-    "test:e2e:host": "playwright test e2e/calendar-host-integration.spec.ts",
-    "test:e2e:ui": "playwright test --ui",
-    "test:all": "npm run test && npm run build && npm run test:e2e",
-    "release": "npm run build:lib && npm publish --access public && git push origin main --tags"
-  },
-  "peerDependencies": {
-    "vue": "^3.5.0"
+    "dev": "turbo run dev --filter=@vuepkg/calendar",
+    "build": "turbo run build:lib",
+    "test": "turbo run test",
+    "test:e2e": "turbo run test:e2e",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "vue": "^3.5.34",
-    "@playwright/test": "^1.52.0",
-    "@types/node": "^24.12.3",
-    "@vitejs/plugin-vue": "^6.0.6",
-    "@vue/eslint-config-prettier": "^10.2.0",
-    "@vue/eslint-config-typescript": "^14.8.0",
-    "@vue/test-utils": "^2.4.11",
-    "@vue/tsconfig": "^0.9.1",
-    "eslint": "^10.4.1",
-    "eslint-plugin-vue": "^10.9.2",
-    "globals": "^17.6.0",
-    "jsdom": "^29.1.1",
     "prettier": "^3.8.4",
-    "typescript": "~6.0.2",
-    "typescript-eslint": "^8.61.0",
-    "vite": "^8.0.12",
-    "vite-plugin-dts": "^5.0.2",
-    "vitest": "^3.2.4",
-    "vue-eslint-parser": "^10.4.1",
-    "vue-tsc": "^3.2.8"
-  }
+    "turbo": "^2.5.4"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "packageManager": "pnpm@9.15.4"
 }

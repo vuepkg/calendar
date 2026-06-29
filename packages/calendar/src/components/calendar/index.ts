@@ -1,57 +1,56 @@
 export { default as ScheduleCalendar } from './ScheduleCalendar.vue'
 
 export type {
-  CalendarContext,
+  // 도메인 타입
+  Schedule,
+  ScheduleDraft,
+  ScheduleType,
+  ScheduleTypeOption,
+  Holiday,
+  HolidayKind,
+  Participant,
+  // 뷰·필터 상태
+  CalendarView,
+  ViewScope,
+  // emit payload
   CalendarDateSelectPayload,
   CalendarNavigateAction,
   CalendarNavigatePayload,
   CalendarOverflowClickPayload,
   CalendarScheduleClickPayload,
   CalendarTimeSlotSelectPayload,
-  CalendarView,
   CalendarViewChangePayload,
+  // payload 상세 타입
   DateSelectSource,
-  Holiday,
-  HolidayKind,
-  Participant,
-  Schedule,
-  ScheduleCalendarEmits,
-  ScheduleCalendarHostContext,
-  ScheduleCalendarHostHandlers,
-  ScheduleCalendarHostListeners,
   ScheduleClickSource,
-  ScheduleDraft,
   TimeSlotSelectSource,
+  // query-change
   ScheduleQueryChangePayload,
   ScheduleQueryDateRange,
   ScheduleQueryFilters,
-  ScheduleType,
-  ScheduleTypeOption,
-  FetchPublicHolidaysOptions,
-  UseCalendarOptions,
-  UsePublicHolidaysOptions,
+  // useScheduleCalendarHost
   UseScheduleCalendarHostOptions,
-  ViewScope,
+  ScheduleCalendarHostContext,
+  ScheduleCalendarHostListeners,
+  // usePublicHolidays
+  UsePublicHolidaysOptions,
 } from '@/types'
+
+// 일정 CRUD · 필터 헬퍼
 export {
   buildScheduleFromDraft,
   createScheduleId,
-  removeSchedule,
   upsertSchedule,
+  removeSchedule,
   applyScheduleFilters,
-  buildScheduleQueryChangePayload,
-  filterSchedulesByScope,
-  filterSchedulesByType,
-  filterSchedulesForListDate,
-  filterSchedulesForListMonth,
-  getScheduleQueryDateRange,
 } from '@/utils/schedule'
+
+// 기본 일정 유형 상수 (커스텀 타입 확장 시 spread 베이스로 사용)
 export { SCHEDULE_TYPE_OPTIONS } from '@/constants/calendarView'
-export { useCalendar } from '@/composables/useCalendar'
+
+// 공휴일 병합 (사내 기념일 + 공공 API 결과 합칠 때)
+export { mergeHolidays } from '@/utils/holiday'
+
+// composable
 export { usePublicHolidays } from '@/composables/usePublicHolidays'
 export { useScheduleCalendarHost } from '@/composables/useScheduleCalendarHost'
-export { mockCompanyHolidays } from '@/data/mockSchedules'
-export { fetchPublicHolidays } from '@/services/publicHolidaysApi'
-export { getHolidaysForDateKey, groupHolidaysByDateKey, mergeHolidays } from '@/utils/holiday'
-export { resolveCalendarNavigateDate } from '@/utils/date'
-export { startOfDay } from '@/utils/date'

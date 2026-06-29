@@ -2,20 +2,16 @@
 
 Vue 3 schedule calendar — Month / Week / Day / List views, **zero extra dependencies** (`vue` peer only).
 
-emit-only 컴포넌트로 일정 범위·CRUD는 부모 컴포넌트에서 처리하고, 캘린더에 필터링된 `schedules`를 prop으로 전달합니다.
-
 ## 주요 기능
 
 - **4가지 뷰** — Month / Week / Day / List
-- **월간 동적 레이아웃** — 6주 행이 부모 높이에 맞춰 균등 분할, 세로 스크롤 없음
-- **월간 `+N` 팝오버** — 숨긴 일정 목록 (임베디드 패널 크기·위치 자동 조정)
+- **월간 동적 레이아웃** — 6주 행이 부모 높이에 맞춰 균등 분할
+- **월간 `+N` 팝오버** — 숨긴 일정 목록
 - **멀티데이 spanning 바** — 2일 이상 종일 일정 바 표시
-- **Week/Day 시간 슬롯 선택** — 빈 셀 클릭 시 `time-slot-select`로 1시간 `start`/`end` 전달
-- **공휴일·기념일** — `:fetch-public-holidays="true"` opt-in + `:holidays` prop 병합
-- **커스텀 일정 타입** — `scheduleTypeOptions` prop으로 도메인 타입·색상 등록
-- **View / Scope 필터** — `v-model:view-scope`·`v-model:schedule-types` + `query-change` emit
-- **TypeScript** — 완전한 타입 선언 포함 (d.ts)
-- **추가 의존성 없음** — `vue ^3.5.0`만 peerDependency
+- **Week/Day 시간 슬롯 선택** — 빈 셀 클릭 시 1시간 `start`/`end` 전달
+- **공휴일·기념일** — 사내 기념일 prop + 한국 공공 API opt-in
+- **커스텀 일정 타입** — `scheduleTypeOptions`로 도메인 타입·색상 등록
+- **TypeScript** — 완전한 타입 선언 포함
 
 ---
 
@@ -32,85 +28,89 @@ import '@vuepkg/calendar/style.css'
 
 ---
 
-## 사용 예시
-
-### Composable 방식 (권장)
-
-`useScheduleCalendarHost`가 뷰·날짜·필터 상태와 이벤트 핸들러를 한 번에 제공합니다.
+## 빠른 시작
 
 ```vue
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import {
   ScheduleCalendar,
-  applyScheduleFilters,
   useScheduleCalendarHost,
   type Schedule,
 } from '@vuepkg/calendar'
 
-const allSchedules = ref<Schedule[]>([
+const schedules = ref<Schedule[]>([
   {
-    id: 's-001',
-    title: '팀 미팅',
+    id: '1',
+    title: '팀 회의',
     type: 'team_schedule',
-    participantId: 'user-001',
+    participantId: 'user-1',
     participantName: '홍길동',
-    start: new Date(2026, 5, 10, 10, 0),
-    end: new Date(2026, 5, 10, 11, 0),
+    start: new Date(2026, 5, 15, 10, 0),
+    end:   new Date(2026, 5, 15, 11, 0),
   },
 ])
 
 const { view, date, listFilterDate, viewScope, scheduleTypes, calendarListeners } =
   useScheduleCalendarHost()
-
-const schedules = computed(() =>
-  applyScheduleFilters(allSchedules.value, {
-    viewScope: viewScope.value,
-    scheduleTypes: scheduleTypes.value,
-    currentUserId: 'user-001',
-  }),
-)
 </script>
 
 <template>
-  <ScheduleCalendar
-    v-model:view="view"
-    v-model:date="date"
-    v-model:list-filter-date="listFilterDate"
-    v-model:view-scope="viewScope"
-    v-model:schedule-types="scheduleTypes"
-    :schedules="schedules"
-    v-on="calendarListeners"
-  />
+  <!-- 부모에 height 지정 필수 — 캘린더가 100% 채움 -->
+  <div style="height: 100vh; display: flex; flex-direction: column;">
+    <ScheduleCalendar
+      :schedules="schedules"
+      v-model:view="view"
+      v-model:date="date"
+      v-model:list-filter-date="listFilterDate"
+      v-model:view-scope="viewScope"
+      v-model:schedule-types="scheduleTypes"
+      v-on="calendarListeners"
+    />
+  </div>
 </template>
 ```
 
-### 커스텀 일정 타입 등록
+> **초보자 팁**: `useScheduleCalendarHost`와 `v-on="calendarListeners"`가 낯설다면 [시작하기 가이드](./docs/guide/getting-started.md)에서 단계별 설명을 확인하세요.
+
+---
+
+## API에서 일정 가져오기
+
+뷰·날짜가 바뀔 때마다 `query-change`가 발생합니다. `onQueryChange`로 API 호출을 연결합니다:
 
 ```ts
-import { SCHEDULE_TYPE_OPTIONS, type ScheduleTypeOption } from '@vuepkg/calendar'
-
-const typeOptions: ScheduleTypeOption[] = [
-  ...SCHEDULE_TYPE_OPTIONS,
-  { type: 'project', label: '프로젝트', color: '#fff', backgroundColor: '#6366f1' },
-  { type: 'leave', label: '휴가', color: '#fff', backgroundColor: '#f59e0b' },
-]
+const { view, date, listFilterDate, viewScope, scheduleTypes, calendarListeners } =
+  useScheduleCalendarHost({
+    onQueryChange: async (payload) => {
+      schedules.value = await fetchSchedules(payload.range.start, payload.range.end)
+    },
+  })
 ```
 
-```vue
-<ScheduleCalendar :schedule-type-options="typeOptions" ... />
+---
+
+## 일정 생성·수정 연결
+
+```ts
+useScheduleCalendarHost({
+  onTimeSlotSelect(payload) {
+    // Week/Day 빈 셀 클릭 — 일정 생성 다이얼로그
+    openCreateDialog({ start: payload.start, end: payload.end })
+  },
+  onScheduleClick(payload) {
+    // 일정 칩 클릭 — 상세/수정 다이얼로그
+    openEditDialog(payload.schedule)
+  },
+})
 ```
 
-### 한국 공공 공휴일 API (opt-in)
+```ts
+import { upsertSchedule, removeSchedule, buildScheduleFromDraft, createScheduleId } from '@vuepkg/calendar'
 
-```vue
-<ScheduleCalendar
-  :fetch-public-holidays="true"
-  ...
-/>
+schedules.value = upsertSchedule(schedules.value, buildScheduleFromDraft({ id: createScheduleId(), ...draft }))
+schedules.value = removeSchedule(schedules.value, targetId)
 ```
-
-> 기본값 `false`. 활성화 시 내부적으로 `/api/spcde/getRestDeInfo` (same-origin BFF/proxy) 경로를 호출합니다. 서버에서 [공공데이터포털](https://www.data.go.kr/data/15012690/openapi.do) 인증키를 주입하는 BFF를 구성하거나, `VITE_SPCDE_API_URL` 환경변수로 API URL을 오버라이드하세요. 클라이언트에서 직접 호출할 경우 `usePublicHolidays({ serviceKey: '...' })`를 대신 사용하세요.
 
 ---
 
@@ -119,11 +119,11 @@ const typeOptions: ScheduleTypeOption[] = [
 | Prop | 타입 | 기본값 | 설명 |
 | ---- | ---- | ------ | ---- |
 | `schedules` | `Schedule[]` | `[]` | 표시할 일정 목록 |
-| `holidays` | `Holiday[]` | `[]` | 기념일·공휴일 병합 목록 |
+| `holidays` | `Holiday[]` | `[]` | 기념일·공휴일 목록 |
 | `view` | `CalendarView` | `'month'` | 현재 뷰 (`'month'｜'week'｜'day'｜'list'`) |
 | `date` | `Date` | 오늘 | 현재 기준 날짜 |
 | `viewScope` | `ViewScope` | `'company'` | 일정 범위 필터 (`'my'｜'company'`) |
-| `scheduleTypes` | `string[] \| null` | `null` | 활성 일정 타입 필터 |
+| `scheduleTypes` | `string[] \| null` | `null` | 활성 일정 타입 필터 (`null`=전체) |
 | `listFilterDate` | `Date \| null` | `null` | List 뷰 날짜 필터 |
 | `scheduleTypeOptions` | `ScheduleTypeOption[]` | 기본 3종 | 커스텀 일정 타입 정의 |
 | `fetchPublicHolidays` | `boolean` | `false` | 한국 공공 API 공휴일 opt-in |
@@ -133,16 +133,34 @@ const typeOptions: ScheduleTypeOption[] = [
 
 | 이벤트 | 페이로드 | 설명 |
 | ------ | -------- | ---- |
-| `view-change` | `{ view: CalendarView, previousView: CalendarView }` | 뷰 탭 전환 |
-| `date-select` | `{ date: Date, source: 'month-cell' \| 'week-day-header' }` | 날짜 클릭 |
-| `navigate` | `{ action: CalendarNavigateAction, date: Date }` | ‹ › · Today 네비 |
-| `overflow-click` | `{ date: Date, hiddenCount: number, schedules: Schedule[], visibleSchedules: Schedule[] }` | 월간 +N 클릭 |
-| `schedule-click` | `{ schedule: Schedule, source: ScheduleClickSource, date?: Date }` | 일정 클릭 |
-| `time-slot-select` | `{ date: Date, start: Date, end: Date, source: TimeSlotSelectSource }` | Week/Day 빈 셀 클릭 (1시간 단위) |
+| `view-change` | `CalendarViewChangePayload` | 뷰 탭 전환 |
+| `date-select` | `CalendarDateSelectPayload` | 날짜 클릭 |
+| `navigate` | `CalendarNavigatePayload` | ‹ › · Today 네비 |
+| `schedule-click` | `CalendarScheduleClickPayload` | 일정 클릭 |
+| `time-slot-select` | `CalendarTimeSlotSelectPayload` | Week/Day 빈 셀 클릭 (1시간 단위) |
+| `overflow-click` | `CalendarOverflowClickPayload` | 월간 +N 클릭 |
 | `list-filter-clear` | — | List 날짜 필터 해제 |
-| `query-change` | `ScheduleQueryChangePayload` | 범위·타입·기간 필터 변경 (API 조회용) |
+| `query-change` | `ScheduleQueryChangePayload` | 범위·필터 변경 (API 조회용) |
 
-> **emit-only** 구조입니다. `view-change`·`navigate`·`date-select` 핸들러를 연결하지 않으면 탭·네비가 동작하지 않습니다. `useScheduleCalendarHost`를 사용하면 모든 핸들러가 자동으로 연결됩니다.
+> `useScheduleCalendarHost`를 사용하면 위 이벤트가 자동으로 연결됩니다. `v-on="calendarListeners"`만 추가하면 됩니다.
+
+---
+
+## 커스텀 일정 타입
+
+```ts
+import { SCHEDULE_TYPE_OPTIONS, type ScheduleTypeOption } from '@vuepkg/calendar'
+
+const typeOptions: ScheduleTypeOption[] = [
+  ...SCHEDULE_TYPE_OPTIONS,
+  { type: 'project', label: '프로젝트', color: '#fff', backgroundColor: '#6366f1' },
+  { type: 'leave',   label: '휴가',     color: '#fff', backgroundColor: '#f59e0b' },
+]
+```
+
+```vue
+<ScheduleCalendar :schedule-type-options="typeOptions" ... />
+```
 
 ---
 
@@ -155,6 +173,7 @@ import type {
   CalendarView,
   ViewScope,
   ScheduleTypeOption,
+  ScheduleQueryChangePayload,
   CalendarScheduleClickPayload,
   CalendarTimeSlotSelectPayload,
 } from '@vuepkg/calendar'
@@ -177,23 +196,12 @@ import type {
 **요구 사항**: Node 20+, pnpm 9+
 
 ```bash
-# 저장소 클론 후 의존성 설치
-pnpm install
-
-# 개발 서버 (packages/calendar)
-pnpm --filter @vuepkg/calendar dev
-
-# 전체 빌드
-pnpm turbo run build:lib
-
-# 단위 테스트
-pnpm turbo run test
-
-# 타입 체크
-pnpm turbo run typecheck
+pnpm install                          # 의존성 설치
+pnpm --filter @vuepkg/calendar dev    # 개발 서버
+pnpm turbo run build:lib              # 전체 빌드
+pnpm turbo run test                   # 단위 테스트
+pnpm turbo run typecheck              # 타입 체크
 ```
-
-이 모노레포는 pnpm workspace + Turborepo로 관리됩니다. `packages/core`에 범용 유틸이, `packages/calendar`에 캘린더 컴포넌트가 위치합니다.
 
 ---
 

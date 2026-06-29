@@ -24,6 +24,9 @@ coverage
 playwright-report
 test-results
 
+# Turborepo cache
+.turbo
+
 # Internal development docs (not for public repo)
 docs/qa/
 docs/dev/refactor-log.md

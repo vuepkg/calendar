@@ -11,6 +11,7 @@ Vue 3 schedule calendar — Month / Week / Day / List views, **zero extra depend
 - **Week/Day 시간 슬롯 선택** — 빈 셀 클릭 시 1시간 `start`/`end` 전달
 - **공휴일·기념일** — 사내 기념일 prop + 한국 공공 API opt-in
 - **커스텀 일정 타입** — `scheduleTypeOptions`로 도메인 타입·색상 등록
+- **CSS 변수 테마** — `--vp-*` 변수로 색상·크기·간격 전면 커스터마이징, 다크 모드 지원
 - **TypeScript** — 완전한 타입 선언 포함
 
 ---
@@ -161,6 +162,29 @@ const typeOptions: ScheduleTypeOption[] = [
 ```vue
 <ScheduleCalendar :schedule-type-options="typeOptions" ... />
 ```
+
+---
+
+## 테마 커스터마이징
+
+모든 색상·크기·간격은 CSS 변수(`--vp-*`)로 정의되어 있어 한 줄만 덮어쓰면 전체 테마가 변경됩니다.
+
+```css
+/* 브랜드 색상 변경 */
+:root {
+  --vp-color-primary: #7c3aed;
+  --vp-today-badge-bg: #7c3aed;
+  --vp-month-cell-selected-bg: #f5f3ff;
+}
+```
+
+**다크 모드** — 시스템 설정(`prefers-color-scheme: dark`) 자동 반영 또는 `.vp-dark` 클래스로 수동 전환:
+
+```ts
+document.documentElement.classList.toggle('vp-dark')
+```
+
+토큰 전체 목록과 사용 예시는 [테마 커스터마이징 가이드](./docs/guide/theming.md)를 참고하세요.
 
 ---
 

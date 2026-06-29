@@ -56,6 +56,7 @@ export default defineConfig(({ mode }) => {
       alias: {
         '@': path.resolve(projectRoot, 'src'),
         '@vuepkg/core': path.resolve(projectRoot, '../core/src'),
+        '@vuepkg/theme': path.resolve(projectRoot, '../theme'),
       },
     },
     plugins: [

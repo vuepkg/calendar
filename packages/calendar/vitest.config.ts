@@ -11,6 +11,7 @@ export default defineConfig({
     alias: {
       '@': path.resolve(projectRoot, 'src'),
       '@vuepkg/core': path.resolve(projectRoot, '../core/src'),
+      '@vuepkg/theme': path.resolve(projectRoot, '../theme'),
     },
   },
   test: {

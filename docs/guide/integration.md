@@ -1,12 +1,14 @@
 # ScheduleCalendar 이식 가이드
 
-다른 Vue 3 프로젝트에 `ScheduleCalendar`를 **소스 복사 방식**으로 이식·연동하는 방법을 정리한 문서입니다.
+다른 Vue 3 프로젝트에 `ScheduleCalendar`를 연동하는 방법을 정리한 문서입니다.
 
 | 문서                                            | 용도                                  |
 | ----------------------------------------------- | ------------------------------------- |
 | **본 문서**                                     | 범용 이식·연동 실무 가이드            |
 | [`dev/architecture.md`](../dev/architecture.md) | API 상세·내부 구조·개발 시작하기      |
-| [`dev/roadmap.md`](../dev/roadmap.md)           | 기능 로드맵·컴포넌트 분리 백로그      |
+| [`dev/npm-publish-guide.md`](../dev/npm-publish-guide.md) | 배포 체크리스트              |
+
+> **권장 연동 방법**: `npm install @vuepkg/calendar` (패키지 설치). 소스 복사는 캘린더를 직접 수정해야 하는 경우에만 사용하세요.
 
 ---
 
@@ -46,20 +48,24 @@
 
 ## 2. 이식 체크리스트
 
+> **소스 위치**: Phase 0(monorepo 전환) 이후 소스는 `packages/calendar/src/`에 있습니다.  
+> **`@vuepkg/core` 필요**: `utils/date.ts`와 `utils/holiday.ts`가 `@vuepkg/core`를 re-export하므로,  
+> 소스 복사 시 대상 프로젝트에서 `npm install @vuepkg/core`를 실행하거나 core 소스(`packages/core/src/`)도 함께 복사해야 합니다.
+
 ### 2.1 공통 (Minimal · Full)
 
-| #   | 복사 대상                                       | 비고                                                         |
+| #   | 복사 대상 (소스: `packages/calendar/src/`)      | 비고                                                         |
 | --- | ----------------------------------------------- | ------------------------------------------------------------ |
-| 1   | `src/components/calendar/`                      | 전체                                                         |
-| 2   | `src/composables/useCalendar.ts`                | 내부 파생 데이터                                             |
-| 3a  | `src/composables/useScheduleCalendarHost.ts`    | 부모 연동 composable (권장)                                  |
-| 3b  | `src/composables/usePublicHolidays.ts`          | `ScheduleCalendar` 내부 공휴일 API (필수)                    |
-| 3c  | `src/composables/useMonthMeasuredCellHeight.ts` | 월간 셀 높이 측정 (MonthView 필수)                           |
-| 4   | `src/services/publicHolidaysApi.ts`             | 공공데이터포털 API                                           |
-| 5   | `src/types/` **4모듈**                          | `index.ts` barrel + `schedule`·`calendarEvents`·`layout` (`e2e.ts` 제외) |
-| 6   | `src/constants/calendarView.ts`                 | 상수·`SCHEDULE_TYPE_OPTIONS` 단일 파일                       |
-| 7   | `src/utils/` **5파일**                          | `date.ts`, `holiday.ts`, `schedule.ts`, `month.ts`, `timed.ts` (`.spec.ts` 제외) |
-| 8   | `src/styles/calendarScroll.css`                 | `ScheduleCalendar.vue`가 side-effect import                  |
+| 1   | `components/calendar/`                          | 전체                                                         |
+| 2   | `composables/useCalendar.ts`                    | 내부 파생 데이터                                             |
+| 3a  | `composables/useScheduleCalendarHost.ts`        | 부모 연동 composable (권장)                                  |
+| 3b  | `composables/usePublicHolidays.ts`              | `ScheduleCalendar` 내부 공휴일 API (필수)                    |
+| 3c  | `composables/useMonthMeasuredCellHeight.ts`     | 월간 셀 높이 측정 (MonthView 필수)                           |
+| 4   | `services/publicHolidaysApi.ts`                 | 공공데이터포털 API                                           |
+| 5   | `types/` **4모듈**                              | `index.ts` barrel + `schedule`·`calendarEvents`·`layout` (`e2e.ts` 제외) |
+| 6   | `constants/calendarView.ts`                     | 상수·`SCHEDULE_TYPE_OPTIONS` 단일 파일                       |
+| 7   | `utils/` **5파일**                              | `date.ts`, `holiday.ts`, `schedule.ts`, `month.ts`, `timed.ts` (`.spec.ts` 제외) |
+| 8   | `styles/calendarScroll.css`                     | `ScheduleCalendar.vue`가 side-effect import                  |
 
 **복사 제외 (데모·E2E 전용)**
 
@@ -70,7 +76,7 @@
 | `src/App.vue`, `src/main.ts` | 데모 앱 진입점                            |
 | `src/types/e2e.ts`           | E2E 전용 `HostLayoutId` — 프로덕션 불필요 (`@/types` barrel 미export) |
 
-**이식 소스 파일 수**: **30개** (Minimal·Full 공통 — Tier 1+2 compact 완료)
+**이식 소스 파일 수**: **30개** (Minimal·Full 공통 — Tier 1+2 compact 완료, `packages/calendar/src/` 기준)
 
 | 영역                    | 파일 수 |
 | ----------------------- | ------- |
@@ -88,14 +94,14 @@
 ```
 types/
 ├── index.ts              # 공개 barrel
-├── schedule.ts           # Schedule, Holiday, CalendarContext, FetchPublicHolidaysOptions …
+├── schedule.ts           # Schedule, Holiday(→@vuepkg/core re-export), CalendarContext …
 ├── calendarEvents.ts     # emit·query-change·useScheduleCalendarHost 계약
 └── layout.ts             # Month/Timed/AllDay·overflow 레이아웃 타입
 ```
 
 | 모듈                | 주요 타입                                                                 |
 | ------------------- | ------------------------------------------------------------------------- |
-| `schedule.ts`       | `Schedule`, `CalendarContext`, `UsePublicHolidaysOptions`, `FetchPublicHolidaysOptions` |
+| `schedule.ts`       | `Schedule`, `Holiday`·`HolidayKind` (→`@vuepkg/core` re-export), `CalendarContext`, `UsePublicHolidaysOptions` |
 | `calendarEvents.ts` | `ScheduleQueryChangePayload`, `UseScheduleCalendarHostOptions`, emit payload |
 | `layout.ts`         | `RectBounds`, `MonthOverflowPopoverLayout*` (overflow 유틸 입력)          |
 
@@ -103,21 +109,24 @@ types/
 
 ```
 utils/
-├── date.ts               # 날짜 유틸 + resolveCalendarNavigateDate
-├── holiday.ts
+├── date.ts               # @vuepkg/core/utils/date re-export + resolveCalendarNavigateDate
+├── holiday.ts            # @vuepkg/core/utils/holiday re-export
 ├── schedule.ts           # filter · query · crud · layout (단일 모듈)
 ├── month.ts              # barLayout · cell · overflow
 └── timed.ts              # allDay + grid (currentTime + timeSlot 통합)
 ```
 
+> `date.ts`와 `holiday.ts`는 `@vuepkg/core`에서 re-export합니다. 소스 복사 시 대상 프로젝트에 `@vuepkg/core`를 설치해야 합니다.
+
 **`types/`·`utils/` 누락이 가장 흔한 이식 실패 원인입니다.**
 
 ### 2.2 이식 파일 전체 목록 (30)
 
-복사 후 아래 목록과 일치하는지 확인하세요. (`.spec.ts`·E2E·데모 제외)
+복사 후 아래 목록과 일치하는지 확인하세요. (`.spec.ts`·E2E·데모 제외)  
+소스 기준 경로: `packages/calendar/src/`
 
 ```
-src/
+packages/calendar/src/
 ├── components/calendar/          (14)
 │   ├── ScheduleCalendar.vue
 │   ├── CalendarToolbar.vue
@@ -145,8 +154,8 @@ src/
 │   ├── calendarEvents.ts
 │   └── layout.ts
 ├── utils/                        (5)
-│   ├── date.ts
-│   ├── holiday.ts
+│   ├── date.ts               ← @vuepkg/core re-export
+│   ├── holiday.ts            ← @vuepkg/core re-export
 │   ├── schedule.ts
 │   ├── month.ts
 │   └── timed.ts
@@ -179,6 +188,8 @@ src/
 
 ### Step 1 — 파일 복사
 
+`packages/calendar/src/`에서 아래 구조로 복사합니다:
+
 ```
 your-app/src/
 ├── components/calendar/     ← 14파일 (ScheduleCalendar, views/, index.ts …)
@@ -189,6 +200,14 @@ your-app/src/
 ├── utils/                   ← date.ts, holiday.ts, schedule.ts, month.ts, timed.ts
 ├── data/mockSchedules.ts    ← 데모용 (mockCompanyHolidays 포함, 선택)
 └── styles/calendarScroll.css
+```
+
+`@vuepkg/core` 설치 (date.ts, holiday.ts가 의존):
+
+```bash
+npm install @vuepkg/core
+# 또는
+pnpm add @vuepkg/core
 ```
 
 ### Step 2 — Path alias (`@/`)
@@ -323,10 +342,22 @@ const { view, date, listFilterDate, viewScope, scheduleTypes, calendarListeners 
 
 ## 4. 검증
 
+소스 복사 후 대상 프로젝트에서:
+
 ```bash
-npm run typecheck   # import 경로 이상 없는지
-npm run test        # 이식 후 단위 테스트
-npm run test:all    # 전체 검증 (빌드 + E2E 포함)
+# 타입 체크
+npm run typecheck   # 또는 pnpm typecheck
+
+# 단위 테스트
+npm run test        # 또는 pnpm test
+```
+
+이 모노레포 자체를 검증할 때:
+
+```bash
+pnpm turbo run typecheck   # 전체 패키지 타입 체크
+pnpm turbo run test        # 전체 단위 테스트
+pnpm turbo run build:lib   # 라이브러리 빌드 검증
 ```
 
 ---

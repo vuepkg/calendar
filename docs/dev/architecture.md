@@ -5,8 +5,9 @@
 | 항목      | 내용                                                                              |
 | --------- | --------------------------------------------------------------------------------- |
 | 스택      | Vue 3 (Composition API) + TypeScript + Vite 8                                     |
+| 빌드      | pnpm workspace + Turborepo (모노레포)                                             |
 | UI        | 커스텀 HTML/CSS — PrimeVue 의존성 없음 (List 뷰 포함 전체 네이티브 구현)          |
-| 테스트    | Vitest 3.2.4 (단위 205건), Playwright E2E 126건 (기능 15 + 반응형 42 + 호스트 69) |
+| 테스트    | Vitest 3.x (단위 205건), Playwright E2E 126건 (기능 15 + 반응형 42 + 호스트 69)   |
 | 진입점    | `ScheduleCalendar.vue`                                                            |
 | 상태 모델 | **emit-only** — 뷰·날짜 변경은 소비 측 (`v-model` + 핸들러)에서 처리              |
 
@@ -14,8 +15,42 @@
 
 ## 1. 디렉터리 구조
 
+### 1.0 모노레포 루트 구조 (Phase 0~)
+
 ```
-src/
+vue3-calendar/                   # monorepo 루트 (pnpm workspace)
+├── packages/
+│   ├── core/                    # @vuepkg/core — 범용 유틸·composable·타입
+│   │   └── src/
+│   │       ├── utils/date.ts          # 범용 날짜 유틸 (resolveCalendarNavigateDate 제외)
+│   │       ├── utils/holiday.ts       # groupHolidaysByDateKey 등
+│   │       ├── types/holiday.ts       # Holiday / HolidayKind 타입
+│   │       ├── composables/
+│   │       │   └── useControllableState.ts  # controlled/uncontrolled 패턴
+│   │       └── index.ts               # barrel
+│   └── calendar/                # @vuepkg/calendar — 배포 패키지
+│       └── src/
+│           ├── (기존 src/ 내용 — 아래 §1.1 참고)
+├── tooling/tsconfig/            # 공유 tsconfig 프리셋
+├── .changeset/                  # 멀티패키지 버저닝 (changesets)
+├── .github/workflows/ci.yml     # turbo run lint test build:lib
+├── pnpm-workspace.yaml
+├── turbo.json
+└── package.json                 # private workspace root
+```
+
+### 의존성 방향 (단방향)
+
+```
+@vuepkg/core  ←  @vuepkg/calendar
+```
+
+`@vuepkg/core`는 calendar에 번들링됩니다. 소비자는 `@vuepkg/calendar`만 설치하면 됩니다.
+
+### 1.1 packages/calendar/src/ 내부 구조
+
+```
+packages/calendar/src/
 ├── App.vue                      # 데모 앱 (v-model + 이벤트 핸들러)
 ├── components/calendar/
 │   ├── ScheduleCalendar.vue     # 메인 컨테이너 (emit-only)
@@ -41,24 +76,20 @@ src/
 ├── constants/
 │   └── calendarView.ts          # TIMED_VIEW_*, MONTH_CELL_*, SCHEDULE_TYPE_OPTIONS 통합
 ├── data/
-│   └── mockSchedules.ts         # mockSchedules + mockCompanyHolidays (데모·이식 제외 가능)
+│   └── mockSchedules.ts         # mockSchedules + mockCompanyHolidays (데모용)
 ├── services/
 │   └── publicHolidaysApi.ts     # SpcdeInfoService/getRestDeInfo
 ├── styles/
 │   └── calendarScroll.css
 ├── types/
 │   ├── index.ts                 # 공개 barrel
-│   ├── schedule.ts              # Schedule, Holiday, ScheduleDraft, UseCalendarOptions …
+│   ├── schedule.ts              # Schedule, Holiday(→@vuepkg/core re-export), ScheduleDraft …
 │   ├── calendarEvents.ts        # emit payload
-│   ├── composable.ts            # CalendarContext, UsePublicHolidaysOptions …
-│   ├── api.ts                   # FetchPublicHolidaysOptions
 │   ├── e2e.ts                   # HostLayoutId (E2E 전용)
-│   ├── host.ts                  # useScheduleCalendarHost 타입
-│   ├── query.ts                 # ScheduleQueryChangePayload, BuildScheduleQueryChangePayloadInput
-│   └── layout.ts                # Month/Timed/AllDay·overflow 레이아웃 타입 (통합)
+│   └── layout.ts                # Month/Timed/AllDay·overflow 레이아웃 타입
 └── utils/
-    ├── date.ts                  # 날짜 유틸 + resolveCalendarNavigateDate
-    ├── holiday.ts
+    ├── date.ts                  # @vuepkg/core re-export + resolveCalendarNavigateDate
+    ├── holiday.ts               # @vuepkg/core re-export
     ├── schedule/  filter · query · crud · layout
     ├── month/     barLayout · cell · overflow
     └── timed/     allDay · grid   # grid = currentTime + timeSlot 통합
@@ -245,21 +276,23 @@ List 뷰는 `CalendarMonthNav` 사용 전 필터가 있으면 `list-filter-clear
 
 ## 6. 유틸리티 함수
 
-### `date.ts`
+### `date.ts` (`@vuepkg/core/utils/date` + calendar re-export)
 
-| 함수                          | 역할                               |
-| ----------------------------- | ---------------------------------- |
-| `startOfDay` / `endOfDay`     | 00:00:00 / 23:59:59.999 정규화     |
-| `isSameDay` / `isSameMonth`   | 동일 날·월 비교                    |
-| `addDays` / `addMonths`       | 날짜 이동                          |
-| `toDateKey`                   | `YYYY-MM-DD` 문자열 키             |
-| `formatMonthLabel`            | `YYYY-MM`                          |
-| `formatDayViewDate`           | `YYYY-MM-DD`                       |
-| `formatPeriod`                | List Period 컬럼 (`start~end`)     |
-| `getMonthGridDays`            | 6주×7열 = 42칸 `Date[]`            |
-| `getWeekDays`                 | 선택일 기준 7일 `Date[]`           |
-| `clampDateToRange`            | 그리드 표시 구간 경계로 자름       |
-| `resolveCalendarNavigateDate` | `navigate` action → 이동 후 `Date` |
+범용 날짜 유틸은 `packages/core/src/utils/date.ts`에 정의되고, calendar의 `src/utils/date.ts`가 re-export합니다.
+
+| 함수 | 위치 | 역할 |
+| ---- | ---- | ---- |
+| `startOfDay` / `endOfDay`     | core | 00:00:00 / 23:59:59.999 정규화     |
+| `isSameDay` / `isSameMonth`   | core | 동일 날·월 비교                    |
+| `addDays` / `addMonths`       | core | 날짜 이동                          |
+| `toDateKey`                   | core | `YYYY-MM-DD` 문자열 키             |
+| `formatMonthLabel`            | core | `YYYY-MM`                          |
+| `formatDayViewDate`           | core | `YYYY-MM-DD`                       |
+| `formatPeriod`                | core | List Period 컬럼 (`start~end`)     |
+| `getMonthGridDays`            | core | 6주×7열 = 42칸 `Date[]`            |
+| `getWeekDays`                 | core | 선택일 기준 7일 `Date[]`           |
+| `clampDateToRange`            | core | 그리드 표시 구간 경계로 자름       |
+| `resolveCalendarNavigateDate` | calendar | `navigate` action → 이동 후 `Date` (CalendarNavigateAction 의존) |
 
 ### `schedule/layout.ts`
 
@@ -414,33 +447,49 @@ npm run test:all      # 단위 + 빌드 + E2E
 
 ## 11. 로컬 개발 시작하기
 
+> **요구사항**: Node 20+, pnpm 9+. `npm i -g pnpm`으로 설치.
+
 ```bash
-npm install
-cp .env.example .env.local   # 공공데이터포털 공휴일 API 키 (선택)
-npm run dev                  # http://localhost:6565
+# 저장소 루트에서 (packages/core + packages/calendar 동시 설치)
+pnpm install
+cp packages/calendar/.env.example packages/calendar/.env.local  # 공휴일 API 키 (선택)
+pnpm dev           # packages/calendar dev 서버 — http://localhost:6565
 ```
 
 ### 주요 명령
 
 | 명령 | 용도 |
 | ---- | ---- |
-| `npm run typecheck` | 타입 검사 (가장 빠른 안전망) |
-| `npm run test` | Vitest 단위 테스트 205건 |
-| `npm run test:e2e` | Playwright E2E 126건 |
-| `npm run test:all` | 단위 + 빌드 + E2E (PR 전 권장) |
-| `npm run build:lib` | 라이브러리 패키지 빌드 (`dist/`) |
+| `pnpm turbo run typecheck` | 전체 타입 검사 |
+| `pnpm turbo run test` | Vitest 단위 테스트 205건 |
+| `pnpm turbo run build:lib` | core + calendar 라이브러리 빌드 |
+| `pnpm --filter @vuepkg/calendar run test:e2e` | Playwright E2E 126건 |
+
+#### 단일 패키지 작업 시 (빠른 반복)
+
+```bash
+pnpm --filter @vuepkg/calendar run test
+pnpm --filter @vuepkg/calendar run typecheck
+pnpm --filter @vuepkg/core run build:lib
+```
 
 ### Path alias
 
-`@/` → `src/` (`vite.config.ts`, `tsconfig.app.json`)
+| alias | 해석 경로 | 적용 범위 |
+| ----- | --------- | --------- |
+| `@/` | `packages/calendar/src/` | calendar 내부 |
+| `@vuepkg/core` | `packages/core/src/` (dev/test alias) | calendar dev·test |
+
+> 라이브러리 빌드(`vite.lib.config.ts`) 시에도 동일 alias 적용 — core가 calendar에 번들링됩니다.
 
 ### 수정 위치 가이드
 
 | 작업 | 수정 파일 |
 | ---- | --------- |
-| 일정 칩 UI | `ScheduleEventChip.vue` + `MonthView.vue` CSS |
+| 일정 칩 UI | `packages/calendar/src/components/calendar/ScheduleEventChip.vue` |
 | 새 뷰 타입 추가 | `CalendarView` 타입 → `CalendarToolbar.vue` 탭 → `ScheduleCalendar.vue` |
-| 새 필터 추가 | `ScheduleCalendar.vue` v-model → `buildScheduleQueryChangePayload` 확장 |
+| 범용 날짜 유틸 | `packages/core/src/utils/date.ts` |
+| 공휴일 관련 타입·유틸 | `packages/core/src/types/holiday.ts`, `packages/core/src/utils/holiday.ts` |
 | 커스텀 일정 유형 | `scheduleTypeOptions` prop (색상·라벨 매핑) |
 
 ---

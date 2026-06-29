@@ -174,6 +174,27 @@ import type {
 
 [github.com/vuepkg/calendar](https://github.com/vuepkg/calendar)
 
+**요구 사항**: Node 20+, pnpm 9+
+
+```bash
+# 저장소 클론 후 의존성 설치
+pnpm install
+
+# 개발 서버 (packages/calendar)
+pnpm --filter @vuepkg/calendar dev
+
+# 전체 빌드
+pnpm turbo run build:lib
+
+# 단위 테스트
+pnpm turbo run test
+
+# 타입 체크
+pnpm turbo run typecheck
+```
+
+이 모노레포는 pnpm workspace + Turborepo로 관리됩니다. `packages/core`에 범용 유틸이, `packages/calendar`에 캘린더 컴포넌트가 위치합니다.
+
 ---
 
 ## License

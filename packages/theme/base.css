@@ -105,11 +105,18 @@
   --vp-tab-active-text:  var(--vp-palette-slate-900);
   --vp-tab-active-shadow: 0 1px 3px rgb(0 0 0 / 10%), 0 1px 2px rgb(0 0 0 / 6%);
 
-  /* ── Component: 네비게이션 버튼 (‹ › Today) ─────────────────────── */
-  --vp-nav-btn-bg:        var(--vp-color-bg);
-  --vp-nav-btn-bg-hover:  var(--vp-color-bg-subtle);
-  --vp-nav-btn-border:    var(--vp-palette-slate-300);
-  --vp-nav-btn-text:      var(--vp-palette-slate-700);
+  /* ── Component: Button / IconButton (@vuepkg/ui) ─────────────────── */
+  --vp-button-bg:        var(--vp-color-bg);
+  --vp-button-bg-hover:  var(--vp-color-bg-subtle);
+  --vp-button-border:    var(--vp-palette-slate-300);
+  --vp-button-text:      var(--vp-palette-slate-700);
+  --vp-button-radius:    4px;
+
+  /* ── Component: 네비게이션 버튼 (‹ › Today) — @vuepkg/ui Button/IconButton로 마이그레이션 전 컴포넌트 호환용 별칭 */
+  --vp-nav-btn-bg:        var(--vp-button-bg);
+  --vp-nav-btn-bg-hover:  var(--vp-button-bg-hover);
+  --vp-nav-btn-border:    var(--vp-button-border);
+  --vp-nav-btn-text:      var(--vp-button-text);
   --vp-nav-title-text:    var(--vp-palette-slate-700);
 
   /* ── Component: 그리드 선 ────────────────────────────────────────── */

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { IconButton } from '@vuepkg/ui'
+
 defineProps<{
   /** 중앙에 표시할 기간 라벨 (예: `YYYY-MM`) */
   label: string
@@ -14,23 +16,9 @@ const emit = defineEmits<{
 
 <template>
   <div class="calendar-month-nav">
-    <button
-      type="button"
-      class="calendar-month-nav-btn"
-      :aria-label="prevLabel ?? 'Previous month'"
-      @click="emit('prev')"
-    >
-      ‹
-    </button>
+    <IconButton :ariaLabel="prevLabel ?? 'Previous month'" @click="emit('prev')"> ‹ </IconButton>
     <h2 class="calendar-month-nav-title">{{ label }}</h2>
-    <button
-      type="button"
-      class="calendar-month-nav-btn"
-      :aria-label="nextLabel ?? 'Next month'"
-      @click="emit('next')"
-    >
-      ›
-    </button>
+    <IconButton :ariaLabel="nextLabel ?? 'Next month'" @click="emit('next')"> › </IconButton>
   </div>
 </template>
 
@@ -42,23 +30,6 @@ const emit = defineEmits<{
   gap: 16px;
   margin-bottom: 12px;
   flex-shrink: 0;
-}
-
-.calendar-month-nav-btn {
-  border: 1px solid var(--vp-nav-btn-border);
-  background: var(--vp-nav-btn-bg);
-  color: var(--vp-nav-btn-text);
-  border-radius: 4px;
-  cursor: pointer;
-  width: 32px;
-  height: 32px;
-  font-size: 18px;
-  line-height: 1;
-  padding: 0;
-}
-
-.calendar-month-nav-btn:hover {
-  background: var(--vp-nav-btn-bg-hover);
 }
 
 .calendar-month-nav-title {

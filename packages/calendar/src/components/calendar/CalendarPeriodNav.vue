@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Button, IconButton } from '@vuepkg/ui'
+
 defineProps<{
   prevLabel?: string
   nextLabel?: string
@@ -15,19 +17,12 @@ const emit = defineEmits<{
 
 <template>
   <div class="period-nav">
-    <button type="button" class="nav-btn today-btn" @click="emit('today')">Today</button>
+    <Button weight="bold" @click="emit('today')">Today</Button>
     <div class="nav-arrows">
-      <button
-        type="button"
-        class="nav-btn"
-        :aria-label="prevLabel ?? 'Previous'"
-        @click="emit('prev')"
-      >
+      <IconButton size="sm" :ariaLabel="prevLabel ?? 'Previous'" @click="emit('prev')">
         ‹
-      </button>
-      <button type="button" class="nav-btn" :aria-label="nextLabel ?? 'Next'" @click="emit('next')">
-        ›
-      </button>
+      </IconButton>
+      <IconButton size="sm" :ariaLabel="nextLabel ?? 'Next'" @click="emit('next')"> › </IconButton>
     </div>
     <span v-if="periodLabel" class="period-label">{{ periodLabel }}</span>
   </div>
@@ -44,30 +39,9 @@ const emit = defineEmits<{
   flex-shrink: 0;
 }
 
-.nav-btn {
-  border: 1px solid var(--vp-nav-btn-border);
-  background: var(--vp-nav-btn-bg);
-  color: var(--vp-nav-btn-text);
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 13px;
-  line-height: 1;
-  padding: 6px 10px;
-}
-
-.today-btn {
-  font-weight: 600;
-}
-
 .nav-arrows {
   display: flex;
   gap: 4px;
-}
-
-.nav-arrows .nav-btn {
-  width: 30px;
-  padding: 6px 0;
-  font-size: 16px;
 }
 
 .period-label {

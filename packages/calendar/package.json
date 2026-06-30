@@ -65,7 +65,8 @@
     "vue": "^3.5.0"
   },
   "dependencies": {
-    "@vuepkg/core": "workspace:*"
+    "@vuepkg/core": "workspace:*",
+    "@vuepkg/ui": "workspace:*"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

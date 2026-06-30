@@ -1,22 +1,19 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vitest/config'
+import vue from '@vitejs/plugin-vue'
 
 const projectRoot = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   plugins: [vue()],
-  resolve: {
-    alias: {
-      '@': path.resolve(projectRoot, 'src'),
-      '@vuepkg/core': path.resolve(projectRoot, '../core/src'),
-      '@vuepkg/theme': path.resolve(projectRoot, '../theme'),
-      '@vuepkg/ui': path.resolve(projectRoot, '../ui/src'),
-    },
-  },
   test: {
     environment: 'jsdom',
-    exclude: ['**/node_modules/**', '**/dist/**', 'e2e/**'],
+    exclude: ['**/node_modules/**', '**/dist/**'],
+  },
+  resolve: {
+    alias: {
+      '@vuepkg/core': path.resolve(projectRoot, '../core/src'),
+    },
   },
 })

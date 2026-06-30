@@ -16,6 +16,8 @@
 | [Phase 0] Monorepo & Core 추출 | pnpm workspace + Turborepo, `@vuepkg/core` 분리, CI 파이프라인 | 2026-06-28 |
 | [Phase 1] 디자인 토큰 & 테마 시스템 | `@vuepkg/theme` CSS 패키지, 전 컴포넌트 `--vp-*` 변수 적용, 다크 모드 | 2026-06-29 |
 | [Phase 2] `@vuepkg/ui` Primitive 승격 (완료) | `Button`/`IconButton`/`SegmentedControl`/`Chip`/`Popover`/`DataTable` 추출, calendar 전체가 소비하도록 리팩토링 | 2026-06-30 |
+| CI E2E · Git hooks | GitHub Actions Node 24, `test:e2e:ci`(134) CI 편입, 시각 회귀 수동 workflow, Husky `verify:push` | 2026-06-30 |
+| [SRV-P0-01] `query-change` 정확성 | navigate/view-change 시 다음 date/view를 payload에 반영 | 2026-06-30 |
 
 ---
 

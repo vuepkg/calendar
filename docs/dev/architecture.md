@@ -7,7 +7,9 @@
 | 스택      | Vue 3 (Composition API) + TypeScript + Vite 8                                     |
 | 빌드      | pnpm workspace + Turborepo (모노레포)                                             |
 | UI        | 커스텀 HTML/CSS — PrimeVue 의존성 없음 (List 뷰 포함 전체 네이티브 구현)          |
-| 테스트    | Vitest 3.x (calendar 200건 + ui 65건 + core 70건), Playwright E2E 142건 (기능 23 + 반응형 42 + 호스트 69 + 시각회귀 8) |
+| 테스트    | Vitest 3.x (calendar 201건 + ui 65건 + core 70건 = 336건), Playwright E2E 142건 (기능 134 + 시각 회귀 8) |
+| CI        | GitHub Actions **Node 24** — lint → typecheck → vitest → build → `test:e2e:ci`(134). 시각 회귀 8건은 [visual-regression.yml](../../.github/workflows/visual-regression.yml) 수동 실행 |
+| Git hooks | Husky `pre-push` → `pnpm verify:push` (lint + typecheck + vitest) |
 | 진입점    | `ScheduleCalendar.vue`                                                            |
 | 상태 모델 | **emit-only** — 뷰·날짜 변경은 소비 측 (`v-model` + 핸들러)에서 처리              |
 
@@ -498,11 +500,11 @@ pnpm test:e2e          # E2E 전체 (134 + 8)
 
 ## 11. 로컬 개발 시작하기
 
-> **요구사항**: Node 20+, pnpm 9+. `npm i -g pnpm`으로 설치.
+> **요구사항**: Node 24+ (CI 기준), pnpm 9+. `npm i -g pnpm`으로 설치.
 
 ```bash
 # 저장소 루트에서 (core + theme + ui + calendar 동시 설치)
-pnpm install
+pnpm install   # Husky pre-push 훅 자동 등록 (prepare 스크립트)
 cp packages/calendar/.env.example packages/calendar/.env.local  # 공휴일 API 키 (선택)
 pnpm dev           # packages/calendar dev 서버 — http://localhost:6565
 ```
@@ -511,10 +513,13 @@ pnpm dev           # packages/calendar dev 서버 — http://localhost:6565
 
 | 명령 | 용도 |
 | ---- | ---- |
+| `pnpm verify:push` | push 전 로컬 검증 (lint + typecheck + vitest) — Husky `pre-push`와 동일 |
 | `pnpm turbo run typecheck` | 전체 타입 검사 |
-| `pnpm turbo run test` | Vitest 단위 테스트 — calendar 200건 + ui 65건 + core 70건 |
+| `pnpm turbo run test` | Vitest 단위 테스트 — calendar 201건 + ui 65건 + core 70건 |
 | `pnpm turbo run build:lib` | core + ui + calendar 라이브러리 빌드 |
-| `pnpm --filter @vuepkg/calendar run test:e2e` | Playwright E2E 142건 |
+| `pnpm test:e2e:ci` | Playwright 기능 E2E 134건 (CI와 동일) |
+| `pnpm test:e2e:visual` | Playwright 시각 회귀 8건 (UI/CSS 변경 시) |
+| `pnpm test:e2e` | E2E 전체 142건 |
 
 #### 단일 패키지 작업 시 (빠른 반복)
 

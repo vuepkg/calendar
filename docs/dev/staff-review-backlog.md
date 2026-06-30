@@ -14,7 +14,7 @@
 | 품질 점수 | 6 / 10 |
 | 리뷰 범위 | Phase 0~2 완료분 — monorepo 4패키지, `ScheduleCalendar` emit-only, ui primitive 6종, Vitest 335건, Playwright 142건 구조 |
 
-**한 줄 요약:** Phase 0~2는 로드맵 의도대로 견고한 토대를 만들었다. `query-change` 동기화, E2E CI, 월간 셀 a11y, dts 부채, 대형 뷰 파일은 Phase 4 착수 전에 정리해야 한다.
+**한 줄 요약:** Phase 0~2는 로드맵 의도대로 견고한 토대를 만들었다. P0(`query-change`·기능 E2E CI)는 완료. P1~P2(월간 셀 a11y, dts 부채, 대형 뷰 분리 등)는 Phase 4 착수 전에 정리해야 한다.
 
 ---
 

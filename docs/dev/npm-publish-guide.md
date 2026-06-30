@@ -1,6 +1,6 @@
 # npm 배포 가이드 — @vuepkg/calendar
 
-> 작성일: 2026-06-16 · 최종 갱신: 2026-06-29 (Phase 0 monorepo 전환 반영)  
+> 작성일: 2026-06-16 · 최종 갱신: 2026-06-30 (CI E2E 분리·Node 24·Husky 반영)  
 > 현재 상태: **배포 준비 완료** — 아래 남은 항목 확인 후 배포 가능
 
 ---
@@ -174,6 +174,19 @@ const typeOptions: ScheduleTypeOption[] = [
 ```vue
 <ScheduleCalendar :schedule-type-options="typeOptions" ... />
 ```
+
+---
+
+## 배포 전 검증
+
+```bash
+pnpm turbo run lint typecheck test build:lib   # CI와 동일한 핵심 게이트
+pnpm test:e2e:ci                               # 기능 E2E (CI와 동일)
+# UI/CSS 변경이 있었다면:
+pnpm test:e2e:visual                           # 시각 회귀 (수동)
+```
+
+GitHub Actions는 **Node 24** 환경에서 실행됩니다. 로컬도 Node 24+ 권장.
 
 ---
 

@@ -136,7 +136,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | F0-3 | changesets 도입 — 멀티 패키지 독립 버저닝 | 🟢 | `.changeset/`, release 워크플로 |
 | F0-4 | `@vuepkg/core` 생성 + `utils/date.ts`·`utils/holiday.ts`·공통 타입 이관 | 🟡 | `packages/core` |
 | F0-5 | `useControllableState` 추출 — emit-only/v-model 패턴 일반화 (현 `useScheduleCalendarHost`의 핵심을 범용화) | 🟡 | `core/composables` |
-| F0-6 | CI 파이프라인: `turbo run lint test build` 매트릭스 | 🟢 | `.github/workflows/ci.yml` |
+| F0-6 | CI 파이프라인: lint → typecheck → vitest → build → `test:e2e:ci` (Node 24). 시각 회귀는 별도 workflow | 🟢 | `.github/workflows/ci.yml`, `visual-regression.yml` |
 | F0-7 | calendar가 `@vuepkg/core` 소비하도록 import 경로 교체 (`@/utils/date` → `@vuepkg/core`) | 🟡 | calendar 리팩토링 |
 
 **완료 기준(DoD)**: `pnpm build` 시 core·calendar 둘 다 빌드. 기존 테스트(Vitest 205 / E2E 126) 전부 통과. calendar npm 배포 결과물 동일.
@@ -278,7 +278,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | calendar 번들 사이즈 (gzip) | index.js ~12.1KB + style.css ~4.9KB (§1.5 dts 누수 부채 영향권) | core 분리로 ↓ | budget 내 유지 — 도메인 기능 추가에도 size-limit CI(F4-9)로 가드 |
 | 문서 커버리지 | docs/ 내부 문서 + theming.md + `@vuepkg/ui` README | 사이트 + 자동 API | 전 도메인 기능 라이브 데모(드래그·반복·Timeline 시연 포함) |
 | a11y | `@vuepkg/ui` 6종 키보드·aria 완비(Popover focus trap·Esc·외부클릭, DataTable row Enter/Space), calendar 전체는 부분 | ✅ primitive 키보드 100% 달성 | axe 통과 |
-| 테스트 | Vitest calendar 200 + ui 65 + core 70 / E2E 142(시각회귀 8 포함) | 패키지별 유지·증가 | 도메인 기능별(드래그/반복/DnD) 신규 테스트 스위트 |
+| 테스트 | Vitest 336 / E2E 기능 **134**(CI·`test:e2e:ci`) + 시각 **8**(수동·`test:e2e:visual`) | 패키지별 유지·증가 | 도메인 기능별(드래그/반복/DnD) 신규 테스트 스위트 |
 
 > **다운로드 KPI 주의**: 현재 501/주는 신규 배포 크롤러 트래픽(6/26 484 + 6/27 17)이며 실사용 아님. 실유입 측정 체계(README npm 배지, 문서 사이트 analytics)부터 Phase 3에 구축.
 

@@ -44,7 +44,7 @@ alwaysApply: false
 - **UI 컴포넌트 라이브러리 미사용** — PrimeVue 의존성 제거 완료, 모든 컴포넌트 순수 Vue 3 구현
 - 상태 관리 없음 — **emit-only 아키텍처**. 필터·CRUD·날짜 상태는 부모 컴포넌트가 소유, 캘린더는 `schedules` prop 수신 후 emit으로 위임
 - 스타일: **커스텀 CSS** (`<style scoped>`) — Tailwind 미사용. 색상·간격은 CSS 변수로 관리
-- 테스트: Vitest(유닛, 205건) + Playwright E2E — 개발자가 직접 관리 (`npm run test:e2e`)
+- 테스트: Vitest 336건 + Playwright E2E — CI는 `test:e2e:ci`(134), 시각 회귀 `test:e2e:visual`(8). Husky `pre-push` → `verify:push` (lint + typecheck + vitest)
 - **라이브러리 패키징**: `vite.lib.config.ts` → ES + CJS + TypeScript d.ts 출력 (`npm run build:lib`)
 - **패키지명**: `@vuepkg/calendar` / `peerDependencies: vue ^3.5.0` 만 (추가 의존성 없음)
 - **타입 확장**: `Schedule.type: string` — 소비자가 `scheduleTypeOptions` prop으로 커스텀 타입 주입

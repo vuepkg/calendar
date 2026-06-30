@@ -217,14 +217,15 @@ import type {
 
 [github.com/vuepkg/calendar](https://github.com/vuepkg/calendar)
 
-**요구 사항**: Node 20+, pnpm 9+
+**요구 사항**: Node 24+ (GitHub Actions CI 기준), pnpm 9+
 
 ```bash
-pnpm install                          # 의존성 설치
+pnpm install                          # 의존성 설치 + Husky pre-push 훅 등록
 pnpm --filter @vuepkg/calendar dev    # 개발 서버
+pnpm verify:push                      # push 전 검증 (lint + typecheck + vitest)
 pnpm turbo run build:lib              # 전체 빌드
-pnpm turbo run test                   # 단위 테스트
-pnpm turbo run typecheck              # 타입 체크
+pnpm test:e2e:ci                      # 기능 E2E (CI와 동일, 134건)
+pnpm test:e2e:visual                  # 시각 회귀 (UI/CSS 변경 시, 8건)
 ```
 
 ---

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { ALL_DAY_SECTION_MAX_HEIGHT } from '@/constants/calendarView'
 import { CALENDAR_END_HOUR, CALENDAR_START_HOUR, HOUR_HEIGHT_PX } from '@/constants/calendarView'
 import type {
@@ -13,21 +13,16 @@ import type {
 import type { Holiday } from '@/types/schedule'
 import type { Schedule } from '@/types/schedule'
 import { getAllDayRowCount, layoutWeekAllDayBars } from '@/utils/timed'
-import { toDateKey } from '@/utils/date'
-import { getHolidaysForDateKey, groupHolidaysByDateKey } from '@/utils/holiday'
-import {
-  getCurrentTimeIndicator,
-  getTimeSlotSelectionStyle,
-  resolveTimeSlotFromOffset,
-} from '@/utils/timed'
-import { formatHourLabel, formatTimedGridDayLabel, formatTime } from '@/utils/date'
+import { getCurrentTimeIndicator } from '@/utils/timed'
 import {
   getTimedGridHeight,
   getTimedSchedules,
   layoutTimedSchedules,
 } from '@/utils/schedule'
-import AllDayBar from './AllDayBar.vue'
-import HolidayChip from './HolidayChip.vue'
+import { formatHourLabel, formatTime } from '@/utils/date'
+import { useTimeSlotSelection } from '@/composables/useTimeSlotSelection'
+import TimedGridAllDay from './TimedGridAllDay.vue'
+import TimedGridHeader from './TimedGridHeader.vue'
 import ScheduleEventChip from './ScheduleEventChip.vue'
 
 const props = withDefaults(
@@ -65,46 +60,28 @@ const resolvedTimeSlotSource = computed<TimeSlotSelectSource>(
   () => props.timeSlotSource ?? (props.singleDay ? 'day-timed-slot' : 'week-timed-slot'),
 )
 
-const selectedSlot = ref<{ date: Date; start: Date; end: Date } | null>(null)
-
-function emitDateSelect(date: Date) {
-  emit('date-select', { date, source: props.dayHeaderSource })
-}
-
-function onDayHeaderActivate(date: Date) {
-  if (props.singleDay) {
-    return
-  }
-
-  emitDateSelect(date)
-}
-
-function emitScheduleClick(schedule: Schedule, date: Date, source: ScheduleClickSource) {
-  emit('schedule-click', { schedule, source, date })
-}
-
-function onTimeSlotClick(event: MouseEvent, day: Date) {
-  const column = event.currentTarget as HTMLElement
-  const offsetY = event.clientY - column.getBoundingClientRect().top
-  const { start, end } = resolveTimeSlotFromOffset(day, offsetY, timeRange)
-
-  selectedSlot.value = { date: day, start, end }
-  emit('time-slot-select', {
-    date: day,
-    start,
-    end,
-    source: resolvedTimeSlotSource.value,
-  })
-}
-
-function selectionStyle(start: Date, end: Date) {
-  return getTimeSlotSelectionStyle(start, end, timeRange)
-}
-
 const timeRange = {
   startHour: CALENDAR_START_HOUR,
   endHour: CALENDAR_END_HOUR,
   hourHeightPx: HOUR_HEIGHT_PX,
+}
+
+const { selectedSlot, isDragging, onPointerDown, onPointerMove, onPointerUp, cancelDrag, selectionStyle } =
+  useTimeSlotSelection(computed(() => props.days), timeRange)
+
+function handlePointerDown(event: PointerEvent, day: Date) {
+  onPointerDown(event, day)
+}
+
+function handlePointerMove(event: PointerEvent) {
+  onPointerMove(event)
+}
+
+function handlePointerUp(event: PointerEvent) {
+  const slot = onPointerUp(event)
+  if (slot) {
+    emit('time-slot-select', { ...slot, source: resolvedTimeSlotSource.value })
+  }
 }
 
 const now = ref(new Date())
@@ -120,10 +97,6 @@ const dayCount = computed(() => props.days.length)
 
 const allDayBars = computed(() => layoutWeekAllDayBars(props.days, props.schedules))
 const allDayRowCount = computed(() => getAllDayRowCount(allDayBars.value))
-const holidaysByDate = computed(() => groupHolidaysByDateKey(props.holidays ?? []))
-const hasHolidays = computed(() =>
-  props.days.some((day) => getHolidaysForDateKey(holidaysByDate.value, toDateKey(day)).length > 0),
-)
 
 const dayColumns = computed(() =>
   props.days.map((day) => {
@@ -132,22 +105,9 @@ const dayColumns = computed(() =>
     const currentTime = props.showCurrentTime
       ? getCurrentTimeIndicator(day, CALENDAR_START_HOUR, CALENDAR_END_HOUR, now.value)
       : { visible: false, topPercent: 0, label: '' }
-    const dayHolidays = getHolidaysForDateKey(holidaysByDate.value, toDateKey(day))
 
-    return {
-      day,
-      layout,
-      currentTime,
-      holidays: dayHolidays,
-    }
+    return { day, layout, currentTime }
   }),
-)
-
-watch(
-  () => props.days.map((day) => day.getTime()).join(','),
-  () => {
-    selectedSlot.value = null
-  },
 )
 
 onMounted(() => {
@@ -170,7 +130,7 @@ onUnmounted(() => {
 <template>
   <div
     class="timed-grid"
-    :class="{ 'single-day': singleDay }"
+    :class="{ 'single-day': singleDay, 'is-dragging': isDragging }"
     :style="{
       '--hour-height': `${HOUR_HEIGHT_PX}px`,
       '--day-count': String(dayCount),
@@ -178,85 +138,23 @@ onUnmounted(() => {
       '--all-day-rows': String(allDayRowCount),
     }"
   >
-    <div class="timed-grid-header-shell calendar-scroll">
-      <div class="calendar-grid-row timed-grid-header">
-        <div class="time-gutter header-gutter" />
-        <div class="calendar-days-track">
-          <div
-            v-for="(column, columnIndex) in dayColumns"
-            :key="column.day.toISOString()"
-            class="day-header"
-            :class="{
-              sunday: column.day.getDay() === 0,
-              saturday: column.day.getDay() === 6,
-              'is-last-column': columnIndex === dayColumns.length - 1,
-              clickable: !singleDay,
-            }"
-            :role="singleDay ? undefined : 'button'"
-            :tabindex="singleDay ? undefined : 0"
-            @click="onDayHeaderActivate(column.day)"
-            @keydown.enter.prevent="onDayHeaderActivate(column.day)"
-            @keydown.space.prevent="onDayHeaderActivate(column.day)"
-          >
-            <span class="day-number">{{ column.day.getDate() }}</span>
-            <span class="day-label">{{ formatTimedGridDayLabel(column.day) }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
+    <TimedGridHeader
+      :days="days"
+      :single-day="singleDay"
+      :day-header-source="dayHeaderSource"
+      @date-select="emit('date-select', $event)"
+    />
 
-    <div class="all-day-scroll calendar-scroll">
-      <div class="calendar-grid-row all-day-layout">
-        <div class="time-gutter all-day-label">all-day</div>
-        <div class="all-day-content">
-          <div v-if="hasHolidays" class="holiday-chips-row">
-            <div
-              v-for="(column, columnIndex) in dayColumns"
-              :key="`holiday-${column.day.toISOString()}`"
-              class="holiday-column"
-              :class="{ 'is-last-column': columnIndex === dayColumns.length - 1 }"
-            >
-              <div v-for="holiday in column.holidays" :key="holiday.id" class="holiday-chip-slot">
-                <HolidayChip :name="holiday.name" />
-              </div>
-            </div>
-          </div>
-
-          <div
-            class="calendar-days-track all-day-bars-track"
-            :style="{ gridTemplateRows: `repeat(${allDayRowCount}, 22px)` }"
-          >
-            <div
-              v-for="(_, index) in dayCount"
-              :key="`divider-${index}`"
-              class="all-day-column-divider"
-              :class="{ 'is-last-column': index === dayCount - 1 }"
-              :style="{ gridColumn: index + 1, gridRow: `1 / span ${allDayRowCount}` }"
-            />
-
-            <div
-              v-for="bar in allDayBars"
-              :key="bar.key"
-              class="all-day-bar-slot"
-              :style="{
-                gridColumn: `${bar.startColumn + 1} / span ${bar.span}`,
-                gridRow: bar.row + 1,
-              }"
-            >
-              <AllDayBar
-                :schedule="bar.schedule"
-                :span="bar.span"
-                v-bind="getTypeStyle(bar.schedule.type)"
-                :show-participant="showParticipant"
-                @click="
-                  emitScheduleClick(bar.schedule, days[bar.startColumn]!, allDayScheduleSource)
-                "
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <TimedGridAllDay
+      :days="days"
+      :holidays="holidays"
+      :all-day-bars="allDayBars"
+      :all-day-row-count="allDayRowCount"
+      :get-type-style="getTypeStyle"
+      :show-participant="showParticipant"
+      :all-day-schedule-source="allDayScheduleSource"
+      @schedule-click="emit('schedule-click', $event)"
+    />
 
     <div class="timed-grid-scroll calendar-scroll">
       <div class="calendar-grid-row timed-body">
@@ -273,7 +171,10 @@ onUnmounted(() => {
             class="day-column"
             :class="{ 'is-last-column': columnIndex === dayColumns.length - 1 }"
             :style="{ height: `${gridHeight}px` }"
-            @click="onTimeSlotClick($event, column.day)"
+            @pointerdown="handlePointerDown($event, column.day)"
+            @pointermove="handlePointerMove($event)"
+            @pointerup="handlePointerUp($event)"
+            @pointercancel="cancelDrag"
           >
             <div
               v-if="selectedSlot && selectedSlot.date.getTime() === column.day.getTime()"
@@ -300,7 +201,8 @@ onUnmounted(() => {
                 left: `calc(${item.left}% + 2px)`,
                 width: `calc(${item.width}% - 4px)`,
               }"
-              @click.stop="emitScheduleClick(item.schedule, column.day, timedScheduleSource)"
+              @pointerdown.stop
+            @click.stop="emit('schedule-click', { schedule: item.schedule, source: timedScheduleSource, date: column.day })"
             >
               <ScheduleEventChip
                 :schedule="item.schedule"
@@ -329,27 +231,6 @@ onUnmounted(() => {
   min-width: 0;
 }
 
-.timed-grid-header-shell {
-  flex-shrink: 0;
-  overflow: hidden;
-}
-
-.timed-grid-header {
-  width: 100%;
-}
-
-.all-day-scroll {
-  flex-shrink: 0;
-  max-height: var(--all-day-max-height);
-  overflow-y: auto;
-  overflow-x: hidden;
-  border-bottom: 1px solid var(--vp-grid-line);
-}
-
-.all-day-layout {
-  width: 100%;
-}
-
 .timed-grid-scroll {
   flex: 1;
   min-height: 0;
@@ -364,130 +245,6 @@ onUnmounted(() => {
   width: var(--gutter-width);
   flex-shrink: 0;
   border-right: 1px solid var(--vp-grid-line);
-}
-
-.time-gutter {
-  width: var(--gutter-width);
-  flex-shrink: 0;
-  font-size: 10px;
-  color: var(--vp-color-text-muted);
-  border-right: 1px solid var(--vp-grid-line);
-}
-
-.header-gutter {
-  border-bottom: 1px solid var(--vp-grid-line);
-}
-
-.day-header {
-  text-align: left;
-  padding: 10px 12px;
-  border-right: 1px solid var(--vp-grid-line);
-  border-bottom: 1px solid var(--vp-grid-line);
-}
-
-.day-header.clickable {
-  cursor: pointer;
-}
-
-.day-header.clickable:hover {
-  background: var(--vp-nav-btn-bg-hover);
-}
-
-.day-header.is-last-column {
-  border-right: none;
-}
-
-.day-header.sunday .day-number {
-  color: var(--vp-color-sunday);
-}
-
-.day-header.saturday .day-number {
-  color: var(--vp-color-saturday);
-}
-
-.day-number {
-  display: block;
-  font-size: 24px;
-  font-weight: 600;
-  line-height: 1.1;
-  color: var(--vp-color-text);
-  margin-bottom: 2px;
-}
-
-.day-label {
-  display: block;
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.3;
-  color: var(--vp-color-text-muted);
-}
-
-.all-day-label {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: 8px;
-  font-size: 10px;
-  text-transform: uppercase;
-}
-
-.all-day-content {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-  min-height: 24px;
-}
-
-.holiday-chips-row {
-  display: grid;
-  grid-template-columns: repeat(var(--day-count), minmax(0, 1fr));
-  gap: 2px 0;
-  padding: 2px 0 0;
-}
-
-.holiday-column {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-  padding: 0 1px;
-  border-right: 1px solid var(--vp-grid-line);
-}
-
-.holiday-column.is-last-column {
-  border-right: none;
-}
-
-.holiday-chip-slot {
-  min-width: 0;
-}
-
-.all-day-bars-track {
-  position: relative;
-  gap: 2px 0;
-  padding: 2px 0;
-  min-height: 24px;
-}
-
-.all-day-column-divider {
-  border-right: 1px solid var(--vp-grid-line);
-  pointer-events: none;
-}
-
-.all-day-column-divider.is-last-column {
-  border-right: none;
-}
-
-.all-day-bar-slot {
-  min-width: 0;
-  padding: 0 1px;
-}
-
-.all-day-bar-slot:first-child,
-.all-day-bar-slot:has(+ .all-day-bar-slot) {
-  padding-left: 0;
 }
 
 .time-slot-label {
@@ -517,6 +274,15 @@ onUnmounted(() => {
   background-image: linear-gradient(to bottom, var(--vp-grid-hour-stripe) 1px, transparent 1px);
   background-size: 100% var(--hour-height);
   cursor: pointer;
+  user-select: none;
+}
+
+.timed-grid.is-dragging .day-column {
+  cursor: ns-resize;
+}
+
+.day-column.is-last-column {
+  border-right: none;
 }
 
 .time-slot-selection {
@@ -528,10 +294,6 @@ onUnmounted(() => {
   background: var(--vp-color-danger-subtle);
   box-sizing: border-box;
   pointer-events: none;
-}
-
-.day-column.is-last-column {
-  border-right: none;
 }
 
 .timed-event {
@@ -584,31 +346,11 @@ onUnmounted(() => {
   .timed-grid:not(.single-day) {
     --gutter-width: 44px;
   }
-
-  .timed-grid:not(.single-day) .day-header {
-    padding: 8px 4px;
-  }
-
-  .timed-grid:not(.single-day) .day-number {
-    font-size: 18px;
-  }
-
-  .timed-grid:not(.single-day) .day-label {
-    font-size: 10px;
-  }
 }
 
 @media (max-width: 480px) {
   .timed-grid:not(.single-day) {
     --gutter-width: 36px;
-  }
-
-  .timed-grid:not(.single-day) .day-label {
-    display: none;
-  }
-
-  .timed-grid:not(.single-day) .day-number {
-    font-size: 14px;
   }
 }
 </style>

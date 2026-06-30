@@ -218,7 +218,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 
 | ID | 작업 | 난이도 | 비고 |
 | -- | ---- | ------ | ---- |
-| F4-1 | 드래그로 시간 슬롯 범위 선택 (IMP-04) | 🟡 | 클릭 1회=1시간 고정 → `mousedown→mousemove→mouseup` 드래그로 임의 범위. 순수 pointer event, 외부 라이브러리 없음 — **다음 작업 후보** |
+| F4-1 | 드래그로 시간 슬롯 범위 선택 (IMP-04) | 🟡 | ✅ **완료 (2026-07-01)** — `useTimeSlotSelection` composable로 분리. `pointerdown→pointermove→pointerup` 순수 pointer event 드래그, 위·아래 방향 모두 지원. `setPointerCapture`로 열 외부 이탈 보호. `isDragging` 상태로 `cursor: ns-resize` 피드백. |
 | F4-2 | 2-week / 3-week 월간 뷰 변형 (IMP-05) | 🟡 | `monthWeekCount?: 2\|3\|6` prop |
 | F4-3 | 일정 상세/생성 모달 (CRUD UI) | 🔴 | `Dialog` primitive(F2-7)를 이 작업과 함께 추출 |
 | F4-4 | 드래그&드롭 이벤트 이동·리사이즈 (IMP-06, 보류 해제) | 🔴 | emit-only 아키텍처와 정합되는 `schedule-update` emit 설계 필요. 외부 드래그 라이브러리 도입 여부 결정 필요 |
@@ -354,18 +354,19 @@ component     --vp-chip-bg: var(--vp-color-surface);
 3. ~~F2-1 `Button` 추출 PoC~~ ✅ (2026-06-29)
 4. ~~Phase 2 전체 (F2-1~F2-5, F2-8)~~ ✅ (2026-06-30) — `@vuepkg/ui` 6종 추출, calendar 전체가 ui 소비로 전환 완료
 
-### 다음 단계 — Phase 4 착수 (난이도 🔴, 2026-06-30 갱신)
+### 다음 단계 — Phase 4 진행 현황 (2026-07-01 갱신)
 
-> **진행 현황 (2026-06-30)**: Phase 2(`@vuepkg/ui` primitive 승격)가 전부 완료됐다. 같은 날 전략 방향이 "범용 UI 프레임워크"에서 "calendar 도메인 고도화"로 전환되며, Phase 4가 폼/오버레이 계열 확장에서 calendar 기능 심화로 전면 재정의됐다. §1.5의 기술 부채는 대부분 해소됐고, 남은 건 영향도 낮은 dts 누수 1건뿐.
+> **진행 현황 (2026-07-01)**: SRV-P1-01(MonthCell a11y)·SRV-P1-03(대형 뷰 분리) 완료 후 F4-1(드래그 슬롯 선택) 구현 완료. `useTimeSlotSelection` composable이 F4-4 DnD의 pointer event 인프라를 이미 갖추고 있다.
 
 | ID | 작업 | 난이도 | 비고 |
 | -- | ---- | ------ | ---- |
-| F4-1 | 드래그 시간 슬롯 범위 선택 (IMP-04) | 🟡 | 백로그 중 가장 낮은 난이도 — **다음 작업 후보** |
-| F4-4 | 드래그&드롭 이벤트 이동·리사이즈 (IMP-06) | 🔴 | F4-1과 pointer event 인프라 일부 공유 가능 |
-| — | §1.5 잔여 항목 (`vite-plugin-dts` 상대경로 누수) 설계 검토 | 🟡 | 영향도 낮음 — Phase 4 착수와 별개로 여유 있을 때 처리 |
-| — | [staff-review-backlog.md](./staff-review-backlog.md) P1~P2 | 🟡~🔴 | 2026-06-30 Staff Review 추적 원장 — P0(query-change·E2E CI) 완료 후 P1부터 에이전트/수동 점검 |
+| ~~F4-1~~ | ~~드래그 시간 슬롯 범위 선택 (IMP-04)~~ | ~~🟡~~ | ✅ 완료 (2026-07-01) |
+| F4-4 | 드래그&드롭 이벤트 이동·리사이즈 (IMP-06) | 🔴 | F4-1의 `useTimeSlotSelection` pointer 인프라 재사용 가능 — **다음 작업 후보** |
+| F4-2 | 2-week / 3-week 월간 뷰 변형 (IMP-05) | 🟡 | `monthWeekCount?: 2\|3\|6` prop — F4-4와 병행 가능 |
+| — | §1.5 잔여 항목 (`vite-plugin-dts` 상대경로 누수) 설계 검토 | 🟡 | 영향도 낮음 — Phase 4 작업과 별개로 여유 있을 때 처리 |
+| — | [staff-review-backlog.md](./staff-review-backlog.md) P2 | 🟡~🔴 | SRV-P2-01~P2-07 — 1.0.0 전 처리 필요 |
 
-F4-5(반복 일정)·F4-6(Timeline) 같은 고난도 항목은 F4-1/F4-4로 드래그·이벤트 갱신 인프라를 먼저 다진 뒤 착수 권장.
+F4-5(반복 일정)·F4-6(Timeline) 같은 고난도 항목은 F4-4로 DnD 인프라를 다진 뒤 착수 권장.
 
 ---
 

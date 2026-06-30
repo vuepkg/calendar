@@ -1,4 +1,5 @@
 import { flushPromises, mount } from '@vue/test-utils'
+import { nextTick } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { fetchPublicHolidays } from '@/services/publicHolidaysApi'
 import { mockSchedules } from '@/data/mockSchedules'
@@ -236,10 +237,10 @@ describe('ScheduleCalendar emit-only contract', () => {
 
   it('emits time-slot-select when an empty week timed grid cell is clicked', async () => {
     const wrapper = mountScheduleCalendar({ view: 'week', date: startOfDay(new Date(2026, 3, 22)) })
-    const column = wrapper.get('.day-column')
+    const columnEl = wrapper.get('.day-column').element as HTMLElement
     const height = 24 * HOUR_HEIGHT_PX
 
-    column.element.getBoundingClientRect = () =>
+    columnEl.getBoundingClientRect = () =>
       ({
         top: 200,
         left: 0,
@@ -251,8 +252,17 @@ describe('ScheduleCalendar emit-only contract', () => {
         y: 200,
         toJSON: () => ({}),
       }) as DOMRect
+    columnEl.setPointerCapture = () => {}
 
-    await column.trigger('click', { clientY: 200 + 8 * HOUR_HEIGHT_PX + 6 })
+    const clientY = 200 + 8 * HOUR_HEIGHT_PX + 6
+    columnEl.dispatchEvent(
+      new PointerEvent('pointerdown', { bubbles: true, cancelable: true, button: 0, clientY, pointerId: 1 }),
+    )
+    await nextTick()
+    columnEl.dispatchEvent(
+      new PointerEvent('pointerup', { bubbles: true, cancelable: true, clientY, pointerId: 1 }),
+    )
+    await nextTick()
 
     const emitted = wrapper.emitted('time-slot-select')?.[0]?.[0] as CalendarTimeSlotSelectPayload
     expect(emitted.source).toBe('week-timed-slot')

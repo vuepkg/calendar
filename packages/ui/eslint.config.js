@@ -11,6 +11,6 @@ export default defineConfigWithVueTs(
   },
   {
     name: 'ui/files-to-ignore',
-    ignores: ['dist/**', 'node_modules/**'],
+    ignores: ['dist/**', 'e2e-dist/**', 'node_modules/**', 'playwright-report/**', 'test-results/**'],
   },
 )

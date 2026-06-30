@@ -10,6 +10,7 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+e2e-dist
 *.local
 
 # Environment variables (API keys)

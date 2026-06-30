@@ -73,9 +73,54 @@ import { IconButton } from '@vuepkg/ui'
 
 ---
 
+## `SegmentedControl`
+
+단일 선택 토글 버튼 그룹 (예: 캘린더 Month/Week/Day/List 뷰 전환). `v-model`로 사용합니다.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { SegmentedControl } from '@vuepkg/ui'
+
+const view = ref('month')
+const options = [
+  { value: 'month', label: 'Month' },
+  { value: 'week', label: 'Week' },
+  { value: 'day', label: 'Day' },
+  { value: 'list', label: 'List' },
+]
+</script>
+
+<template>
+  <SegmentedControl v-model="view" :options="options" ariaLabel="캘린더 보기 선택" />
+</template>
+```
+
+### Props
+
+| Prop | 타입 | 기본값 | 설명 |
+| ---- | ---- | ------ | ---- |
+| `options` | `{ value: string; label: string }[]` | — (필수) | 선택 항목 목록 |
+| `modelValue` | `string` | — (필수) | 현재 선택된 `value` |
+| `ariaLabel` | `string` | — (필수) | 그룹 전체에 대한 스크린리더 라벨 |
+
+### Emits
+
+| 이벤트 | 페이로드 | 설명 |
+| ---- | ---- | ---- |
+| `update:modelValue` | `string` | 옵션 클릭 또는 키보드 네비게이션으로 선택이 바뀔 때 |
+
+### 키보드 동작 (Roving tabindex)
+
+- `←`/`→` (또는 `↑`/`↓`): 이전/다음 옵션으로 포커스·선택 이동 (양 끝에서 순환)
+- `Home`/`End`: 첫/마지막 옵션으로 이동
+- 선택된 항목만 `tabindex="0"`, 나머지는 `-1` — Tab 키로 그룹에 진입하면 항상 현재 선택값에 포커스됨
+
+---
+
 ## 공통 동작 — 속성 폴스루(Attribute Fallthrough)
 
-두 컴포넌트 모두 단일 루트 `<button>`이므로 Vue 3의 기본 동작에 따라 prop으로 선언하지 않은 속성은 자동으로 루트 엘리먼트에 전달됩니다:
+`Button`/`IconButton`은 단일 루트 `<button>`이므로 Vue 3의 기본 동작에 따라 prop으로 선언하지 않은 속성은 자동으로 루트 엘리먼트에 전달됩니다 (`SegmentedControl`은 내부에 여러 `<button>`을 렌더링하므로 동일하게 적용되지 않습니다):
 
 ```vue
 <Button class="my-extra-class" data-testid="save-btn" disabled>저장</Button>

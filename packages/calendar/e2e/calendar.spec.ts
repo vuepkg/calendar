@@ -226,12 +226,13 @@ test.describe('ScheduleCalendar E2E', () => {
   })
 
   // SUG-ACC-01 재검증: CalendarToolbar :focus-visible outline
-  test('view tab shows outline when focused via keyboard (Tab)', async ({ page }) => {
-    // Tab 키로 첫 번째 탭에 포커스 이동
-    await page.keyboard.press('Tab')
-
-    const focusedTab = page.locator('button.vp-segmented-control-item:focus')
-    await expect(focusedTab).toBeVisible()
+  test('view tab shows :focus-visible outline when keyboard-focused', async ({ page }) => {
+    // 데모 페이지의 필터 영역(라디오/체크박스)이 toolbar보다 DOM상 먼저 있어
+    // 첫 Tab이 toolbar에 도달한다고 보장할 수 없다. roving tabindex 패턴상
+    // 활성 탭(Month)만 tabindex=0이므로 직접 focus() 후 키보드 포커스 스타일을 검증한다.
+    const focusedTab = page.locator('button.vp-segmented-control-item.active')
+    await focusedTab.focus()
+    await expect(focusedTab).toBeFocused()
 
     // :focus-visible outline이 CSS로 적용되어 있는지 computed style로 검증
     const outlineWidth = await focusedTab.evaluate((el) => {

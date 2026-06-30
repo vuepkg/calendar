@@ -16,11 +16,10 @@ import type {
 } from '@/types/calendarEvents'
 import type { Schedule } from '@/types/schedule'
 import { layoutMonthWeeks, sortSchedulesForOverflowPopover } from '@/utils/month'
-import AllDayBar from '../AllDayBar.vue'
 import CalendarMonthNav from '../CalendarMonthNav.vue'
-import HolidayChip from '../HolidayChip.vue'
+import MonthCell from '../MonthCell.vue'
+import AllDayBar from '../AllDayBar.vue'
 import MonthOverflowPopover from '../MonthOverflowPopover.vue'
-import ScheduleEventChip from '../ScheduleEventChip.vue'
 
 const props = defineProps<{
   calendar: CalendarContext
@@ -32,10 +31,6 @@ const emit = defineEmits<{
   'schedule-click': [payload: CalendarScheduleClickPayload]
   navigate: [action: CalendarNavigateAction]
 }>()
-
-function emitDateSelect(date: Date) {
-  emit('date-select', { date, source: 'month-cell' })
-}
 
 const overflowPopover = ref<{
   date: Date
@@ -51,43 +46,26 @@ function closeOverflowPopover() {
   overflowPopover.value = null
 }
 
-function openOverflowPopover(
-  cell: {
-    date: Date
-    hiddenScheduleCount: number
-    schedules: Schedule[]
-    chipVisible: Schedule[]
-  },
-  event: MouseEvent,
-) {
-  const target = event.currentTarget
-  if (!(target instanceof HTMLElement)) {
-    return
-  }
-
-  const rect = target.getBoundingClientRect()
-  const calendarRoot = target.closest('.schedule-calendar')
-  const containerBounds =
-    calendarRoot instanceof HTMLElement ? toRectBounds(calendarRoot.getBoundingClientRect()) : null
-
-  const payload: CalendarOverflowClickPayload = {
-    date: cell.date,
-    hiddenCount: cell.hiddenScheduleCount,
-    schedules: cell.schedules,
-    visibleSchedules: cell.chipVisible,
-  }
-
+function onOpenOverflow(payload: CalendarOverflowClickPayload & {
+  anchorRect: DOMRect
+  containerBounds: ReturnType<typeof toRectBounds> | null
+}) {
   overflowPopover.value = {
-    date: cell.date,
-    schedules: sortSchedulesForOverflowPopover(cell.schedules),
-    highlightedScheduleIds: cell.chipVisible.map((schedule) => schedule.id),
-    anchorTop: rect.bottom + 4,
-    anchorLeft: rect.left,
-    anchorBottom: rect.bottom,
-    containerBounds,
+    date: payload.date,
+    schedules: sortSchedulesForOverflowPopover(payload.schedules),
+    highlightedScheduleIds: payload.visibleSchedules.map((s) => s.id),
+    anchorTop: payload.anchorRect.bottom + 4,
+    anchorLeft: payload.anchorRect.left,
+    anchorBottom: payload.anchorRect.bottom,
+    containerBounds: payload.containerBounds,
   }
 
-  emit('overflow-click', payload)
+  emit('overflow-click', {
+    date: payload.date,
+    hiddenCount: payload.hiddenCount,
+    schedules: payload.schedules,
+    visibleSchedules: payload.visibleSchedules,
+  })
 }
 
 function onOverflowScheduleClick(schedule: Schedule) {
@@ -95,25 +73,8 @@ function onOverflowScheduleClick(schedule: Schedule) {
     return
   }
 
-  emitScheduleClick(schedule, overflowPopover.value.date)
+  emit('schedule-click', { schedule, source: 'month-chip', date: overflowPopover.value.date })
   closeOverflowPopover()
-}
-
-function emitScheduleClick(schedule: Schedule, date: Date) {
-  const payload: CalendarScheduleClickPayload = { schedule, source: 'month-chip', date }
-  emit('schedule-click', payload)
-}
-
-function emitMonthAllDayClick(schedule: Schedule, date: Date) {
-  emit('schedule-click', {
-    schedule,
-    source: 'month-all-day-bar',
-    date,
-  })
-}
-
-function emitNavigate(action: CalendarNavigateAction) {
-  emit('navigate', action)
 }
 
 const monthWeeksRef = ref<HTMLElement | null>(null)
@@ -139,8 +100,8 @@ const weekdayLabels = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
   >
     <CalendarMonthNav
       :label="monthLabel"
-      @prev="emitNavigate('prev-month')"
-      @next="emitNavigate('next-month')"
+      @prev="emit('navigate', 'prev-month')"
+      @next="emit('navigate', 'next-month')"
     />
 
     <div class="month-calendar">
@@ -157,53 +118,15 @@ const weekdayLabels = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 
       <div ref="monthWeeksRef" class="month-weeks-body">
         <div v-for="(week, weekIndex) in monthWeeks" :key="`week-${weekIndex}`" class="month-week">
-          <div
+          <MonthCell
             v-for="cell in week.cells"
             :key="cell.key"
-            class="month-cell"
-            :class="{
-              outside: !cell.inCurrentMonth,
-              today: cell.isToday,
-              selected: cell.isSelected,
-              sunday: cell.isSunday,
-              saturday: cell.isSaturday,
-            }"
-            @click="emitDateSelect(cell.date)"
-          >
-            <div class="cell-date">{{ cell.date.getDate() }}</div>
-            <div
-              v-if="cell.spanningBarRows > 0"
-              class="cell-bar-spacer"
-              :style="{ height: `${cell.spanningBarRows * MONTH_CELL_BAR_ROW_HEIGHT_PX}px` }"
-            />
-            <div class="cell-events">
-              <div v-for="holiday in cell.holidays" :key="holiday.id" class="cell-holiday-chip">
-                <HolidayChip :name="holiday.name" />
-              </div>
-              <div
-                v-for="schedule in cell.chipVisible"
-                :key="schedule.id"
-                class="cell-event-chip"
-                @click.stop
-              >
-                <ScheduleEventChip
-                  :schedule="schedule"
-                  v-bind="calendar.getTypeStyle(schedule.type)"
-                  compact
-                  @click="emitScheduleClick(schedule, cell.date)"
-                />
-              </div>
-              <button
-                v-if="cell.hiddenScheduleCount > 0"
-                type="button"
-                class="more-events"
-                :title="`${cell.hiddenScheduleCount}개 일정 더 보기`"
-                @click.stop="openOverflowPopover(cell, $event)"
-              >
-                +{{ cell.hiddenScheduleCount }}
-              </button>
-            </div>
-          </div>
+            :cell="cell"
+            :get-type-style="calendar.getTypeStyle"
+            @date-select="emit('date-select', { date: $event, source: 'month-cell' })"
+            @schedule-click="emit('schedule-click', $event)"
+            @open-overflow="onOpenOverflow($event)"
+          />
 
           <div
             v-if="week.barRowCount > 0"
@@ -227,7 +150,7 @@ const weekdayLabels = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
                   :schedule="bar.schedule"
                   :span="bar.span"
                   v-bind="calendar.getTypeStyle(bar.schedule.type)"
-                  @click="emitMonthAllDayClick(bar.schedule, week.cells[bar.startColumn]!.date)"
+                  @click="emit('schedule-click', { schedule: bar.schedule, source: 'month-all-day-bar', date: week.cells[bar.startColumn]?.date })"
                 />
               </div>
             </div>
@@ -323,67 +246,6 @@ const weekdayLabels = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
   border-bottom: none;
 }
 
-.month-cell {
-  height: 100%;
-  min-height: 0;
-  border-right: 1px solid var(--vp-grid-line);
-  padding: 4px;
-  cursor: pointer;
-  background: var(--vp-month-cell-bg);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-.month-cell:nth-child(7n) {
-  border-right: none;
-}
-
-.month-cell.outside {
-  background: var(--vp-month-cell-outside-bg);
-}
-
-.month-cell.outside .cell-date {
-  color: var(--vp-month-cell-outside-text);
-}
-
-.month-cell.selected {
-  background: var(--vp-month-cell-selected-bg);
-}
-
-.month-cell.today .cell-date {
-  display: inline-flex;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  align-items: center;
-  justify-content: center;
-  background: var(--vp-today-badge-bg);
-  color: var(--vp-today-badge-text) !important;
-}
-
-.month-cell.sunday .cell-date {
-  color: var(--vp-color-sunday);
-}
-
-.month-cell.saturday .cell-date {
-  color: var(--vp-color-saturday);
-}
-
-.cell-date {
-  font-size: 12px;
-  font-weight: 600;
-  margin-bottom: 2px;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 2;
-}
-
-.cell-bar-spacer {
-  flex-shrink: 0;
-}
-
 .month-week-bars {
   position: absolute;
   top: 26px;
@@ -422,61 +284,5 @@ const weekdayLabels = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
   padding: 1px 6px;
   font-size: 10px;
   line-height: calc(var(--month-bar-row-height) - 4px);
-}
-
-.cell-events {
-  display: flex;
-  flex-direction: column;
-  gap: var(--month-row-gap);
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-  position: relative;
-  z-index: 1;
-}
-
-.cell-holiday-chip {
-  flex-shrink: 0;
-  width: 100%;
-  min-width: 0;
-}
-
-.cell-events :deep(.event-chip.compact) {
-  flex-shrink: 0;
-  height: var(--month-chip-height);
-  min-height: var(--month-chip-height);
-  padding: 1px 6px;
-  font-size: 10px;
-  line-height: calc(var(--month-chip-height) - 2px);
-  margin-bottom: 0;
-  min-width: 0;
-}
-
-.cell-events :deep(.event-chip.compact .event-title) {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.more-events {
-  border: none;
-  background: var(--vp-popover-item-bg);
-  color: var(--vp-color-text-secondary);
-  font-size: 10px;
-  font-weight: 600;
-  height: var(--month-chip-height);
-  min-height: var(--month-chip-height);
-  line-height: calc(var(--month-chip-height) - 2px);
-  padding: 1px 6px;
-  border-radius: var(--vp-chip-radius);
-  text-align: left;
-  cursor: pointer;
-  flex-shrink: 0;
-  width: fit-content;
-}
-
-.more-events:hover {
-  background: var(--vp-popover-item-bg-hover);
 }
 </style>

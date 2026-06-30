@@ -40,9 +40,9 @@
 
 | ID | Severity | 카테고리 | 요약 | 상태 | 담당/비고 |
 | -- | -------- | -------- | ---- | ---- | --------- |
-| [SRV-P1-01](#srv-p1-01-month-cell-키보드-a11y) | MAJOR | 접근성 | `MonthView` 날짜 셀이 `<div @click>`만 — 키보드 불가 | 미착수 | roving tabindex 또는 button 래핑 |
+| [SRV-P1-01](#srv-p1-01-month-cell-키보드-a11y) | MAJOR | 접근성 | `MonthView` 날짜 셀이 `<div @click>`만 — 키보드 불가 | **완료** | `MonthCell.vue` 분리와 함께 `role="gridcell"` + `tabindex="0"` + `@keydown.enter/space` 추가 (2026-07-01) |
 | [SRV-P1-02](#srv-p1-02-dtscss-alias-분리) | MAJOR | 타입/빌드 | `vite-plugin-dts` 깨진 상대경로 — CSS alias와 결합 | 미착수 | [framework-roadmap.md §1.5](./framework-roadmap.md) BLOCKED |
-| [SRV-P1-03](#srv-p1-03-대형-뷰-컴포넌트-분리) | MAJOR | 아키텍처 | `TimedGrid`(614줄)·`MonthView`(482줄) — Phase 4 DnD 병목 | 미착수 | CMP-02~05, F4-1 전 분리 권장 |
+| [SRV-P1-03](#srv-p1-03-대형-뷰-컴포넌트-분리) | MAJOR | 아키텍처 | `TimedGrid`(614줄)·`MonthView`(482줄) — Phase 4 DnD 병목 | **완료** | `TimedGridHeader.vue`·`TimedGridAllDay.vue` 분리 + `useTimeSlotSelection.ts` composable 추출 + `MonthCell.vue` 분리. TimedGrid 614→303줄, MonthView 482→257줄 (2026-07-01) |
 
 ### P2 — 1.0.0 전
 

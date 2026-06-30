@@ -15,7 +15,7 @@ describe('CalendarToolbar', () => {
       props: { calendar },
     })
 
-    const tabs = wrapper.findAll('.view-tab')
+    const tabs = wrapper.findAll('.vp-segmented-control-item')
     expect(tabs).toHaveLength(4)
     expect(tabs.map((tab) => tab.text())).toEqual(['Month', 'Week', 'Day', 'List'])
     expect(tabs.find((tab) => tab.text() === 'Week')?.classes()).toContain('active')
@@ -32,7 +32,7 @@ describe('CalendarToolbar', () => {
     })
 
     await wrapper
-      .findAll('.view-tab')
+      .findAll('.vp-segmented-control-item')
       .find((tab) => tab.text() === 'Day')!
       .trigger('click')
 
@@ -43,7 +43,7 @@ describe('CalendarToolbar', () => {
     const calendar = useCalendar({ schedules: mockSchedules })
     const wrapper = mount(CalendarToolbar, { props: { calendar } })
 
-    wrapper.findAll('button.view-tab').forEach((button) => {
+    wrapper.findAll('button.vp-segmented-control-item').forEach((button) => {
       expect(button.attributes('type')).toBe('button')
     })
   })
@@ -53,7 +53,7 @@ describe('CalendarToolbar', () => {
     const calendar = useCalendar({ schedules: mockSchedules })
     const wrapper = mount(CalendarToolbar, { props: { calendar } })
 
-    const group = wrapper.find('.view-tabs')
+    const group = wrapper.find('.vp-segmented-control')
     expect(group.attributes('role')).toBe('group')
     expect(group.attributes('aria-label')).toBe('캘린더 보기 선택')
   })
@@ -65,7 +65,7 @@ describe('CalendarToolbar', () => {
     })
     const wrapper = mount(CalendarToolbar, { props: { calendar } })
 
-    const tabs = wrapper.findAll('button.view-tab')
+    const tabs = wrapper.findAll('button.vp-segmented-control-item')
     const dayTab = tabs.find((tab) => tab.text() === 'Day')
     const monthTab = tabs.find((tab) => tab.text() === 'Month')
 
@@ -80,7 +80,7 @@ describe('CalendarToolbar', () => {
     })
     const wrapper = mount(CalendarToolbar, { props: { calendar } })
 
-    const weekTab = wrapper.findAll('button.view-tab').find((tab) => tab.text() === 'Week')
+    const weekTab = wrapper.findAll('button.vp-segmented-control-item').find((tab) => tab.text() === 'Week')
     expect(weekTab?.attributes('aria-pressed')).toBe('false')
 
     // 탭 클릭 후 calendar 상태를 직접 변경해 반응성 검증

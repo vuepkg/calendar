@@ -34,7 +34,7 @@ type ScrollMetrics = {
 }
 
 function viewTab(page: Page, label: string): Locator {
-  return page.locator('.view-tab', { hasText: label })
+  return page.locator('.vp-segmented-control-item', { hasText: label })
 }
 
 async function gotoHostLayout(page: Page, host: HostLayoutId) {

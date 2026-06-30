@@ -2,7 +2,7 @@ import { expect, test, type Locator, type Page } from '@playwright/test'
 import { gotoCalendar } from './helpers/navigation'
 
 function viewTab(page: Page, label: string): Locator {
-  return page.locator('.view-tab', { hasText: label })
+  return page.locator('.vp-segmented-control-item', { hasText: label })
 }
 
 test.describe('ScheduleCalendar E2E', () => {
@@ -230,7 +230,7 @@ test.describe('ScheduleCalendar E2E', () => {
     // Tab 키로 첫 번째 탭에 포커스 이동
     await page.keyboard.press('Tab')
 
-    const focusedTab = page.locator('button.view-tab:focus')
+    const focusedTab = page.locator('button.vp-segmented-control-item:focus')
     await expect(focusedTab).toBeVisible()
 
     // :focus-visible outline이 CSS로 적용되어 있는지 computed style로 검증
@@ -259,7 +259,7 @@ test.describe('ScheduleCalendar E2E', () => {
 
   // 2026-06-16: CalendarToolbar 접근성 개선 — ARIA 속성 E2E 검증
   test('view tabs container has role=group and aria-label', async ({ page }) => {
-    const tabGroup = page.locator('.view-tabs')
+    const tabGroup = page.locator('.vp-segmented-control')
     await expect(tabGroup).toHaveAttribute('role', 'group')
     await expect(tabGroup).toHaveAttribute('aria-label', '캘린더 보기 선택')
   })

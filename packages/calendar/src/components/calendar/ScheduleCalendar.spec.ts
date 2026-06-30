@@ -55,7 +55,7 @@ describe('ScheduleCalendar emit-only contract', () => {
   it('emits view-change without updating view when parent does not handle it', async () => {
     const wrapper = mountScheduleCalendar({ view: 'month' })
 
-    const weekTab = wrapper.findAll('.view-tab').find((tab) => tab.text() === 'Week')
+    const weekTab = wrapper.findAll('.vp-segmented-control-item').find((tab) => tab.text() === 'Week')
     await weekTab!.trigger('click')
 
     const emitted = wrapper.emitted('view-change')?.[0]?.[0] as CalendarViewChangePayload

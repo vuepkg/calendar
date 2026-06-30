@@ -23,7 +23,7 @@ type ScrollMetrics = {
 }
 
 function viewTab(page: Page, label: string): Locator {
-  return page.locator('.view-tab', { hasText: label })
+  return page.locator('.vp-segmented-control-item', { hasText: label })
 }
 
 async function getScrollMetrics(locator: Locator): Promise<ScrollMetrics> {

@@ -10,7 +10,7 @@ async function prepareForScreenshot(page: Page) {
 }
 
 async function switchView(page: Page, label: string) {
-  await page.locator('.view-tab', { hasText: label }).click()
+  await page.locator('.vp-segmented-control-item', { hasText: label }).click()
   await page.waitForTimeout(150)
 }
 

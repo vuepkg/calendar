@@ -153,6 +153,7 @@
   --vp-popover-bg:      var(--vp-color-bg);
   --vp-popover-border:  var(--vp-color-border-strong);
   --vp-popover-shadow:  0 8px 24px rgb(15 23 42 / 18%);
+  --vp-popover-radius:  4px;
   --vp-popover-header-bg: #e8f0fe;
   --vp-popover-item-bg:   var(--vp-color-bg-muted);
   --vp-popover-item-bg-hover: var(--vp-palette-slate-200);

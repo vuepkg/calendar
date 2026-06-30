@@ -8,11 +8,6 @@ const projectRoot = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   publicDir: false,
-  resolve: {
-    alias: {
-      '@vuepkg/core': path.resolve(projectRoot, '../core/src'),
-    },
-  },
   plugins: [
     vue(),
     dts({

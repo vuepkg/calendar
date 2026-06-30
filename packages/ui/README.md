@@ -156,9 +156,78 @@ import { Chip } from '@vuepkg/ui'
 
 ---
 
+## `Popover`
+
+위치 지정·포커스 관리가 포함된 오버레이 패널. 앵커 좌표(`anchorTop`/`anchorLeft`)를 기준으로 화면 경계 안에 들어오도록 위치·최대 크기를 자동 계산하고(공간이 부족하면 위로 뒤집음), `body`로 Teleport되어 렌더링됩니다. 콘텐츠는 슬롯으로 전달하는 헤드리스 컴포넌트입니다.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { Popover } from '@vuepkg/ui'
+
+const open = ref(false)
+const anchor = ref({ top: 0, left: 0 })
+
+function onTriggerClick(event: MouseEvent) {
+  const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
+  anchor.value = { top: rect.bottom + 4, left: rect.left }
+  open.value = true
+}
+</script>
+
+<template>
+  <button @click="onTriggerClick">옵션 더보기</button>
+
+  <Popover
+    :open="open"
+    :anchorTop="anchor.top"
+    :anchorLeft="anchor.left"
+    ariaLabel="옵션 메뉴"
+    @close="open = false"
+  >
+    <ul>
+      <li><button type="button">수정</button></li>
+      <li><button type="button">삭제</button></li>
+    </ul>
+  </Popover>
+</template>
+```
+
+### Props
+
+| Prop | 타입 | 기본값 | 설명 |
+| ---- | ---- | ------ | ---- |
+| `open` | `boolean` | — (필수) | 표시 여부 |
+| `anchorTop` | `number` | — (필수) | 앵커 기준 top 좌표(px, viewport 기준) |
+| `anchorLeft` | `number` | — (필수) | 앵커 기준 left 좌표(px, viewport 기준) |
+| `anchorBottom` | `number` | — | 위쪽으로 뒤집을 때 기준이 되는 앵커 하단 좌표 (미전달 시 `anchorTop` 사용) |
+| `containerBounds` | `RectBounds \| null` | — | 패널 위치·크기를 제한할 컨테이너 영역 (임베디드 레이아웃용, `@vuepkg/core`의 `toRectBounds`로 생성) |
+| `ariaLabel` | `string` | — (필수) | 패널 `role="dialog"`의 스크린리더 라벨 |
+| `panelClass` | `string \| string[] \| Record<string, boolean>` | — | 패널 엘리먼트(`.vp-popover`)에 추가할 클래스 — 소비 측 전용 스타일 후킹용 |
+| `preferredWidth` / `preferredMaxHeight` / `minWidth` / `minHeight` / `containerHeightRatio` | `number` | `@vuepkg/core`의 `POPOVER_LAYOUT_DEFAULTS` 참고 | 위치·크기 계산 세부 옵션 |
+
+### Emits
+
+| 이벤트 | 페이로드 | 설명 |
+| ---- | ---- | ---- |
+| `close` | — | 배경(backdrop) 클릭 또는 `Esc` 키 입력 시 |
+
+### 키보드·접근성
+
+- `role="dialog"` `aria-modal="true"` + `ariaLabel`
+- `Esc`: 어디에 포커스가 있든 닫힘(`close` emit)
+- 배경 클릭: 닫힘(`close` emit) — 패널 내부 클릭은 전파되지 않음
+- 열릴 때 패널 내부 첫 번째 포커스 가능 요소로 자동 포커스 이동, 포커스 가능한 요소가 없으면 패널 자체로 이동
+- `Tab`/`Shift+Tab`: 패널 내부에서 순환(focus trap) — 패널 밖으로 포커스가 빠져나가지 않음
+- 닫힐 때 열기 전 포커스가 있던 요소로 자동 복원
+
+> 위치·크기 계산 로직(`computePopoverLayout` 등)은 `@vuepkg/core`에 있습니다 — 직접 좌표를 계산해야 하는 경우 그 함수들을 재사용할 수 있습니다.
+
+---
+
 ## 공통 동작 — 속성 폴스루(Attribute Fallthrough)
 
-`Button`/`IconButton`/`Chip`은 단일 루트 엘리먼트이므로 Vue 3의 기본 동작에 따라 prop으로 선언하지 않은 속성은 자동으로 루트 엘리먼트에 전달됩니다 (`SegmentedControl`은 내부에 여러 `<button>`을 렌더링하므로 동일하게 적용되지 않습니다):
+`Button`/`IconButton`/`Chip`은 단일 루트 엘리먼트이므로 Vue 3의 기본 동작에 따라 prop으로 선언하지 않은 속성은 자동으로 루트 엘리먼트에 전달됩니다 (`SegmentedControl`은 내부에 여러 `<button>`을 렌더링하므로, `Popover`는 `Teleport` + 조건부 렌더링 루트이므로 동일하게 적용되지 않습니다 — `Popover`는 대신 명시적 `panelClass` prop을 제공합니다):
 
 ```vue
 <Button class="my-extra-class" data-testid="save-btn" disabled>저장</Button>
@@ -179,6 +248,12 @@ import { Chip } from '@vuepkg/ui'
   --vp-button-border:    /* 테두리 */
   --vp-button-text:      /* 텍스트 색상 */
   --vp-button-radius:    /* 모서리 반경 (기본 4px) */
+
+  --vp-popover-bg:       /* Popover 패널 배경 */
+  --vp-popover-border:   /* Popover 패널 테두리 */
+  --vp-popover-shadow:   /* Popover 패널 그림자 */
+  --vp-popover-radius:   /* Popover 패널 모서리 반경 (기본 4px) */
+  --vp-popover-z-index:  /* Popover z-index (기본 1000) */
 }
 ```
 

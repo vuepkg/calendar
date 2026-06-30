@@ -7,7 +7,7 @@
 | 스택      | Vue 3 (Composition API) + TypeScript + Vite 8                                     |
 | 빌드      | pnpm workspace + Turborepo (모노레포)                                             |
 | UI        | 커스텀 HTML/CSS — PrimeVue 의존성 없음 (List 뷰 포함 전체 네이티브 구현)          |
-| 테스트    | Vitest 3.x (calendar 205건 + ui 38건), Playwright E2E 142건 (기능 23 + 반응형 42 + 호스트 69 + 시각회귀 8) |
+| 테스트    | Vitest 3.x (calendar 200건 + ui 55건 + core 70건), Playwright E2E 142건 (기능 23 + 반응형 42 + 호스트 69 + 시각회귀 8) |
 | 진입점    | `ScheduleCalendar.vue`                                                            |
 | 상태 모델 | **emit-only** — 뷰·날짜 변경은 소비 측 (`v-model` + 핸들러)에서 처리              |
 
@@ -24,7 +24,9 @@ vue3-calendar/                   # monorepo 루트 (pnpm workspace)
 │   │   └── src/
 │   │       ├── utils/date.ts          # 범용 날짜 유틸 (resolveCalendarNavigateDate 제외)
 │   │       ├── utils/holiday.ts       # groupHolidaysByDateKey 등
+│   │       ├── utils/popover.ts       # 팝오버 위치·flip 계산 (resolvePopoverBounds 등, F2-4 이관)
 │   │       ├── types/holiday.ts       # Holiday / HolidayKind 타입
+│   │       ├── types/popover.ts       # RectBounds / PopoverLayoutInput·Result (F2-4 이관)
 │   │       ├── composables/
 │   │       │   └── useControllableState.ts  # controlled/uncontrolled 패턴
 │   │       └── index.ts               # barrel
@@ -38,6 +40,7 @@ vue3-calendar/                   # monorepo 루트 (pnpm workspace)
 │   │       ├── IconButton.vue          # 정사각형 아이콘 버튼 (‹ ›)
 │   │       ├── SegmentedControl.vue    # 단일 선택 토글 그룹 (화살표 키 roving tabindex)
 │   │       ├── Chip.vue                # 라벨·태그 셸 (정적/클릭형 공용)
+│   │       ├── Popover.vue             # Teleport·backdrop·focus trap·Esc 포함 위치 지정 패널 (F2-4)
 │   │       └── index.ts                # barrel
 │   └── calendar/                # @vuepkg/calendar — 배포 패키지
 │       └── src/
@@ -72,7 +75,7 @@ packages/calendar/src/
 │   ├── HolidayChip.vue          # 공휴일·기념일 붉은 칩 (@vuepkg/ui Chip 소비)
 │   ├── AllDayBar.vue            # 종일/멀티데이 spanning 바
 │   ├── ScheduleEventChip.vue    # 일정 칩 (클릭 emit, @vuepkg/ui Chip 소비)
-│   ├── MonthOverflowPopover.vue # +N 팝오버
+│   ├── MonthOverflowPopover.vue # +N 팝오버 (@vuepkg/ui Popover 소비)
 │   ├── views/
 │   │   ├── MonthView.vue
 │   │   ├── WeekView.vue
@@ -347,7 +350,7 @@ List 뷰는 `CalendarMonthNav` 사용 전 필터가 있으면 `list-filter-clear
 | `composable.ts`     | `CalendarContext`, `UsePublicHolidaysOptions`                        |
 | `calendarEvents.ts` | emit payload (`CalendarTimeSlotSelectPayload` 등)                    |
 | `query.ts`          | `ScheduleQueryChangePayload`, `BuildScheduleQueryChangePayloadInput` |
-| `layout.ts`         | `MonthDayCell`, `TimedLayoutItem`, `RectBounds`, overflow 레이아웃   |
+| `layout.ts`         | `MonthDayCell`, `TimedLayoutItem` (`RectBounds`는 F2-4부터 `@vuepkg/core`에서 재노출) |
 | `host.ts`           | `UseScheduleCalendarHostOptions`                                     |
 | `api.ts`            | `FetchPublicHolidaysOptions`                                         |
 | `e2e.ts`            | `HostLayoutId` (E2E·이식 제외)                                       |
@@ -419,7 +422,7 @@ type ViewScope = 'my' | 'company'
 
 ## 10. 테스트 구조
 
-### 단위·컴포넌트 (Vitest — calendar 205건 + ui 38건)
+### 단위·컴포넌트 (Vitest — calendar 200건 + ui 55건 + core 70건)
 
 | 스펙                              | 검증                                                |
 | --------------------------------- | --------------------------------------------------- |
@@ -434,13 +437,13 @@ type ViewScope = 'my' | 'company'
 | `useScheduleCalendarHost.spec.ts` | 핸들러·`time-slot-select`                           |
 | `schedule/layout.spec.ts`         | 겹침 컬럼 분할                                      |
 | `month/barLayout.spec.ts`         | spanning·공휴일 슬롯                                |
-| `month/overflow-layout.spec.ts`   | bounds·flip                                         |
 | `timed/grid.spec.ts`              | 현재 시각·time-slot offset·하이라이트 스타일 (7건)  |
 | `constants/timedView.spec.ts`     | `calendarView.ts` 상수 (파일명 레거시)              |
 
 `resolveCalendarNavigateDate`는 `ScheduleCalendar.spec`·`schedule/query.spec`에서 간접 검증합니다.
+팝오버 bounds·flip 계산 테스트는 F2-4에서 `@vuepkg/core`의 `popover.spec.ts`로 이관됐습니다.
 
-**`@vuepkg/ui` (Phase 2 primitive, 38건)**
+**`@vuepkg/ui` (Phase 2 primitive, 55건)**
 
 | 스펙                       | 검증                                                              |
 | -------------------------- | ----------------------------------------------------------------- |
@@ -448,6 +451,9 @@ type ViewScope = 'my' | 'company'
 | `IconButton.spec.ts`       | ariaLabel·size·type prop, click                                   |
 | `SegmentedControl.spec.ts` | role=group, aria-pressed, roving tabindex, 화살표/Home/End 키보드 |
 | `Chip.spec.ts`             | clickable role/keyboard, color/backgroundColor 인라인 오버라이드  |
+| `Popover.spec.ts`          | role=dialog, backdrop/Esc close, Tab/Shift+Tab focus trap, 닫힘 시 focus 복원, 위치 스타일 적용 |
+
+**`@vuepkg/core` (70건)** — `utils/date.spec.ts`(41) · `utils/holiday.spec.ts`(14) · `composables/useControllableState.spec.ts`(10) · `utils/popover.spec.ts`(5, F2-4 이관)
 
 ### E2E (Playwright 142건)
 
@@ -482,7 +488,7 @@ pnpm dev           # packages/calendar dev 서버 — http://localhost:6565
 | 명령 | 용도 |
 | ---- | ---- |
 | `pnpm turbo run typecheck` | 전체 타입 검사 |
-| `pnpm turbo run test` | Vitest 단위 테스트 — calendar 205건 + ui 38건 |
+| `pnpm turbo run test` | Vitest 단위 테스트 — calendar 200건 + ui 55건 + core 70건 |
 | `pnpm turbo run build:lib` | core + ui + calendar 라이브러리 빌드 |
 | `pnpm --filter @vuepkg/calendar run test:e2e` | Playwright E2E 142건 |
 

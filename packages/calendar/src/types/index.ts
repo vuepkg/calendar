@@ -49,13 +49,13 @@ export type {
   MonthCellDisplay,
   MonthCellDisplayAllocation,
   MonthDayCell,
-  MonthOverflowPopoverLayoutInput,
-  MonthOverflowPopoverLayoutResult,
   MonthWeekCell,
   MonthWeekLayout,
   PlacedSegment,
-  RectBounds,
   TimedLayoutItem,
   TimedSegment,
   TimeGridRange,
 } from './layout'
+
+/** 팝오버 위치 계산 경계 타입 — `@vuepkg/core`에서 재노출 */
+export type { RectBounds } from '@vuepkg/core'

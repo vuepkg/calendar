@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { toRectBounds } from '@vuepkg/core'
 import { useMonthMeasuredCellHeight } from '@/composables/useMonthMeasuredCellHeight'
 import {
   MONTH_CELL_BAR_ROW_HEIGHT_PX,
@@ -14,7 +15,7 @@ import type {
   CalendarScheduleClickPayload,
 } from '@/types/calendarEvents'
 import type { Schedule } from '@/types/schedule'
-import { layoutMonthWeeks, sortSchedulesForOverflowPopover, toRectBounds } from '@/utils/month'
+import { layoutMonthWeeks, sortSchedulesForOverflowPopover } from '@/utils/month'
 import AllDayBar from '../AllDayBar.vue'
 import CalendarMonthNav from '../CalendarMonthNav.vue'
 import HolidayChip from '../HolidayChip.vue'

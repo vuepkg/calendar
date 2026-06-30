@@ -127,6 +127,7 @@ document.documentElement.classList.toggle('vp-dark')
   --vp-popover-bg:         /* 팝오버 배경 */
   --vp-popover-border:     /* 팝오버 테두리 */
   --vp-popover-shadow:     /* 팝오버 그림자 */
+  --vp-popover-radius:     /* 팝오버 모서리 반경 (@vuepkg/ui Popover, 기본 4px) */
   --vp-popover-header-bg:  /* 팝오버 헤더 배경 */
 }
 ```

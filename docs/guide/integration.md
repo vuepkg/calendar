@@ -103,7 +103,7 @@ types/
 | ------------------- | ------------------------------------------------------------------------- |
 | `schedule.ts`       | `Schedule`, `Holiday`·`HolidayKind` (→`@vuepkg/core` re-export), `CalendarContext`, `UsePublicHolidaysOptions` |
 | `calendarEvents.ts` | `ScheduleQueryChangePayload`, `UseScheduleCalendarHostOptions`, emit payload |
-| `layout.ts`         | `RectBounds`, `MonthOverflowPopoverLayout*` (overflow 유틸 입력)          |
+| `layout.ts`         | `MonthDayCell`, `TimedLayoutItem` 등 (`RectBounds`는 `@vuepkg/core` re-export, F2-4) |
 
 **`utils/` 필수 구조**
 

@@ -35,3 +35,12 @@ jobs:
 
       - name: Build
         run: pnpm turbo run build:lib
+
+      - name: Install Playwright (chromium)
+        run: pnpm --filter @vuepkg/calendar exec playwright install --with-deps chromium
+
+      - name: Build calendar demo for E2E
+        run: pnpm --filter @vuepkg/calendar run build
+
+      - name: E2E
+        run: pnpm --filter @vuepkg/calendar run test:e2e

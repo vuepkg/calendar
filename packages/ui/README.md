@@ -225,9 +225,77 @@ function onTriggerClick(event: MouseEvent) {
 
 ---
 
+## `DataTable`
+
+페이지네이션·반응형 컬럼 숨김이 포함된 제네릭 테이블 셸 (Vue 3.3+ `<script setup generic="T">`). 행 데이터 타입을 모르는 헤드리스 컴포넌트로, 각 셀의 실제 내용은 `cell-{column.key}` 이름의 named scoped slot으로 전달합니다.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { DataTable, type DataTableColumn } from '@vuepkg/ui'
+
+interface Row {
+  id: number
+  title: string
+  type: string
+}
+
+const columns: DataTableColumn[] = [
+  { key: 'title', label: 'Title', ellipsis: true },
+  { key: 'type', label: 'Type', width: '100px', hideBelow: 'md' },
+]
+
+const rows: Row[] = [{ id: 1, title: '회의', type: '내 일정' }]
+const page = ref(1)
+</script>
+
+<template>
+  <DataTable
+    v-model:page="page"
+    :columns="columns"
+    :rows="rows"
+    :rowKey="(row: Row) => row.id"
+    ariaLabel="일정 목록"
+    @row-click="(row) => console.log(row)"
+  >
+    <template #cell-title="{ row }: { row: Row }">{{ row.title }}</template>
+    <template #cell-type="{ row }: { row: Row }">{{ row.type }}</template>
+  </DataTable>
+</template>
+```
+
+### Props
+
+| Prop | 타입 | 기본값 | 설명 |
+| ---- | ---- | ------ | ---- |
+| `columns` | `DataTableColumn[]` | — (필수) | `{ key, label, width?, hideBelow?: 'sm' \| 'md', ellipsis? }[]` |
+| `rows` | `T[]` | — (필수) | 전체 행 데이터 (페이지네이션 전, 컴포넌트가 내부에서 slice) |
+| `rowKey` | `(row: T) => string \| number` | — (필수) | `:key`로 사용할 고유 값을 뽑는 함수 |
+| `page` | `number` | — | 현재 페이지 (1-based). `v-model:page`로 사용 — 미전달 시 내부 상태로 자체 관리(uncontrolled) |
+| `pageSize` | `number` | `10` | 페이지당 행 수 |
+| `emptyMessage` | `string` | `'No data.'` | `rows`가 빈 배열일 때 표시할 메시지 |
+| `ariaLabel` | `string` | — | `<table>`의 스크린리더 라벨 |
+
+### Emits
+
+| 이벤트 | 페이로드 | 설명 |
+| ---- | ---- | ---- |
+| `update:page` | `number` | 이전/다음 페이지 버튼 클릭 시 (controlled/uncontrolled 공통) |
+| `row-click` | `T` | 행 클릭 또는 Enter/Space 입력 시 |
+
+### Slots
+
+| 슬롯 | Props | 설명 |
+| ---- | ----- | ---- |
+| `cell-{column.key}` | `{ row: T }` | 각 컬럼의 셀 내용 — `columns`에 정의한 모든 키에 대해 제공해야 합니다 |
+
+> 헤더 라벨(`column.label`)은 텍스트만 지원합니다(스코프 제한). 정렬 가능한 헤더나 `caption` 등은 현재 범위 밖입니다. 페이지네이션 버튼은 내부적으로 `IconButton`을 재사용합니다.
+
+---
+
 ## 공통 동작 — 속성 폴스루(Attribute Fallthrough)
 
-`Button`/`IconButton`/`Chip`은 단일 루트 엘리먼트이므로 Vue 3의 기본 동작에 따라 prop으로 선언하지 않은 속성은 자동으로 루트 엘리먼트에 전달됩니다 (`SegmentedControl`은 내부에 여러 `<button>`을 렌더링하므로, `Popover`는 `Teleport` + 조건부 렌더링 루트이므로 동일하게 적용되지 않습니다 — `Popover`는 대신 명시적 `panelClass` prop을 제공합니다):
+`Button`/`IconButton`/`Chip`은 단일 루트 엘리먼트이므로 Vue 3의 기본 동작에 따라 prop으로 선언하지 않은 속성은 자동으로 루트 엘리먼트에 전달됩니다 (`SegmentedControl`/`DataTable`은 여러 루트 엘리먼트를 렌더링하므로, `Popover`는 `Teleport` + 조건부 렌더링 루트이므로 동일하게 적용되지 않습니다 — `Popover`는 대신 명시적 `panelClass` prop을 제공합니다):
 
 ```vue
 <Button class="my-extra-class" data-testid="save-btn" disabled>저장</Button>
@@ -254,6 +322,10 @@ function onTriggerClick(event: MouseEvent) {
   --vp-popover-shadow:   /* Popover 패널 그림자 */
   --vp-popover-radius:   /* Popover 패널 모서리 반경 (기본 4px) */
   --vp-popover-z-index:  /* Popover z-index (기본 1000) */
+
+  --vp-table-header-bg:     /* DataTable 헤더 배경 */
+  --vp-table-row-hover-bg:  /* DataTable 행 hover 배경 */
+  --vp-table-row-stripe-bg: /* DataTable 홀짝 줄무늬 배경 */
 }
 ```
 

@@ -24,7 +24,7 @@
 | `CalendarToolbar.vue` (SelectButton 비주얼, `aria-pressed`) | `SegmentedControl` | ✅ 완료 |
 | `ScheduleEventChip.vue` / `HolidayChip.vue` | `Chip` | ✅ 완료 (`Badge`는 보류) |
 | `MonthOverflowPopover.vue` (bounds·flip 계산) | `Popover` | ✅ 완료 |
-| `ListView.vue` (네이티브 `<table>`, 페이지네이션, 반응형 컬럼 숨김) | `DataTable` | ⏳ F2-5 |
+| `ListView.vue` (네이티브 `<table>`, 페이지네이션, 반응형 컬럼 숨김) | `DataTable` | ✅ 완료 |
 | `useScheduleCalendarHost` (controlled 패턴) | `core` 의 controlled-component 컨벤션 | ✅ 완료 (Phase 0) |
 | `utils/date.ts`, `utils/holiday.ts` | `@vuepkg/core` 유틸 | ✅ 완료 (Phase 0) |
 
@@ -39,7 +39,7 @@
 | **CSS-variable 테마** | 런타임 JS 테마 엔진 없이 CSS 변수로 테마 | ✅ (Phase 1 완료) |
 | **Type-safe public API** | 모든 공개 타입 `types/` 단일 출처 | ✅ |
 | **Headless-friendly** | 로직(composable) / 표현(styled) 분리 가능 | ⚠️ 부분 (`useCalendar` 내부 전용) |
-| **A11y by default** | role/aria/keyboard 기본 제공 | ⚠️ 부분 (`@vuepkg/ui` 5종은 키보드·aria 완비 — `Popover`는 focus trap·Esc·외부클릭 포함, `DataTable`은 F2-5 대기) |
+| **A11y by default** | role/aria/keyboard 기본 제공 | ✅ `@vuepkg/ui` 6종 모두 키보드·aria 완비 (`Popover`는 focus trap·Esc·외부클릭, `DataTable`은 row Enter/Space + aria-label) |
 
 ---
 
@@ -60,8 +60,7 @@ vuepkg/                         # monorepo 루트 (pnpm workspace)
 │   │   ├── light.css / dark.css
 │   │   └── presets/            #   브랜드 프리셋
 │   ├── ui/                     # @vuepkg/ui — 범용 primitive 컴포넌트 (구현: 평면 src/*.vue)
-│   │   ├── Button.vue  IconButton.vue  SegmentedControl.vue  Chip.vue  Popover.vue  (완료)
-│   │   ├── DataTable.vue  (F2-5 예정)
+│   │   ├── Button.vue  IconButton.vue  SegmentedControl.vue  Chip.vue  Popover.vue  DataTable.vue  (완료)
 │   │   └── index.ts
 │   └── calendar/               # @vuepkg/calendar — ui·core 위에 재구성
 │       └── (기존 src/components/calendar 이관)
@@ -85,7 +84,7 @@ core  ◄──  ui  ◄──  calendar
 
 - `core`: 다른 `@vuepkg` 패키지에 의존하지 않음. `vue` peer만.
 - `ui`: `core`에만 의존.
-- `calendar`: `ui` + `core`에 의존. (자체 구현 → ui primitive 소비로 전환 중 — Button/IconButton/SegmentedControl/Chip/Popover 완료, DataTable 대상 잔여)
+- `calendar`: `ui` + `core`에 의존. (자체 구현 → ui primitive 소비로 전환 완료 — Button/IconButton/SegmentedControl/Chip/Popover/DataTable 전부 추출·소비)
 - `theme`: 순수 CSS. JS 의존성 없음. 모든 패키지가 참조하는 CSS 변수 계약(contract).
 
 ### 1.3 디자인 토큰 3계층
@@ -164,7 +163,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 
 ---
 
-### Phase 2 — Primitive 승격 (`@vuepkg/ui`) 🚧 진행 중
+### Phase 2 — Primitive 승격 (`@vuepkg/ui`) ✅ 완료 (2026-06-30, F2-6/F2-7 신규 항목 제외)
 
 **목표**: calendar 내부 구현을 범용 primitive로 추출. calendar는 ui를 소비하도록 재조립.
 
@@ -176,10 +175,10 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | F2-2 | `SegmentedControl` | `CalendarToolbar` | 🟡 | ✅ (2026-06-29) — 화살표 키 네비게이션·roving tabindex 신규 추가 |
 | F2-3 | `Chip` | `ScheduleEventChip`, `HolidayChip` | 🟢 | ✅ (2026-06-29) — `Badge`는 보류 (today-badge 단일 사용처, 2회 미만이라 추출 기준 미충족) |
 | F2-4 | `Popover` | `MonthOverflowPopover` (bounds·flip 로직 재사용) | 🔴 | ✅ (2026-06-30) — `RectBounds`/위치 계산 함수는 `@vuepkg/core`로 이관, `Popover`가 Teleport·backdrop·Esc·외부클릭(backdrop)·focus trap·focus 복원을 신규 구현 |
-| F2-5 | `DataTable` | `ListView` (페이지네이션·반응형 컬럼) | 🔴 | 정렬 aria, caption |
+| F2-5 | `DataTable` | `ListView` (페이지네이션·반응형 컬럼) | 🔴 | ✅ (2026-06-30) — 제네릭(`<script setup generic="T">`) 컴포넌트, `cell-{key}` named slot, 페이지네이션은 `IconButton` 재사용 + `useControllableState`(v-model). 정렬 aria·caption은 스코프 제외(로드맵 권장대로 페이지네이션만으로 제한) |
 | F2-6 | `Dialog` / `Modal` (신규 — calendar의 상세/생성 모달 수요) | 신규 | 🔴 | focus trap, scroll-lock, aria-modal |
 | F2-7 | `Select` (신규 — 폼 기반 확장 대비) | 신규 | 🔴 | listbox 패턴 |
-| F2-8 | calendar를 ui primitive 소비로 리팩토링 (내부 중복 제거) | calendar | 🟡 | 🚧 진행 중 — `CalendarPeriodNav`/`CalendarMonthNav`/`CalendarToolbar`/`HolidayChip`/`ScheduleEventChip`/`MonthOverflowPopover` 완료, `ListView`는 F2-5 추출과 함께 진행 |
+| F2-8 | calendar를 ui primitive 소비로 리팩토링 (내부 중복 제거) | calendar | 🟡 | ✅ 완료 (2026-06-30) — `CalendarPeriodNav`/`CalendarMonthNav`/`CalendarToolbar`/`HolidayChip`/`ScheduleEventChip`/`MonthOverflowPopover`/`ListView` 전부 ui primitive 소비로 전환 |
 
 **각 primitive 공통 산출물**:
 - `props`/`emits` 타입 (`core` 타입 재사용: `Size = 'sm'|'md'|'lg'`, `Variant` 등)
@@ -257,15 +256,15 @@ component     --vp-chip-bg: var(--vp-color-surface);
 
 ## 5. 성공 지표 (KPI)
 
-| 지표 | 현재 (2026-06-30, F2-4 완료) | Phase 2 목표 | Phase 4 목표 |
+| 지표 | 현재 (2026-06-30, F2-5 완료 — Phase 2 종료) | Phase 2 목표 | Phase 4 목표 |
 | ---- | ---------------------------- | ------------ | ------------ |
 | 패키지 수 | **4 (core/theme/ui/calendar)** | 4 (core/theme/ui/calendar) ✅ 달성 | 6+ |
 | 실 주간 다운로드(봇 제외) | ~0 (배포 직후 크롤러 484) | 측정 체계 구축 | 의미 있는 유입 |
-| 컴포넌트 수 | calendar 1 + **ui primitive 5종** (Button/IconButton/SegmentedControl/Chip/Popover) | DataTable 추가 시 6종 달성 | 15+ |
-| calendar 번들 사이즈 (gzip) | 초기 index.js ~12.0KB + style.css ~5.0KB (`@vuepkg/ui` 소비 포함, §1.5 external 누락 부채 영향 가능) | core 분리로 ↓ | budget 내 유지 |
+| 컴포넌트 수 | calendar 1 + **ui primitive 6종** (Button/IconButton/SegmentedControl/Chip/Popover/DataTable) | ✅ 달성 | 15+ |
+| calendar 번들 사이즈 (gzip) | index.js ~12.1KB + style.css ~4.9KB (`@vuepkg/ui` 소비 포함, §1.5 dts 누수 부채 영향권) | core 분리로 ↓ | budget 내 유지 |
 | 문서 커버리지 | docs/ 내부 문서 + theming.md + `@vuepkg/ui` README | 사이트 + 자동 API | 전 컴포넌트 라이브 데모 |
-| a11y | `@vuepkg/ui` 5종 키보드·aria 완비(Popover는 focus trap·Esc·외부클릭 포함), calendar 전체는 부분 | primitive 키보드 100% | axe 통과 |
-| 테스트 | Vitest calendar 200 + ui 55 + core 70 / E2E 142(시각회귀 8 포함) | 패키지별 유지·증가 | + 시각 회귀 |
+| a11y | `@vuepkg/ui` 6종 키보드·aria 완비(Popover focus trap·Esc·외부클릭, DataTable row Enter/Space), calendar 전체는 부분 | ✅ primitive 키보드 100% 달성 | axe 통과 |
+| 테스트 | Vitest calendar 200 + ui 65 + core 70 / E2E 142(시각회귀 8 포함) | 패키지별 유지·증가 | + 시각 회귀 |
 
 > **다운로드 KPI 주의**: 현재 501/주는 신규 배포 크롤러 트래픽(6/26 484 + 6/27 17)이며 실사용 아님. 실유입 측정 체계(README npm 배지, 문서 사이트 analytics)부터 Phase 3에 구축.
 
@@ -310,18 +309,26 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | `ListView-*.js` | 3.70 KB | 1.61 KB | 변동 없음 |
 | `CalendarMonthNav-*.js` | 13.66 KB | 4.39 KB | 청크 분할 기준 변경으로 증가 — §1.5 external 누락 부채와 연관, 정확한 원인은 다음 부채 정리 세션에서 확인 |
 
+**Phase 2 F2-5 완료 (DataTable 추가, Phase 2 종료 시점) — 측정: 2026-06-30**
+
+| 산출물 | Raw | Gzip | 비고 |
+| ------ | ---: | ---: | ---- |
+| `index.js` (메인) | 41.88 KB | **12.07 KB** | 거의 변동 없음 |
+| `style.css` | **27.22 KB** | **4.92 KB** | `--vp-list-row-*`/`--vp-list-header-bg` → `--vp-table-*`로 이름만 이관(중복 제거로 소폭 감소) |
+| `ListView-*.js` | 2.77 KB | 1.28 KB | 페이지네이션·테이블 마크업이 `DataTable`로 빠지며 감소 |
+| `CalendarMonthNav-*.js` | 16.53 KB | 5.17 KB | `DataTable`이 내부에서 재사용하는 `IconButton`이 같은 청크에 묶이며 증가 — §1.5의 external 미설정 부채와 동일 원인으로 추정, 별도 설계 검토 시 함께 확인 |
+
 `@vuepkg/ui` **단독 패키지** (참고용 — calendar에는 소스 단위로 번들링되어 별도 설치 불필요):
 
 | 산출물 | Raw | Gzip |
 | ------ | ---: | ---: |
-| `index.esm.js` | 7.59 KB | 2.67 KB |
-| `style.css` | 3.21 KB | 0.87 KB |
+| `index.esm.js` | 10.31 KB | 3.51 KB |
+| `style.css` | 4.92 KB | 1.20 KB |
 
 **관찰**
 - UI 컴포넌트치고 매우 가벼움 (FullCalendar ~100KB+, toast-ui ~70KB+ gzip 대비). zero-dep 포지셔닝이 수치로 증명됨.
-- `CalendarMonthNav` 청크 크기 변화 등 일부 수치는 §1.5에 새로 기록한 "calendar lib 빌드가 core/ui를 external 처리하지 않음" 부채와 얽혀 있어 — 그 부채를 해소한 뒤 기준선을 다시 측정해야 정확한 비교가 가능하다.
-- `CalendarMonthNav` 청크가 7.23KB로 늘어난 건 `IconButton` 컴포넌트가 그 청크에 함께 번들링되기 때문 — Phase 2 후반(F2-4 Popover 등 무거운 primitive 추가 시) 청크 분할 전략 재검토 필요.
-- Phase 0에서 `@vuepkg/core` 분리 시 `utils/*` 등이 빠져 calendar JS 번들은 추가로 감소 예상.
+- `CalendarMonthNav` 청크가 Phase 2 진행 중 계속 커진 건(3.7→7.2→13.7→16.5KB) `IconButton`/`Popover`/`DataTable`이 그 청크에 함께 번들링되기 때문 — §1.5의 "calendar lib 빌드가 core/ui를 external 처리하지 않음" 부채와 같은 원인. Phase 2가 끝난 지금이 청크 분할 전략을 재검토할 적기.
+- `ListView` 청크는 반대로 계속 작아짐(3.7→2.77KB) — 페이지네이션/테이블 마크업이 `@vuepkg/ui`의 공용 `DataTable`로 이동했기 때문, 의도된 변화.
 
 ---
 
@@ -333,18 +340,19 @@ component     --vp-chip-bg: var(--vp-color-surface);
 2. ~~**F1-1 토큰 RFC**: `--vp-*` 네이밍과 3계층 구조를 1페이지로 확정. (1~2시간)~~ ✅ 완료
 3. ~~**F2-1 `Button` 추출 PoC**: `CalendarPeriodNav`의 버튼을 `@vuepkg/ui/Button`으로 빼보고, 추출 비용이 실제로 감당되는지 1개로 체감. (반나절)~~ ✅ 완료 (2026-06-29) — `Button`/`IconButton` 둘 다 추출, `CalendarPeriodNav` + `CalendarMonthNav` 적용
 
-→ 3축 검증 완료. Phase 2를 F2-2(`SegmentedControl`)·F2-3(`Chip`)·F2-4(`Popover`)까지 이어서 완료 (2026-06-30 기준).
+→ 3축 검증 완료. Phase 2를 F2-2(`SegmentedControl`)·F2-3(`Chip`)·F2-4(`Popover`)·F2-5(`DataTable`)까지 이어서 완료 — **Phase 2 종료 (2026-06-30)**.
 
-### 다음 단계 — Phase 2 후반 (난이도 🔴)
+### 다음 단계 — Phase 3 착수 전 정리
 
-> **진행 현황 (2026-06-30)**: F2-4(Popover) 완료. 작업 중 §1.5의 기존 기술 부채 3건 중 2건은 이미 해소됐고 1건(core 테스트 0건)은 오판으로 확인됨. 새로 발견한 2건 중 `package.json` `types` 경로 오류는 수정·검증 완료. 남은 1건(`vite-plugin-dts` 상대경로 누수)은 CSS 번들링과 결합되어 있어 설계 결정이 필요해 BLOCKED로 §1.5에 기록.
+> **진행 현황 (2026-06-30)**: F2-5(DataTable) 완료로 Phase 2의 핵심 추출 목표(calendar가 실제로 쓰는 모든 내부 구현 → `@vuepkg/ui` primitive화) 달성. F2-6/F2-7(Dialog/Select)은 가드레일에 따라 calendar에 실제 수요가 생길 때까지 보류. §1.5의 기존 기술 부채는 대부분 해소·정리됨 — 남은 건 영향도 낮은 dts 누수 1건뿐.
 
 | ID | 작업 | 난이도 | 비고 |
 | -- | ---- | ------ | ---- |
-| F2-5 | `DataTable` 추출 — `ListView`의 페이지네이션·반응형 컬럼 숨김 | 🔴 | 정렬 aria·caption까지 가면 범위 확대 — 우선 페이지네이션만으로 스코프 제한 권장 — **다음 작업 후보** |
-| — | §1.5 잔여 항목 (`vite-plugin-dts` 상대경로 누수) 설계 검토 | 🟡 | 영향도 낮음 — F2-5 이후 또는 F3-2 착수 직전 재검토 |
+| — | §1.5 잔여 항목 (`vite-plugin-dts` 상대경로 누수) 설계 검토 | 🟡 | 영향도 낮음 — Phase 3(`F3-2` `vue-component-meta`) 착수 직전 재검토 권장 |
+| F2-6/F2-7 | `Dialog`/`Select` (신규 primitive) | 🔴 | calendar에 명확한 수요(상세/생성 모달, 타입 필터 셀렉트) 발생 시에만 착수 |
+| F3-1 | VitePress 문서 사이트 + 라이브 플레이그라운드 | 🟡 | Phase 3 본격 착수 시 첫 항목 |
 
-F2-5 역시 F2-1~F2-3보다 난이도가 한 단계 높음(상태를 가진 컴포넌트 + DOM 위치 계산). 착수 전 설계 노트 1페이지 권장.
+Phase 2를 마쳤으니, 다음 큰 단위는 Phase 3(DX·생태계)다. 착수 전 "실 채택" 목표에 맞춰 우선순위(문서 사이트 vs i18n vs SSR 검증)를 한 번 더 점검 권장.
 
 ---
 

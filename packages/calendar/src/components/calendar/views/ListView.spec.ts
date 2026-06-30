@@ -59,7 +59,7 @@ describe('ListView', () => {
 
     const wrapper = mount(ListView, { props: { calendar } })
 
-    const firstRow = wrapper.get('.list-row')
+    const firstRow = wrapper.get('.vp-data-table-row')
     await firstRow.trigger('click')
 
     const emitted = wrapper.emitted('schedule-click')?.[0]?.[0] as {

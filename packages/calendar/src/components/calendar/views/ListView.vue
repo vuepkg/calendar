@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { DataTable, type DataTableColumn } from '@vuepkg/ui'
 import CalendarMonthNav from '../CalendarMonthNav.vue'
 import type {
   CalendarContext,
@@ -10,6 +11,14 @@ import type {
 import { toDateKey } from '@/utils/date'
 
 const PAGE_SIZE = 10
+
+const columns: DataTableColumn[] = [
+  { key: 'no', label: 'No', width: '48px' },
+  { key: 'title', label: 'Title', ellipsis: true },
+  { key: 'type', label: 'Type', width: '100px', hideBelow: 'md' },
+  { key: 'participant', label: 'Participant', width: '120px', hideBelow: 'sm' },
+  { key: 'period', label: 'Period', width: '180px', ellipsis: true, hideBelow: 'md' },
+]
 
 const props = defineProps<{
   calendar: CalendarContext
@@ -29,11 +38,6 @@ const listFilterLabel = computed(() =>
 const monthLabel = computed(() => props.calendar.monthLabel.value)
 
 const currentPage = ref(1)
-const totalPages = computed(() => Math.max(1, Math.ceil(listRows.value.length / PAGE_SIZE)))
-const pageRows = computed(() => {
-  const start = (currentPage.value - 1) * PAGE_SIZE
-  return listRows.value.slice(start, start + PAGE_SIZE)
-})
 
 watch(listRows, () => {
   currentPage.value = 1
@@ -70,62 +74,26 @@ function onRowClick(row: CalendarListRow) {
       </button>
     </div>
 
-    <div class="list-table-wrapper">
-      <table class="list-table">
-        <thead>
-          <tr>
-            <th class="col-no">No</th>
-            <th class="col-title">Title</th>
-            <th class="col-type">Type</th>
-            <th class="col-participant">Participant</th>
-            <th class="col-period">Period</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="(row, index) in pageRows"
-            :key="row.no"
-            class="list-row"
-            :class="{ striped: index % 2 === 1 }"
-            tabindex="0"
-            @click="onRowClick(row)"
-            @keydown.enter.prevent="onRowClick(row)"
-            @keydown.space.prevent="onRowClick(row)"
-          >
-            <td class="col-no">{{ row.no }}</td>
-            <td class="col-title">{{ row.title }}</td>
-            <td class="col-type">{{ row.scheduleType }}</td>
-            <td class="col-participant">{{ row.participant }}</td>
-            <td class="col-period">{{ row.period }}</td>
-          </tr>
-          <tr v-if="pageRows.length === 0" class="list-empty">
-            <td colspan="5">일정이 없습니다.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div v-if="totalPages > 1" class="list-pagination">
-      <button
-        type="button"
-        class="page-btn"
-        :disabled="currentPage === 1"
-        aria-label="Previous page"
-        @click="currentPage--"
+    <DataTable
+      v-model:page="currentPage"
+      :columns="columns"
+      :rows="listRows"
+      :rowKey="(row: CalendarListRow) => row.no"
+      :pageSize="PAGE_SIZE"
+      ariaLabel="Schedule list"
+      emptyMessage="일정이 없습니다."
+      @row-click="onRowClick"
+    >
+      <template #cell-no="{ row }: { row: CalendarListRow }"
+        ><span class="col-no-text">{{ row.no }}</span></template
       >
-        ‹
-      </button>
-      <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
-      <button
-        type="button"
-        class="page-btn"
-        :disabled="currentPage === totalPages"
-        aria-label="Next page"
-        @click="currentPage++"
-      >
-        ›
-      </button>
-    </div>
+      <template #cell-title="{ row }: { row: CalendarListRow }">{{ row.title }}</template>
+      <template #cell-type="{ row }: { row: CalendarListRow }">{{ row.scheduleType }}</template>
+      <template #cell-participant="{ row }: { row: CalendarListRow }">{{
+        row.participant
+      }}</template>
+      <template #cell-period="{ row }: { row: CalendarListRow }">{{ row.period }}</template>
+    </DataTable>
   </div>
 </template>
 
@@ -164,148 +132,8 @@ function onRowClick(row: CalendarListRow) {
   cursor: pointer;
 }
 
-.list-table-wrapper {
-  flex: 1;
-  min-height: 0;
-  overflow: auto;
-}
-
-.list-table {
-  width: 100%;
-  table-layout: fixed;
-  border-collapse: collapse;
-  font-size: 12px;
-  color: var(--vp-color-text-secondary);
-}
-
-.list-table thead tr {
-  background: var(--vp-list-header-bg);
-  border-bottom: 2px solid var(--vp-grid-line);
-}
-
-.list-table th {
-  padding: 8px 10px;
-  text-align: left;
-  font-weight: 600;
-  font-size: 11px;
-  color: var(--vp-color-text-muted);
-  white-space: nowrap;
-}
-
-.list-table td {
-  padding: 7px 10px;
-  border-bottom: 1px solid var(--vp-grid-line);
-  vertical-align: middle;
-}
-
-.list-row {
-  cursor: pointer;
-  transition: background 0.1s;
-}
-
-.list-row:hover {
-  background: var(--vp-list-row-hover-bg);
-}
-
-.list-row:focus-visible {
-  outline: var(--vp-focus-ring);
-  outline-offset: -2px;
-}
-
-.list-row.striped {
-  background: var(--vp-list-row-stripe-bg);
-}
-
-.list-row.striped:hover {
-  background: var(--vp-list-row-hover-bg);
-}
-
-.list-empty td {
-  padding: 24px;
-  text-align: center;
-  color: var(--vp-color-text-muted);
-  font-size: 13px;
-  cursor: default;
-}
-
-.col-no {
-  width: 48px;
+.col-no-text {
   color: var(--vp-color-text-muted);
   font-size: 11px;
-}
-
-.col-title {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.col-type {
-  width: 100px;
-}
-
-.col-participant {
-  width: 120px;
-}
-
-.col-period {
-  width: 180px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.list-pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 10px 0 2px;
-  flex-shrink: 0;
-}
-
-.page-btn {
-  border: 1px solid var(--vp-nav-btn-border);
-  background: var(--vp-nav-btn-bg);
-  color: var(--vp-nav-btn-text);
-  border-radius: var(--vp-chip-radius);
-  width: 28px;
-  height: 28px;
-  font-size: 16px;
-  line-height: 1;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: background var(--vp-transition-fast);
-}
-
-.page-btn:hover:not(:disabled) {
-  background: var(--vp-nav-btn-bg-hover);
-}
-
-.page-btn:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
-
-.page-info {
-  font-size: 12px;
-  color: var(--vp-color-text-secondary);
-  min-width: 48px;
-  text-align: center;
-}
-
-@media (max-width: 768px) {
-  .col-period,
-  .col-type {
-    display: none;
-  }
-}
-
-@media (max-width: 480px) {
-  .col-participant {
-    display: none;
-  }
 }
 </style>

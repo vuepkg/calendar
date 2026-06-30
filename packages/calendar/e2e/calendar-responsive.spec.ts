@@ -132,9 +132,9 @@ for (const [, viewport] of Object.entries(VIEWPORTS)) {
     test('list view loads and table fits viewport width', async ({ page }) => {
       await viewTab(page, 'List').click()
       await expect(page.locator('.list-view')).toBeVisible()
-      await expect(page.locator('.list-table')).toBeVisible({ timeout: 10_000 })
+      await expect(page.locator('.vp-data-table')).toBeVisible({ timeout: 10_000 })
 
-      const table = page.locator('.list-table')
+      const table = page.locator('.vp-data-table')
       await expect(table).toBeVisible()
       const tableMetrics = await getScrollMetrics(table)
       const listMetrics = await getScrollMetrics(page.locator('.list-view'))

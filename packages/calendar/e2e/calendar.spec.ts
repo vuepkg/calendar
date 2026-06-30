@@ -166,7 +166,7 @@ test.describe('ScheduleCalendar E2E', () => {
 
     await expect(page.locator('.list-view')).toBeVisible()
     await expect(page.locator('.calendar-month-nav-title')).toContainText('2026-04')
-    await expect(page.locator('.list-table')).toBeVisible({ timeout: 10_000 })
+    await expect(page.locator('.vp-data-table')).toBeVisible({ timeout: 10_000 })
     await expect(page.getByText('VVNST A 방선')).toBeVisible()
   })
 

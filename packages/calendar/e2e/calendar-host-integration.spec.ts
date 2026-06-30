@@ -236,7 +236,7 @@ test.describe('Host import — cross-layout interactions', () => {
     expect(bodyMetrics.scrollHeight).toBeLessThanOrEqual(bodyMetrics.clientHeight + 2)
 
     await viewTab(page, 'List').click()
-    await expect(page.locator('.list-table')).toBeVisible({ timeout: 10_000 })
+    await expect(page.locator('.vp-data-table')).toBeVisible({ timeout: 10_000 })
     await expect(page.locator('.list-view')).toBeVisible()
   })
 

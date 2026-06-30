@@ -7,7 +7,7 @@
 | 스택      | Vue 3 (Composition API) + TypeScript + Vite 8                                     |
 | 빌드      | pnpm workspace + Turborepo (모노레포)                                             |
 | UI        | 커스텀 HTML/CSS — PrimeVue 의존성 없음 (List 뷰 포함 전체 네이티브 구현)          |
-| 테스트    | Vitest 3.x (calendar 200건 + ui 55건 + core 70건), Playwright E2E 142건 (기능 23 + 반응형 42 + 호스트 69 + 시각회귀 8) |
+| 테스트    | Vitest 3.x (calendar 200건 + ui 65건 + core 70건), Playwright E2E 142건 (기능 23 + 반응형 42 + 호스트 69 + 시각회귀 8) |
 | 진입점    | `ScheduleCalendar.vue`                                                            |
 | 상태 모델 | **emit-only** — 뷰·날짜 변경은 소비 측 (`v-model` + 핸들러)에서 처리              |
 
@@ -41,6 +41,7 @@ vue3-calendar/                   # monorepo 루트 (pnpm workspace)
 │   │       ├── SegmentedControl.vue    # 단일 선택 토글 그룹 (화살표 키 roving tabindex)
 │   │       ├── Chip.vue                # 라벨·태그 셸 (정적/클릭형 공용)
 │   │       ├── Popover.vue             # Teleport·backdrop·focus trap·Esc 포함 위치 지정 패널 (F2-4)
+│   │       ├── DataTable.vue           # 제네릭 테이블 셸 — 페이지네이션·반응형 컬럼 숨김 (F2-5)
 │   │       └── index.ts                # barrel
 │   └── calendar/                # @vuepkg/calendar — 배포 패키지
 │       └── src/
@@ -80,7 +81,7 @@ packages/calendar/src/
 │   │   ├── MonthView.vue
 │   │   ├── WeekView.vue
 │   │   ├── DayView.vue
-│   │   └── ListView.vue         # async (defineAsyncComponent), 네이티브 <table>
+│   │   └── ListView.vue         # async (defineAsyncComponent), @vuepkg/ui DataTable 소비
 │   └── index.ts                 # 컴포넌트·타입·유틸 barrel export
 ├── composables/
 │   ├── useCalendar.ts           # 파생 데이터·표시 상태 (내부)
@@ -422,7 +423,7 @@ type ViewScope = 'my' | 'company'
 
 ## 10. 테스트 구조
 
-### 단위·컴포넌트 (Vitest — calendar 200건 + ui 55건 + core 70건)
+### 단위·컴포넌트 (Vitest — calendar 200건 + ui 65건 + core 70건)
 
 | 스펙                              | 검증                                                |
 | --------------------------------- | --------------------------------------------------- |
@@ -443,7 +444,7 @@ type ViewScope = 'my' | 'company'
 `resolveCalendarNavigateDate`는 `ScheduleCalendar.spec`·`schedule/query.spec`에서 간접 검증합니다.
 팝오버 bounds·flip 계산 테스트는 F2-4에서 `@vuepkg/core`의 `popover.spec.ts`로 이관됐습니다.
 
-**`@vuepkg/ui` (Phase 2 primitive, 55건)**
+**`@vuepkg/ui` (Phase 2 primitive, 65건)**
 
 | 스펙                       | 검증                                                              |
 | -------------------------- | ----------------------------------------------------------------- |
@@ -452,6 +453,7 @@ type ViewScope = 'my' | 'company'
 | `SegmentedControl.spec.ts` | role=group, aria-pressed, roving tabindex, 화살표/Home/End 키보드 |
 | `Chip.spec.ts`             | clickable role/keyboard, color/backgroundColor 인라인 오버라이드  |
 | `Popover.spec.ts`          | role=dialog, backdrop/Esc close, Tab/Shift+Tab focus trap, 닫힘 시 focus 복원, 위치 스타일 적용 |
+| `DataTable.spec.ts`        | 헤더·셀 슬롯 렌더링, hideBelow 클래스, empty 메시지, row-click(클릭/Enter/Space), 페이지네이션(controlled/uncontrolled), ariaLabel |
 
 **`@vuepkg/core` (70건)** — `utils/date.spec.ts`(41) · `utils/holiday.spec.ts`(14) · `composables/useControllableState.spec.ts`(10) · `utils/popover.spec.ts`(5, F2-4 이관)
 
@@ -488,7 +490,7 @@ pnpm dev           # packages/calendar dev 서버 — http://localhost:6565
 | 명령 | 용도 |
 | ---- | ---- |
 | `pnpm turbo run typecheck` | 전체 타입 검사 |
-| `pnpm turbo run test` | Vitest 단위 테스트 — calendar 200건 + ui 55건 + core 70건 |
+| `pnpm turbo run test` | Vitest 단위 테스트 — calendar 200건 + ui 65건 + core 70건 |
 | `pnpm turbo run build:lib` | core + ui + calendar 라이브러리 빌드 |
 | `pnpm --filter @vuepkg/calendar run test:e2e` | Playwright E2E 142건 |
 

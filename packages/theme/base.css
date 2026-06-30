@@ -167,9 +167,11 @@
   --vp-list-filter-text:   var(--vp-palette-blue-900);
   --vp-list-filter-btn-border: var(--vp-palette-blue-300);
   --vp-list-filter-btn-text:   var(--vp-palette-blue-700);
-  --vp-list-row-hover-bg:  #f0f9ff;
-  --vp-list-row-stripe-bg: var(--vp-color-bg-subtle);
-  --vp-list-header-bg:     var(--vp-color-bg-subtle);
+
+  /* ── Component: 데이터 테이블 (@vuepkg/ui DataTable) ───────────────── */
+  --vp-table-row-hover-bg:  #f0f9ff;
+  --vp-table-row-stripe-bg: var(--vp-color-bg-subtle);
+  --vp-table-header-bg:     var(--vp-color-bg-subtle);
 
   /* ── Component: 스크롤바 ─────────────────────────────────────────── */
   --vp-scrollbar-size:        6px;

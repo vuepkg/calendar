@@ -132,6 +132,16 @@ document.documentElement.classList.toggle('vp-dark')
 }
 ```
 
+### 데이터 테이블
+
+```css
+:root {
+  --vp-table-header-bg:     /* 테이블 헤더 배경 (@vuepkg/ui DataTable) */
+  --vp-table-row-hover-bg:  /* 행 hover 배경 */
+  --vp-table-row-stripe-bg: /* 홀짝 줄무늬 배경 */
+}
+```
+
 ## 사용 예시
 
 ### 회사 브랜드 색상

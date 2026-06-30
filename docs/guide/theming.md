@@ -88,6 +88,18 @@ document.documentElement.classList.toggle('vp-dark')
 }
 ```
 
+### 버튼 (`@vuepkg/ui` Button · IconButton)
+
+```css
+:root {
+  --vp-button-bg:        /* 배경 */
+  --vp-button-bg-hover:  /* hover 배경 */
+  --vp-button-border:    /* 테두리 */
+  --vp-button-text:      /* 텍스트 색상 */
+  --vp-button-radius:    /* 모서리 반경 (기본 4px) */
+}
+```
+
 ### 공휴일 칩
 
 ```css

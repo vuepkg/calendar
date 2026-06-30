@@ -34,4 +34,23 @@ describe('IconButton', () => {
     await wrapper.trigger('click')
     expect(wrapper.emitted('click')).toHaveLength(1)
   })
+
+  it('honors explicit type prop (e.g. "submit")', () => {
+    const wrapper = mount(IconButton, { props: { ariaLabel: 'Next', type: 'submit' } })
+    expect(wrapper.attributes('type')).toBe('submit')
+  })
+
+  it('forwards disabled attribute', () => {
+    const wrapper = mount(IconButton, { props: { ariaLabel: 'Next' }, attrs: { disabled: true } })
+    expect(wrapper.attributes('disabled')).toBeDefined()
+  })
+
+  it('merges externally passed class with component class', () => {
+    const wrapper = mount(IconButton, {
+      props: { ariaLabel: 'Next' },
+      attrs: { class: 'custom-class' },
+    })
+    expect(wrapper.classes()).toContain('vp-icon-button')
+    expect(wrapper.classes()).toContain('custom-class')
+  })
 })

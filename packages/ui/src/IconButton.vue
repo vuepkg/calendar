@@ -3,16 +3,18 @@ withDefaults(
   defineProps<{
     ariaLabel: string
     size?: 'sm' | 'md'
+    type?: 'button' | 'submit' | 'reset'
   }>(),
   {
     size: 'md',
+    type: 'button',
   },
 )
 </script>
 
 <template>
   <button
-    type="button"
+    :type="type"
     class="vp-icon-button"
     :class="`vp-icon-button--${size}`"
     :aria-label="ariaLabel"
@@ -42,6 +44,11 @@ withDefaults(
 .vp-icon-button:focus-visible {
   outline: var(--vp-focus-ring);
   outline-offset: 1px;
+}
+
+.vp-icon-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .vp-icon-button--sm {

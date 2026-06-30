@@ -2,15 +2,17 @@
 withDefaults(
   defineProps<{
     weight?: 'normal' | 'bold'
+    type?: 'button' | 'submit' | 'reset'
   }>(),
   {
     weight: 'normal',
+    type: 'button',
   },
 )
 </script>
 
 <template>
-  <button type="button" class="vp-button" :class="{ 'vp-button--bold': weight === 'bold' }">
+  <button :type="type" class="vp-button" :class="{ 'vp-button--bold': weight === 'bold' }">
     <slot />
   </button>
 </template>
@@ -34,6 +36,11 @@ withDefaults(
 .vp-button:focus-visible {
   outline: var(--vp-focus-ring);
   outline-offset: 1px;
+}
+
+.vp-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .vp-button--bold {

@@ -29,4 +29,20 @@ describe('Button', () => {
     await wrapper.trigger('click')
     expect(wrapper.emitted('click')).toHaveLength(1)
   })
+
+  it('honors explicit type prop (e.g. "submit")', () => {
+    const wrapper = mount(Button, { props: { type: 'submit' } })
+    expect(wrapper.attributes('type')).toBe('submit')
+  })
+
+  it('forwards disabled attribute and applies disabled styling', () => {
+    const wrapper = mount(Button, { attrs: { disabled: true } })
+    expect(wrapper.attributes('disabled')).toBeDefined()
+  })
+
+  it('merges externally passed class with component class', () => {
+    const wrapper = mount(Button, { attrs: { class: 'custom-class' } })
+    expect(wrapper.classes()).toContain('vp-button')
+    expect(wrapper.classes()).toContain('custom-class')
+  })
 })

@@ -161,12 +161,32 @@ describe('ScheduleCalendar emit-only contract', () => {
       scheduleTypes: string[]
       trigger: string
       action: string
+      date: Date
     }
 
     expect(latest.viewScope).toBe('my')
     expect(latest.scheduleTypes).toEqual(['my_schedule'])
     expect(latest.trigger).toBe('navigate')
     expect(latest.action).toBe('next-month')
+    expect(latest.date).toEqual(startOfDay(new Date(2026, 4, 22)))
+    expect(wrapper.props('date')).toEqual(startOfDay(new Date(2026, 3, 22)))
+  })
+
+  it('emits query-change with next view on view-change when parent v-model is stale', async () => {
+    const wrapper = mountScheduleCalendar({ view: 'month' })
+
+    const weekTab = wrapper
+      .findAll('.vp-segmented-control-item')
+      .find((tab) => tab.text() === 'Week')
+    await weekTab!.trigger('click')
+
+    const queryEvents = wrapper.emitted('query-change') ?? []
+    const viewChangeQuery = queryEvents.find(
+      (event) => (event[0] as { trigger: string }).trigger === 'view-change',
+    )
+
+    expect((viewChangeQuery?.[0] as { view: string }).view).toBe('week')
+    expect(wrapper.props('view')).toBe('month')
   })
 
   it('emits overflow-click from +count without switching view by itself', async () => {

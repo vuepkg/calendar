@@ -10,7 +10,7 @@ import type {
   CalendarTimeSlotSelectPayload,
   ScheduleCalendarEmits,
 } from '@/types/calendarEvents'
-import type { ScheduleQueryTrigger } from '@/types/calendarEvents'
+import type { BuildScheduleQueryChangePayloadInput, ScheduleQueryTrigger } from '@/types/calendarEvents'
 import type { Holiday } from '@/types/schedule'
 import type { CalendarView, Schedule, ScheduleTypeOption, ViewScope } from '@/types/schedule'
 import { startOfDay } from '@/utils/date'
@@ -127,15 +127,23 @@ const currentView = computed(() => calendar.state.currentView)
 const isTimedView = computed(() => currentView.value === 'week' || currentView.value === 'day')
 const isMonthView = computed(() => currentView.value === 'month')
 
-function emitQueryChange(trigger: ScheduleQueryTrigger, action?: CalendarNavigateAction) {
+type QueryChangeOverrides = Partial<
+  Pick<BuildScheduleQueryChangePayloadInput, 'view' | 'date' | 'listFilterDate'>
+>
+
+function emitQueryChange(
+  trigger: ScheduleQueryTrigger,
+  action?: CalendarNavigateAction,
+  overrides?: QueryChangeOverrides,
+) {
   emit(
     'query-change',
     buildScheduleQueryChangePayload({
-      view: view.value,
-      date: date.value,
+      view: overrides?.view ?? view.value,
+      date: overrides?.date ?? date.value,
       viewScope: viewScope.value,
       scheduleTypes: scheduleTypes.value,
-      listFilterDate: listFilterDate.value,
+      listFilterDate: overrides?.listFilterDate ?? listFilterDate.value,
       trigger,
       action,
     }),
@@ -156,7 +164,7 @@ watch(listFilterDate, () => {
 
 function handleViewChange(nextView: CalendarView) {
   emit('view-change', { view: nextView, previousView: view.value })
-  emitQueryChange('view-change')
+  emitQueryChange('view-change', undefined, { view: nextView })
 }
 
 function handleDateSelect(payload: CalendarDateSelectPayload) {
@@ -172,16 +180,17 @@ function handleScheduleClick(payload: CalendarScheduleClickPayload) {
 }
 
 function handleNavigate(action: CalendarNavigateAction) {
+  const nextDate = resolveCalendarNavigateDate(date.value, action)
   emit('navigate', {
     action,
-    date: resolveCalendarNavigateDate(date.value, action),
+    date: nextDate,
   })
-  emitQueryChange('navigate', action)
+  emitQueryChange('navigate', action, { date: nextDate })
 }
 
 function handleListFilterClear() {
   emit('list-filter-clear')
-  emitQueryChange('list-filter-clear')
+  emitQueryChange('list-filter-clear', undefined, { listFilterDate: null })
 }
 
 function handleTimeSlotSelect(payload: CalendarTimeSlotSelectPayload) {

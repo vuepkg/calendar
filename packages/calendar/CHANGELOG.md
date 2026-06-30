@@ -1,5 +1,13 @@
 # @vuepkg/calendar
 
+## 0.1.3
+
+### Patch Changes
+
+- Add SegmentedControl and Chip primitives (F2-2, F2-3) to @vuepkg/ui. SegmentedControl includes roving-tabindex arrow key navigation. CalendarToolbar, HolidayChip, and ScheduleEventChip now consume these primitives instead of duplicating markup/CSS.
+- Updated dependencies
+  - @vuepkg/ui@0.2.0
+
 ## 0.1.2
 
 ### Patch Changes

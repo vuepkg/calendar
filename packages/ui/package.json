@@ -1,9 +1,15 @@
 {
   "name": "@vuepkg/ui",
   "private": false,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Headless-friendly Vue 3 UI primitives for @vuepkg",
-  "keywords": ["vue", "vue3", "vuepkg", "ui", "components"],
+  "keywords": [
+    "vue",
+    "vue3",
+    "vuepkg",
+    "ui",
+    "components"
+  ],
   "homepage": "https://github.com/vuepkg/calendar",
   "repository": {
     "type": "git",
@@ -28,7 +34,9 @@
     },
     "./style.css": "./dist/style.css"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build:lib": "vue-tsc --noEmit -p tsconfig.app.json && vite build --config vite.lib.config.ts",
     "typecheck": "vue-tsc --noEmit -p tsconfig.app.json",

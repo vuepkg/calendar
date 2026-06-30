@@ -15,6 +15,7 @@
 | 라이브러리 패키징 | `vite.lib.config.ts`, `build:lib` 스크립트, ES+CJS+d.ts 출력 | 2026-06-23 |
 | [Phase 0] Monorepo & Core 추출 | pnpm workspace + Turborepo, `@vuepkg/core` 분리, CI 파이프라인 | 2026-06-28 |
 | [Phase 1] 디자인 토큰 & 테마 시스템 | `@vuepkg/theme` CSS 패키지, 전 컴포넌트 `--vp-*` 변수 적용, 다크 모드 | 2026-06-29 |
+| [Phase 2 — F2-1~F2-3] `@vuepkg/ui` Primitive 승격 (진행 중) | `Button`/`IconButton`/`SegmentedControl`/`Chip` 추출, calendar가 소비하도록 리팩토링 | 2026-06-29 |
 
 ---
 

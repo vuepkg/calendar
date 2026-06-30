@@ -7,7 +7,7 @@
 | 스택      | Vue 3 (Composition API) + TypeScript + Vite 8                                     |
 | 빌드      | pnpm workspace + Turborepo (모노레포)                                             |
 | UI        | 커스텀 HTML/CSS — PrimeVue 의존성 없음 (List 뷰 포함 전체 네이티브 구현)          |
-| 테스트    | Vitest 3.x (단위 205건), Playwright E2E 126건 (기능 15 + 반응형 42 + 호스트 69)   |
+| 테스트    | Vitest 3.x (calendar 205건 + ui 38건), Playwright E2E 142건 (기능 23 + 반응형 42 + 호스트 69 + 시각회귀 8) |
 | 진입점    | `ScheduleCalendar.vue`                                                            |
 | 상태 모델 | **emit-only** — 뷰·날짜 변경은 소비 측 (`v-model` + 핸들러)에서 처리              |
 
@@ -32,6 +32,13 @@ vue3-calendar/                   # monorepo 루트 (pnpm workspace)
 │   │   ├── base.css                   # 라이트 테마 (primitive/semantic/component 3계층)
 │   │   ├── dark.css                   # 다크 오버라이드 (prefers-color-scheme + .vp-dark)
 │   │   └── index.css                  # 진입점
+│   ├── ui/                      # @vuepkg/ui — 범용 Vue 3 primitive (Phase 2)
+│   │   └── src/
+│   │       ├── Button.vue              # 텍스트 버튼
+│   │       ├── IconButton.vue          # 정사각형 아이콘 버튼 (‹ ›)
+│   │       ├── SegmentedControl.vue    # 단일 선택 토글 그룹 (화살표 키 roving tabindex)
+│   │       ├── Chip.vue                # 라벨·태그 셸 (정적/클릭형 공용)
+│   │       └── index.ts                # barrel
 │   └── calendar/                # @vuepkg/calendar — 배포 패키지
 │       └── src/
 │           ├── (기존 src/ 내용 — 아래 §1.1 참고)
@@ -46,10 +53,10 @@ vue3-calendar/                   # monorepo 루트 (pnpm workspace)
 ### 의존성 방향 (단방향)
 
 ```
-@vuepkg/core  ←  @vuepkg/calendar
+@vuepkg/core  ←  @vuepkg/ui  ←  @vuepkg/calendar
 ```
 
-`@vuepkg/core`는 calendar에 번들링됩니다. 소비자는 `@vuepkg/calendar`만 설치하면 됩니다.
+`@vuepkg/core`·`@vuepkg/ui`는 calendar에 번들링됩니다. 소비자는 `@vuepkg/calendar`만 설치하면 됩니다.
 
 ### 1.1 packages/calendar/src/ 내부 구조
 
@@ -58,13 +65,13 @@ packages/calendar/src/
 ├── App.vue                      # 데모 앱 (v-model + 이벤트 핸들러)
 ├── components/calendar/
 │   ├── ScheduleCalendar.vue     # 메인 컨테이너 (emit-only)
-│   ├── CalendarToolbar.vue      # Month/Week/Day/List 탭
-│   ├── CalendarMonthNav.vue     # ‹ YYYY-MM › (Month/List 공통)
-│   ├── CalendarPeriodNav.vue    # Today + ‹ › (Week/Day)
+│   ├── CalendarToolbar.vue      # Month/Week/Day/List 탭 (@vuepkg/ui SegmentedControl 소비)
+│   ├── CalendarMonthNav.vue     # ‹ YYYY-MM › (Month/List 공통, @vuepkg/ui IconButton 소비)
+│   ├── CalendarPeriodNav.vue    # Today + ‹ › (Week/Day, @vuepkg/ui Button/IconButton 소비)
 │   ├── TimedGrid.vue            # Week/Day 공통 그리드 (공휴일 칩 포함)
-│   ├── HolidayChip.vue          # 공휴일·기념일 붉은 칩
+│   ├── HolidayChip.vue          # 공휴일·기념일 붉은 칩 (@vuepkg/ui Chip 소비)
 │   ├── AllDayBar.vue            # 종일/멀티데이 spanning 바
-│   ├── ScheduleEventChip.vue    # 일정 칩 (클릭 emit)
+│   ├── ScheduleEventChip.vue    # 일정 칩 (클릭 emit, @vuepkg/ui Chip 소비)
 │   ├── MonthOverflowPopover.vue # +N 팝오버
 │   ├── views/
 │   │   ├── MonthView.vue
@@ -412,7 +419,7 @@ type ViewScope = 'my' | 'company'
 
 ## 10. 테스트 구조
 
-### 단위·컴포넌트 (Vitest 205건)
+### 단위·컴포넌트 (Vitest — calendar 205건 + ui 38건)
 
 | 스펙                              | 검증                                                |
 | --------------------------------- | --------------------------------------------------- |
@@ -433,13 +440,23 @@ type ViewScope = 'my' | 'company'
 
 `resolveCalendarNavigateDate`는 `ScheduleCalendar.spec`·`schedule/query.spec`에서 간접 검증합니다.
 
-### E2E (Playwright 126건)
+**`@vuepkg/ui` (Phase 2 primitive, 38건)**
+
+| 스펙                       | 검증                                                              |
+| -------------------------- | ----------------------------------------------------------------- |
+| `Button.spec.ts`           | weight·type prop, attribute fallthrough(class/disabled), click    |
+| `IconButton.spec.ts`       | ariaLabel·size·type prop, click                                   |
+| `SegmentedControl.spec.ts` | role=group, aria-pressed, roving tabindex, 화살표/Home/End 키보드 |
+| `Chip.spec.ts`             | clickable role/keyboard, color/backgroundColor 인라인 오버라이드  |
+
+### E2E (Playwright 142건)
 
 | 스펙                                | 건수 |
 | ----------------------------------- | ---- |
-| `calendar.spec.ts`                  | 15   |
+| `calendar.spec.ts`                  | 23   |
 | `calendar-responsive.spec.ts`       | 42   |
 | `calendar-host-integration.spec.ts` | 69   |
+| `visual-regression.spec.ts`         | 8    |
 
 ```bash
 npm run test          # Vitest
@@ -454,7 +471,7 @@ npm run test:all      # 단위 + 빌드 + E2E
 > **요구사항**: Node 20+, pnpm 9+. `npm i -g pnpm`으로 설치.
 
 ```bash
-# 저장소 루트에서 (packages/core + packages/calendar 동시 설치)
+# 저장소 루트에서 (core + theme + ui + calendar 동시 설치)
 pnpm install
 cp packages/calendar/.env.example packages/calendar/.env.local  # 공휴일 API 키 (선택)
 pnpm dev           # packages/calendar dev 서버 — http://localhost:6565
@@ -465,9 +482,9 @@ pnpm dev           # packages/calendar dev 서버 — http://localhost:6565
 | 명령 | 용도 |
 | ---- | ---- |
 | `pnpm turbo run typecheck` | 전체 타입 검사 |
-| `pnpm turbo run test` | Vitest 단위 테스트 205건 |
-| `pnpm turbo run build:lib` | core + calendar 라이브러리 빌드 |
-| `pnpm --filter @vuepkg/calendar run test:e2e` | Playwright E2E 126건 |
+| `pnpm turbo run test` | Vitest 단위 테스트 — calendar 205건 + ui 38건 |
+| `pnpm turbo run build:lib` | core + ui + calendar 라이브러리 빌드 |
+| `pnpm --filter @vuepkg/calendar run test:e2e` | Playwright E2E 142건 |
 
 #### 단일 패키지 작업 시 (빠른 반복)
 

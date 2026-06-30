@@ -3,6 +3,7 @@
 > 작성: 2026-06-29
 > 목표: 단일 `@vuepkg/calendar` 컴포넌트 → **`@vuepkg` 범용 Vue 3 디자인 시스템**
 > 전략 결정: 멀티 컴포넌트 라이브러리 지향 (`core` / `ui` / `calendar` / `theme`)
+> **방향 확정 (2026-06-29)**: 실제 npm 배포 라이브러리로 채택을 노린다 — Phase 3/4(문서 사이트·SSR·커뮤니티 노출)에 투자할 가치가 있다고 판단. 단, 실 사용자가 생기기 전(Phase 3 착수 또는 `1.0.0` 시점)까지 §1.5의 기술 부채를 반드시 정리한다.
 
 ---
 
@@ -101,6 +102,18 @@ component     --vp-chip-bg: var(--vp-color-surface);
 
 - 소비자는 **semantic 계층만 덮어쓰면** 전체 테마가 바뀐다.
 - 현 calendar의 `HOLIDAY_CHIP_BACKGROUND(#ffebee)`, `HOLIDAY_CHIP_COLOR(#c62828)`, `TIMED_VIEW_HOUR_HEIGHT_PX` 등 하드코딩 상수가 component 토큰의 1차 이관 대상.
+
+### 1.5 알려진 기술 부채 (추적)
+
+> "실 채택 OSS"가 목표로 확정됨에 따라, 실 사용자가 생기기 전에 반드시 정리해야 할 항목들. Phase 2 작업 중 발견했지만 추출 작업 우선순위에 밀려 보류된 것들 — **F2-4/F2-5 완료 직후, Phase 3 착수 전** 처리.
+
+| 항목 | 발견 시점 | 내용 | 영향 |
+| ---- | --------- | ---- | ---- |
+| `@vuepkg/core` 테스트 0건 | F2-3 작업 중 확인 (2026-06-29) | `vitest run --passWithNoTests`로 통과 처리되고 있어 CI가 그린이어도 실제 검증이 없음 | 배포 중인 npm 패키지가 무검증 상태 |
+| 키보드 포커스 Tab 순서 회귀 | F2-1 검증 중 발견 (2026-06-29) | `view tab shows outline when focused via keyboard (Tab)` E2E가 메인 브랜치에서도 실패 — 데모 앱 필터 사이드바가 추가되며 Tab 순서가 깨진 것으로 추정 | 키보드 사용자가 실제로 영향받는 a11y 회귀 |
+| List 뷰 반응형 너비 5px 초과 | F2-3 검증 중 발견 (2026-06-29) | `list view loads and table fits viewport width` E2E가 992px 기대값에 997px로 실패 (Desktop/Laptop 둘 다) | 좁은 화면에서 가로 스크롤 발생 가능 |
+
+**처리 방침**: 셋 다 "이번 작업과 무관함"만 확인하고 그대로 진행해왔다. F2-4 완료 후 별도 세션으로 묶어서 처리하고, 이 표에서 제거한다.
 
 ---
 
@@ -317,12 +330,15 @@ component     --vp-chip-bg: var(--vp-color-surface);
 
 ### 다음 단계 — Phase 2 후반 (난이도 🔴)
 
+> **우선순위 결정 (2026-06-29)**: F2-4(Popover)를 로드맵 순서대로 계속 진행. §1.5의 기술 부채 3건은 F2-4 완료 직후로 명시적으로 미룸 (병행하지 않기로 결정).
+
 | ID | 작업 | 난이도 | 비고 |
 | -- | ---- | ------ | ---- |
-| F2-4 | `Popover` 추출 — `MonthOverflowPopover`의 bounds·flip 계산 재사용 | 🔴 | focus trap·Esc·외부클릭까지 새로 구현 필요 (현재 popover는 이런 키보드 처리가 없음) |
+| F2-4 | `Popover` 추출 — `MonthOverflowPopover`의 bounds·flip 계산 재사용 | 🔴 | focus trap·Esc·외부클릭까지 새로 구현 필요 (현재 popover는 이런 키보드 처리가 없음) — **다음 작업** |
 | F2-5 | `DataTable` 추출 — `ListView`의 페이지네이션·반응형 컬럼 숨김 | 🔴 | 정렬 aria·caption까지 가면 범위 확대 — 우선 페이지네이션만으로 스코프 제한 권장 |
+| — | §1.5 기술 부채 3건 정리 | 🟡 | F2-4 완료 직후 별도 세션으로 묶어서 처리 |
 
-두 항목 모두 F2-1~F2-3보다 추출 난이도가 한 단계 높음(상태를 가진 컴포넌트 + DOM 위치 계산). 착수 전 설계 노트 1페이지 권장.
+두 추출 항목 모두 F2-1~F2-3보다 난이도가 한 단계 높음(상태를 가진 컴포넌트 + DOM 위치 계산). 착수 전 설계 노트 1페이지 권장.
 
 ---
 

@@ -29,8 +29,8 @@ export default defineConfig({
         'src/services/**',
       ],
       exclude: ['src/**/*.spec.ts', 'src/data/**', 'src/e2e-hosts/**'],
-      // src/ 를 기준으로 상대경로를 계산해 dist/types/ 에 출력
-      // 결과: dist/types/components/calendar/index.d.ts
+      // src/ 를 기준으로 상대경로를 계산해 dist/ 에 출력
+      // 결과: dist/components/calendar/index.d.ts (outDir 표기와 달리 'types' 세그먼트는 붙지 않음 — package.json의 types 경로는 이 실측값을 따른다)
       outDir: 'dist/types',
       entryRoot: 'src',
     }),

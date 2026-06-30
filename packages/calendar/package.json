@@ -25,15 +25,15 @@
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
-  "types": "./dist/src/components/calendar/index.d.ts",
+  "types": "./dist/components/calendar/index.d.ts",
   "exports": {
     ".": {
       "import": {
-        "types": "./dist/src/components/calendar/index.d.ts",
+        "types": "./dist/components/calendar/index.d.ts",
         "default": "./dist/index.js"
       },
       "require": {
-        "types": "./dist/src/components/calendar/index.d.ts",
+        "types": "./dist/components/calendar/index.d.ts",
         "default": "./dist/index.cjs"
       }
     },

@@ -112,10 +112,10 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | ~~`@vuepkg/core` 테스트 0건~~ | F2-3 작업 중 확인 (2026-06-29) | 당시 `vitest run --passWithNoTests`만 보고 0건으로 오판. 실제로는 date/holiday/useControllableState 테스트가 이미 존재(65건) | — | ✅ 오판으로 확인 (F2-4 검증 중, 2026-06-30) — popover 유틸 이관으로 70건으로 증가 |
 | ~~키보드 포커스 Tab 순서 회귀~~ | F2-1 검증 중 발견 (2026-06-29) | `view tab shows outline when focused via keyboard (Tab)` E2E 실패 | 키보드 사용자 영향 a11y 회귀 | ✅ 해소 확인 (F2-4 전체 E2E 142건 재실행, 2026-06-30) — 중간 커밋에서 이미 수정된 것으로 추정 |
 | ~~List 뷰 반응형 너비 5px 초과~~ | F2-3 검증 중 발견 (2026-06-29) | `list view loads and table fits viewport width` E2E 실패 (Desktop/Laptop) | 좁은 화면 가로 스크롤 | ✅ 해소 확인 (F2-4 전체 E2E 142건 재실행, 2026-06-30) — `fix(calendar): clip overflowing Period column text in list view` 커밋으로 수정된 것으로 추정 |
-| `@vuepkg/calendar` lib 빌드가 `@vuepkg/core`/`@vuepkg/ui`를 external 처리하지 않음 | F2-4 작업 중 발견 (2026-06-30) | `vite.lib.config.ts`의 `rollupOptions.external`이 `['vue']`뿐 — `@vuepkg/core`/`@vuepkg/ui` 소스가 calendar 번들에 직접 인라인됨(F2-1부터 누적). 동시에 `vite-plugin-dts`가 Vite alias를 따라가 일부 `.d.ts`에 `'../../../../core/src'` 같은 깨진 상대경로 import를 남김(현재는 공개 엔트리 그래프 밖이라 무해하지만 deep-import 시 깨짐) | calendar+ui를 함께 설치하는 소비자는 컴포넌트가 중복 정의됨(번들 크기·인스턴스 비교 이슈), §5.1 번들 사이즈 수치가 부정확할 수 있음 | 🔴 미해결 |
-| `@vuepkg/calendar`의 `package.json` `types`/`exports.types`가 `./dist/src/components/calendar/index.d.ts`를 가리키나 실제 빌드 출력은 `./dist/components/calendar/index.d.ts` (`src` 세그먼트 없음) | F2-4 작업 중 발견 (2026-06-30), `main` 기준 재현 확인 | 0.1.0~0.1.3로 이미 배포된 모든 버전에서 동일하게 깨져 있을 가능성 — TS 소비자가 타입을 못 찾을 수 있음 | 게시된 패키지의 TypeScript 지원이 깨졌을 가능성 (높은 심각도) | 🔴 미해결 — 우선 확인 필요 |
+| ~~`@vuepkg/calendar`의 `package.json` `types`/`exports.types`가 `./dist/src/components/calendar/index.d.ts`를 가리키나 실제 빌드 출력은 `./dist/components/calendar/index.d.ts`였음 (`src` 세그먼트 없음)~~ | F2-4 작업 중 발견 (2026-06-30), `main` 기준 재현 확인 | 0.1.0~0.1.3 전체 배포 버전에서 동일하게 깨져 있었음 — TS 소비자가 타입을 못 찾을 수 있었음 | 게시된 패키지의 TypeScript 지원이 깨졌을 가능성 (높은 심각도) | ✅ 수정 완료 (2026-06-30) — `package.json`의 `types`/`exports.types` 3곳을 실제 빌드 경로로 정정, `vite.lib.config.ts`의 stale 주석도 함께 정정. 빌드 재실행으로 경로 일치 확인 |
+| `vite-plugin-dts`가 일부 내부 컴포넌트 `.d.ts`에 깨진 상대경로(`'../../../../core/src'` 등)를 남김 | F2-4 작업 중 발견 (2026-06-30) | `vite.lib.config.ts`의 `@vuepkg/core`/`@vuepkg/ui` alias(원시 src 지정) 때문에 `vite-plugin-dts`가 그 경로를 그대로 `.d.ts` import에 박아넣음. **주의**: 이 alias는 의도된 설계다 — calendar는 core/ui를 원시 소스로 직접 컴파일해 번들링하는 자기완결형(self-contained) 패키지이며(`architecture.md`에 명시), 이 alias가 동시에 `@vuepkg/ui` 컴포넌트들의 `<style>` 블록을 calendar의 `style.css`로 추출해주는 역할도 겸하고 있음. **시도했던 수정(alias 제거 → node_modules 경유 resolve)은 되돌림**: dts는 깨끗해지지만 `@vuepkg/ui` 컴포넌트 스타일(`.vp-button`/`.vp-chip`/`.vp-popover`/`.vp-segmented-control` 등)이 calendar의 `style.css`에서 통째로 빠지는 회귀를 직접 확인함(`grep`으로 검증) | 현재는 공개 엔트리(`dist/components/calendar/index.d.ts`)의 타입 그래프 밖이라 일반 소비자에게는 무해. `MonthOverflowPopover.vue.d.ts` 같은 비공개 컴포넌트를 deep-import하거나, F3-2(`vue-component-meta` 자동 문서화)에서 전 컴포넌트를 introspect할 때 문제될 수 있음 | 🟡 BLOCKED(범위밖 근본원인) — CSS 번들링과 타입 생성이 같은 alias에 결합되어 있어, 분리하려면 ui 컴포넌트 CSS를 calendar 빌드에 주입하는 별도 메커니즘이 필요. 설계 결정 필요 |
 
-**처리 방침**: 위 두 신규 항목(번들 external 누락, 잘못된 types 경로)은 F2-5 착수 전 별도로 빠르게 확인·수정 권장 — 특히 `types` 경로는 한 줄 수정으로 끝날 가능성이 높고 영향도가 커서 후순위로 미루기보다 우선 처리를 제안.
+**처리 방침**: `types` 경로 버그는 수정·검증 완료. 남은 dts 누수 항목은 영향도가 낮고 (CSS 회귀 없이) 고치려면 별도 설계가 필요해 F2-5 이후, 혹은 F3-2 착수 직전에 재검토 권장.
 
 ---
 
@@ -337,12 +337,12 @@ component     --vp-chip-bg: var(--vp-color-surface);
 
 ### 다음 단계 — Phase 2 후반 (난이도 🔴)
 
-> **진행 현황 (2026-06-30)**: F2-4(Popover) 완료. 작업 중 §1.5의 기존 기술 부채 3건 중 2건은 이미 해소됐고 1건(core 테스트 0건)은 오판으로 확인됨 — 대신 새로운 부채 2건(번들 external 누락, `types` 경로 오류)을 발견해 §1.5에 기록.
+> **진행 현황 (2026-06-30)**: F2-4(Popover) 완료. 작업 중 §1.5의 기존 기술 부채 3건 중 2건은 이미 해소됐고 1건(core 테스트 0건)은 오판으로 확인됨. 새로 발견한 2건 중 `package.json` `types` 경로 오류는 수정·검증 완료. 남은 1건(`vite-plugin-dts` 상대경로 누수)은 CSS 번들링과 결합되어 있어 설계 결정이 필요해 BLOCKED로 §1.5에 기록.
 
 | ID | 작업 | 난이도 | 비고 |
 | -- | ---- | ------ | ---- |
 | F2-5 | `DataTable` 추출 — `ListView`의 페이지네이션·반응형 컬럼 숨김 | 🔴 | 정렬 aria·caption까지 가면 범위 확대 — 우선 페이지네이션만으로 스코프 제한 권장 — **다음 작업 후보** |
-| — | §1.5 신규 기술 부채 2건 정리 (번들 external 누락, `package.json` types 경로) | 🟡 | `types` 경로는 영향도가 커서 F2-5보다 먼저 처리 권장 |
+| — | §1.5 잔여 항목 (`vite-plugin-dts` 상대경로 누수) 설계 검토 | 🟡 | 영향도 낮음 — F2-5 이후 또는 F3-2 착수 직전 재검토 |
 
 F2-5 역시 F2-1~F2-3보다 난이도가 한 단계 높음(상태를 가진 컴포넌트 + DOM 위치 계산). 착수 전 설계 노트 1페이지 권장.
 

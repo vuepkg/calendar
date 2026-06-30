@@ -118,9 +118,47 @@ const options = [
 
 ---
 
+## `Chip`
+
+레이블·태그형 표시 요소. 정적 표시(공휴일 칩)와 클릭 가능한 인터랙티브 칩(일정 칩) 둘 다 지원합니다. 색상은 토큰(`--vp-chip-*`) 또는 `color`/`backgroundColor` prop으로 동적 오버라이드할 수 있습니다.
+
+```vue
+<script setup lang="ts">
+import { Chip } from '@vuepkg/ui'
+</script>
+
+<template>
+  <!-- 정적 표시 -->
+  <Chip>공휴일</Chip>
+
+  <!-- 클릭 가능 + 동적 색상 -->
+  <Chip clickable color="#1565c0" backgroundColor="#e3f2fd" @click="onSelect">
+    회의
+  </Chip>
+</template>
+```
+
+### Props
+
+| Prop | 타입 | 기본값 | 설명 |
+| ---- | ---- | ------ | ---- |
+| `color` | `string` | — | 텍스트·테두리 색상 인라인 오버라이드 |
+| `backgroundColor` | `string` | — | 배경색 인라인 오버라이드 |
+| `clickable` | `boolean` | `false` | `true`이면 `role="button"`, `tabindex="0"`, 클릭/Enter/Space 인터랙션 활성화 |
+
+### Emits
+
+| 이벤트 | 페이로드 | 설명 |
+| ---- | ---- | ---- |
+| `click` | `MouseEvent \| KeyboardEvent` | `clickable`일 때 클릭 또는 Enter/Space 입력 시 |
+
+> `Chip`은 `border-radius`(`--vp-chip-radius`)와 클릭 인터랙션만 제공하는 최소 셸입니다. `padding`·`font-size`·기본 색상 등은 의도적으로 비워뒀습니다 — 용도별로 padding/크기 차이가 커서(예: 공휴일 칩 vs 일정 칩) 무리하게 통일하지 않고, 소비 측 컴포넌트가 `class` 폴스루로 자신의 스타일을 얹는 방식을 권장합니다.
+
+---
+
 ## 공통 동작 — 속성 폴스루(Attribute Fallthrough)
 
-`Button`/`IconButton`은 단일 루트 `<button>`이므로 Vue 3의 기본 동작에 따라 prop으로 선언하지 않은 속성은 자동으로 루트 엘리먼트에 전달됩니다 (`SegmentedControl`은 내부에 여러 `<button>`을 렌더링하므로 동일하게 적용되지 않습니다):
+`Button`/`IconButton`/`Chip`은 단일 루트 엘리먼트이므로 Vue 3의 기본 동작에 따라 prop으로 선언하지 않은 속성은 자동으로 루트 엘리먼트에 전달됩니다 (`SegmentedControl`은 내부에 여러 `<button>`을 렌더링하므로 동일하게 적용되지 않습니다):
 
 ```vue
 <Button class="my-extra-class" data-testid="save-btn" disabled>저장</Button>

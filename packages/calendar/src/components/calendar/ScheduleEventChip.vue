@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Chip } from '@vuepkg/ui'
 import type { Schedule } from '@/types/schedule'
 import { formatPeriod } from '@/utils/date'
 
@@ -16,43 +17,29 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div
+  <Chip
     class="event-chip"
-    :class="{ compact, timed: !schedule.allDay, clickable: true }"
-    :style="{ color, backgroundColor, borderColor: color }"
+    :class="{ compact, timed: !schedule.allDay }"
+    clickable
+    :color="color"
+    :backgroundColor="backgroundColor"
     :title="`${schedule.title} (${schedule.participantName})`"
-    role="button"
-    tabindex="0"
     @click="emit('click', schedule)"
-    @keydown.enter.prevent="emit('click', schedule)"
-    @keydown.space.prevent="emit('click', schedule)"
   >
     <span class="event-title">{{ schedule.title }}</span>
     <span v-if="showParticipant" class="event-participant">{{ schedule.participantName }}</span>
     <span v-if="!compact && !schedule.allDay" class="event-time">
       {{ formatPeriod(schedule.start, schedule.end) }}
     </span>
-  </div>
+  </Chip>
 </template>
 
 <style scoped>
 .event-chip {
   border: 1px solid transparent;
-  border-radius: 4px;
   padding: 2px 6px;
   font-size: 11px;
   line-height: 1.3;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.event-chip.clickable {
-  cursor: pointer;
-}
-
-.event-chip.clickable:hover {
-  filter: brightness(0.97);
 }
 
 .event-chip.compact {
@@ -66,7 +53,6 @@ const emit = defineEmits<{
   flex-direction: column;
   gap: 2px;
   padding: 4px 6px;
-  box-sizing: border-box;
 }
 
 .event-title {
@@ -76,6 +62,6 @@ const emit = defineEmits<{
 .event-participant,
 .event-time {
   font-size: 10px;
-  opacity: 0.85;
+  opacity: var(--vp-chip-text-sub, 0.85);
 }
 </style>

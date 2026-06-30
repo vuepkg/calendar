@@ -149,16 +149,16 @@ component     --vp-chip-bg: var(--vp-color-surface);
 
 ---
 
-### Phase 2 — Primitive 승격 (`@vuepkg/ui`)
+### Phase 2 — Primitive 승격 (`@vuepkg/ui`) 🚧 진행 중
 
 **목표**: calendar 내부 구현을 범용 primitive로 추출. calendar는 ui를 소비하도록 재조립.
 
 추출 순서는 **calendar가 실제로 쓰는 것 우선** (당장 검증되고, 중복 제거 효과 즉시 발생):
 
-| ID | primitive | 추출 출처 | 난이도 | a11y 요구 |
+| ID | primitive | 추출 출처 | 난이도 | 상태 |
 | -- | --------- | --------- | ------ | --------- |
-| F2-1 | `Button` / `IconButton` | `CalendarPeriodNav` `‹ › Today` | 🟢 | role, focus-visible |
-| F2-2 | `SegmentedControl` (또는 `Tabs`) | `CalendarToolbar` | 🟡 | `aria-pressed`/`tablist`, 화살표 키 |
+| F2-1 | `Button` / `IconButton` | `CalendarPeriodNav` `‹ › Today`, `CalendarMonthNav` | 🟢 | ✅ (2026-06-29, `@vuepkg/ui@0.1.0`) |
+| F2-2 | `SegmentedControl` (또는 `Tabs`) | `CalendarToolbar` | 🟡 | ⏳ 미착수 |
 | F2-3 | `Chip` / `Badge` | `ScheduleEventChip`, `HolidayChip` | 🟢 | |
 | F2-4 | `Popover` | `MonthOverflowPopover` (bounds·flip 로직 재사용) | 🔴 | focus trap, Esc, 외부클릭 |
 | F2-5 | `DataTable` | `ListView` (페이지네이션·반응형 컬럼) | 🔴 | 정렬 aria, caption |
@@ -292,11 +292,11 @@ component     --vp-chip-bg: var(--vp-color-surface);
 
 로드맵 전체는 길지만, **이번 주에 시작할 수 있는 것**:
 
-1. **F0-1/F0-4 스파이크**: 현 레포를 `packages/calendar`로 옮기고 pnpm workspace + `@vuepkg/core` 빈 패키지 생성. `utils/date.ts`만 먼저 이관해서 동선 검증. (반나절)
-2. **F1-1 토큰 RFC**: `--vp-*` 네이밍과 3계층 구조를 1페이지로 확정. (1~2시간)
-3. **F2-1 `Button` 추출 PoC**: `CalendarPeriodNav`의 버튼을 `@vuepkg/ui/Button`으로 빼보고, 추출 비용이 실제로 감당되는지 1개로 체감. (반나절)
+1. ~~**F0-1/F0-4 스파이크**: 현 레포를 `packages/calendar`로 옮기고 pnpm workspace + `@vuepkg/core` 빈 패키지 생성. `utils/date.ts`만 먼저 이관해서 동선 검증. (반나절)~~ ✅ 완료
+2. ~~**F1-1 토큰 RFC**: `--vp-*` 네이밍과 3계층 구조를 1페이지로 확정. (1~2시간)~~ ✅ 완료
+3. ~~**F2-1 `Button` 추출 PoC**: `CalendarPeriodNav`의 버튼을 `@vuepkg/ui/Button`으로 빼보고, 추출 비용이 실제로 감당되는지 1개로 체감. (반나절)~~ ✅ 완료 (2026-06-29) — `Button`/`IconButton` 둘 다 추출, `CalendarPeriodNav` + `CalendarMonthNav` 적용
 
-→ 이 3개로 monorepo·토큰·primitive 추출 **각 축을 1개씩** 검증한 뒤, 감을 잡고 Phase를 본격화.
+→ 3축 검증 완료. 다음은 Phase 2 나머지 추출(F2-2 `SegmentedControl`부터 난이도 순 진행).
 
 ---
 

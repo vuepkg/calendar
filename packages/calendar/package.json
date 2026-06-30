@@ -56,6 +56,8 @@
     "test": "vitest run --config vitest.config.ts",
     "test:watch": "vitest --config vitest.config.ts",
     "test:e2e": "playwright test",
+    "test:e2e:ci": "playwright test e2e/calendar.spec.ts e2e/calendar-responsive.spec.ts e2e/calendar-host-integration.spec.ts",
+    "test:e2e:visual": "playwright test e2e/visual-regression.spec.ts",
     "test:e2e:update-snapshots:linux": "bash scripts/update-visual-snapshots-linux.sh",
     "test:e2e:responsive": "playwright test e2e/calendar-responsive.spec.ts",
     "test:e2e:host": "playwright test e2e/calendar-host-integration.spec.ts",

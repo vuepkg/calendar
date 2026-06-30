@@ -457,27 +457,41 @@ type ViewScope = 'my' | 'company'
 
 **`@vuepkg/core` (70건)** — `utils/date.spec.ts`(41) · `utils/holiday.spec.ts`(14) · `composables/useControllableState.spec.ts`(10) · `utils/popover.spec.ts`(5, F2-4 이관)
 
-### E2E (Playwright 142건)
+### E2E (Playwright)
 
-| 스펙                                | 건수 |
-| ----------------------------------- | ---- |
-| `calendar.spec.ts`                  | 23   |
-| `calendar-responsive.spec.ts`       | 42   |
-| `calendar-host-integration.spec.ts` | 69   |
-| `visual-regression.spec.ts`         | 8    |
+| 스펙                                | 건수 | CI (`test:e2e:ci`) |
+| ----------------------------------- | ---- | -------------------- |
+| `calendar.spec.ts`                  | 23   | ✅                    |
+| `calendar-responsive.spec.ts`       | 42   | ✅                    |
+| `calendar-host-integration.spec.ts` | 69   | ✅                    |
+| `visual-regression.spec.ts`         | 8    | ❌ (수동·별도 workflow) |
 
-**시각 회귀 스냅샷**: Playwright는 OS별로 `-chromium-{linux|win32}` 접미사를 붙인다. CI(ubuntu)는 `*-linux.png`를 사용한다. UI 변경 후 Linux baseline 갱신:
+**테스트 계층 정책**
+
+| 계층 | 명령 | 언제 |
+| ---- | ---- | ---- |
+| 단위·컴포넌트 | `pnpm test` (Vitest 335건) | **CI** + Husky `pre-push` (`verify:push`) |
+| 기능 E2E | `pnpm test:e2e:ci` (134건) | **CI** — push/PR마다 |
+| 시각 회귀 E2E | `pnpm test:e2e:visual` (8건) | **CI 제외** — UI/CSS 변경 시 로컬 또는 GitHub Actions `Visual Regression` workflow 수동 실행 |
+
+시각 회귀를 push마다 CI에 넣지 않는 이유: (1) Chromium·폰트 렌더링이 runner마다 달라 픽셀 단위 flaky, (2) 전체 E2E 대비 시간 대비 신호가 낮음, (3) Windows 개발자는 `*-win32` / CI는 `*-linux` baseline이 분리됨.
+
+**시각 회귀 스냅샷** (UI 변경 시에만):
 
 ```bash
-pnpm --filter @vuepkg/calendar run test:e2e:update-snapshots:linux  # Docker 필요
+pnpm test:e2e:visual                                    # 로컬 검증 (Windows → win32 baseline)
+pnpm --filter @vuepkg/calendar run test:e2e:update-snapshots:linux  # Linux baseline 갱신 (Docker)
 ```
 
-Windows 로컬 `test:e2e`는 `*-win32.png`를 사용한다. 두 플랫폼 스냅샷을 모두 커밋한다.
+GitHub: Actions → **Visual Regression** → Run workflow.
+
+**Husky `pre-push`**: `pnpm verify:push` (= lint + typecheck + vitest). E2E·시각 회귀는 포함하지 않음 — 느리고 OS 의존적이기 때문. UI PR 전에는 `test:e2e:visual`을 수동 실행한다.
 
 ```bash
-npm run test          # Vitest
-npm run test:e2e      # E2E 전체
-npm run test:all      # 단위 + 빌드 + E2E
+pnpm test              # Vitest
+pnpm test:e2e:ci       # 기능 E2E (CI와 동일)
+pnpm test:e2e:visual   # 시각 회귀만
+pnpm test:e2e          # E2E 전체 (134 + 8)
 ```
 
 ---

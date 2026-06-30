@@ -1,14 +1,13 @@
-name: CI
+name: Visual Regression
 
+# 시각 회귀는 OS·Chromium 렌더링에 민감해 push마다 CI에 넣지 않는다.
+# UI/CSS 변경 PR 전에 수동 실행하거나, 스냅샷 갱신 시 사용한다.
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
 
 jobs:
-  ci:
-    name: Lint / Test / Build
+  visual-regression:
+    name: Playwright visual regression
     runs-on: ubuntu-latest
 
     steps:
@@ -24,23 +23,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint
-        run: pnpm turbo run lint
-
-      - name: Typecheck
-        run: pnpm turbo run typecheck
-
-      - name: Test
-        run: pnpm turbo run test
-
-      - name: Build
-        run: pnpm turbo run build:lib
-
       - name: Install Playwright (chromium)
         run: pnpm --filter @vuepkg/calendar exec playwright install --with-deps chromium
 
       - name: Build calendar demo for E2E
         run: pnpm --filter @vuepkg/calendar run build
 
-      - name: E2E (functional only — visual regression excluded)
-        run: pnpm --filter @vuepkg/calendar run test:e2e:ci
+      - name: Visual regression
+        run: pnpm --filter @vuepkg/calendar run test:e2e:visual

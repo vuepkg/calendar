@@ -34,7 +34,7 @@
 | ID | Severity | 카테고리 | 요약 | 상태 | 담당/비고 |
 | -- | -------- | -------- | ---- | ---- | --------- |
 | [SRV-P0-01](#srv-p0-01-query-change-payload-정확성) | MAJOR | 런타임 | `query-change`가 navigate/view-change 시 stale `date`/`view`를 emit할 수 있음 | **완료** | `ScheduleCalendar.vue` override + spec 보강 (2026-06-30) |
-| [SRV-P0-02](#srv-p0-02-e2e-ci-편입) | MAJOR | 테스트/운영 | Playwright 142건이 CI에 없음 | **완료** | `.github/workflows/ci.yml` calendar E2E job (2026-06-30) |
+| [SRV-P0-02](#srv-p0-02-e2e-ci-편입) | MAJOR | 테스트/운영 | Playwright 142건이 CI에 없음 | **완료** | 기능 E2E 134건 CI 편입; 시각 회귀 8건은 `test:e2e:visual` + 수동 workflow로 분리 (2026-06-30) |
 
 ### P1 — Phase 4 착수 전 권장
 
@@ -82,11 +82,11 @@
 
 **위치:** `.github/workflows/ci.yml`
 
-**문제:** lint → typecheck → vitest → build:lib만 실행. Playwright 142건은 로컬 전용.
+**문제:** lint → typecheck → vitest → build:lib만 실행. Playwright E2E가 CI에 없음.
 
-**수정 방향:** calendar `vite build` → `playwright install chromium` → `pnpm --filter @vuepkg/calendar run test:e2e`.
+**수정 방향 (2026-06-30 갱신):** 기능 E2E 134건은 `test:e2e:ci`로 CI에 편입. 시각 회귀 8건은 OS·Chromium 렌더링 flaky로 **CI에서 제외** — `test:e2e:visual` + `.github/workflows/visual-regression.yml` (workflow_dispatch)로 수동 실행.
 
-**검증:** main push/PR에서 E2E job green. CI: `playwright install chromium` → `calendar build` → `test:e2e`.
+**검증:** push/PR CI green (`test:e2e:ci`). UI 변경 시 `test:e2e:visual` 수동.
 
 ---
 

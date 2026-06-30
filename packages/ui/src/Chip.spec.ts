@@ -64,4 +64,24 @@ describe('Chip', () => {
     const wrapper = mount(Chip, { attrs: { title: 'New Year' } })
     expect(wrapper.attributes('title')).toBe('New Year')
   })
+
+  it('does not emit click for an unrelated keydown when clickable', async () => {
+    const wrapper = mount(Chip, { props: { clickable: true } })
+    await wrapper.trigger('keydown', { key: 'a' })
+    expect(wrapper.emitted('click')).toBeUndefined()
+  })
+
+  it('does not emit click on Enter/Space keydown when not clickable', async () => {
+    const wrapper = mount(Chip)
+    await wrapper.trigger('keydown', { key: 'Enter' })
+    await wrapper.trigger('keydown', { key: ' ' })
+    expect(wrapper.emitted('click')).toBeUndefined()
+  })
+
+  it('applies only color (no backgroundColor) when backgroundColor is omitted', () => {
+    const wrapper = mount(Chip, { props: { color: 'rgb(1, 2, 3)' } })
+    const style = wrapper.attributes('style') ?? ''
+    expect(style).toContain('color: rgb(1, 2, 3)')
+    expect(style).not.toContain('background-color')
+  })
 })

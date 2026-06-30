@@ -99,4 +99,33 @@ describe('SegmentedControl', () => {
     expect(weekItem?.element).toBe(document.activeElement)
     wrapper.unmount()
   })
+
+  it('renders no buttons and does not throw for an empty options array', () => {
+    const wrapper = mount(SegmentedControl, {
+      props: { options: [], modelValue: '', ariaLabel: 'Empty' },
+    })
+    expect(wrapper.findAll('.vp-segmented-control-item')).toHaveLength(0)
+  })
+
+  it('wraps to itself on ArrowRight/ArrowLeft with a single option', async () => {
+    const single = [{ value: 'only', label: 'Only' }]
+    const wrapper = mount(SegmentedControl, {
+      props: { options: single, modelValue: 'only', ariaLabel: 'Single' },
+    })
+    await wrapper.find('.vp-segmented-control').trigger('keydown', { key: 'ArrowRight' })
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['only'])
+  })
+
+  it('falls back to the first option on ArrowRight when modelValue matches no option', async () => {
+    const wrapper = mountControl('unknown-value')
+    await wrapper.find('.vp-segmented-control').trigger('keydown', { key: 'ArrowRight' })
+    // currentIndex is -1 -> baseIndex 0 -> ArrowRight selects index 1 ("week")
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['week'])
+  })
+
+  it('ignores keys other than Arrow/Home/End', async () => {
+    const wrapper = mountControl('month')
+    await wrapper.find('.vp-segmented-control').trigger('keydown', { key: 'Escape' })
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+  })
 })

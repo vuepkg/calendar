@@ -466,6 +466,14 @@ type ViewScope = 'my' | 'company'
 | `calendar-host-integration.spec.ts` | 69   |
 | `visual-regression.spec.ts`         | 8    |
 
+**시각 회귀 스냅샷**: Playwright는 OS별로 `-chromium-{linux|win32}` 접미사를 붙인다. CI(ubuntu)는 `*-linux.png`를 사용한다. UI 변경 후 Linux baseline 갱신:
+
+```bash
+pnpm --filter @vuepkg/calendar run test:e2e:update-snapshots:linux  # Docker 필요
+```
+
+Windows 로컬 `test:e2e`는 `*-win32.png`를 사용한다. 두 플랫폼 스냅샷을 모두 커밋한다.
+
 ```bash
 npm run test          # Vitest
 npm run test:e2e      # E2E 전체

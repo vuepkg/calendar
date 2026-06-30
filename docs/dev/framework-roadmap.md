@@ -158,7 +158,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | ID | primitive | 추출 출처 | 난이도 | 상태 |
 | -- | --------- | --------- | ------ | --------- |
 | F2-1 | `Button` / `IconButton` | `CalendarPeriodNav` `‹ › Today`, `CalendarMonthNav` | 🟢 | ✅ (2026-06-29, `@vuepkg/ui@0.1.0`) |
-| F2-2 | `SegmentedControl` (또는 `Tabs`) | `CalendarToolbar` | 🟡 | ⏳ 미착수 |
+| F2-2 | `SegmentedControl` | `CalendarToolbar` | 🟡 | ✅ (2026-06-29) — 화살표 키 네비게이션·roving tabindex 신규 추가 |
 | F2-3 | `Chip` / `Badge` | `ScheduleEventChip`, `HolidayChip` | 🟢 | |
 | F2-4 | `Popover` | `MonthOverflowPopover` (bounds·flip 로직 재사용) | 🔴 | focus trap, Esc, 외부클릭 |
 | F2-5 | `DataTable` | `ListView` (페이지네이션·반응형 컬럼) | 🔴 | 정렬 aria, caption |

@@ -1,9 +1,10 @@
-# Framework Roadmap — `@vuepkg` UI 프레임워크화
+# Calendar Engine Roadmap — `@vuepkg/calendar` 고도화
 
-> 작성: 2026-06-29
-> 목표: 단일 `@vuepkg/calendar` 컴포넌트 → **`@vuepkg` 범용 Vue 3 디자인 시스템**
-> 전략 결정: 멀티 컴포넌트 라이브러리 지향 (`core` / `ui` / `calendar` / `theme`)
-> **방향 확정 (2026-06-29)**: 실제 npm 배포 라이브러리로 채택을 노린다 — Phase 3/4(문서 사이트·SSR·커뮤니티 노출)에 투자할 가치가 있다고 판단. 단, 실 사용자가 생기기 전(Phase 3 착수 또는 `1.0.0` 시점)까지 §1.5의 기술 부채를 반드시 정리한다.
+> 작성: 2026-06-29 · **대대적 개편: 2026-06-30**
+> 목표: 단일 `@vuepkg/calendar` 컴포넌트 → **Vue 3 전용 Modern Calendar Engine**
+> **전략 결정 (2026-06-30, 방향 전환)**: 범용 Vue 3 디자인 시스템(PrimeVue/Vuetify식 풀세트) 방향을 폐기하고 **calendar 도메인 고도화에 집중**한다. `core`/`ui`/`theme`는 폐기가 아니라 **calendar를 지탱하는 내부 인프라로 스코프를 고정** — `ui`를 외부에 독립 판매하는 범용 컴포넌트 라이브러리로 키우는 것은 더 이상 목표가 아니다.
+> **이전 방향 (2026-06-29, 폐기)**: ~~실제 npm 배포 "범용 UI 프레임워크"로 채택을 노린다~~ — PrimeVue/Vuetify(풀세트)·shadcn-vue/Radix Vue(headless+Tailwind) 모두 이미 강자가 있는 레드오션이라는 경쟁 분석 결과 방향 전환. 반면 Vue 캘린더 생태계(FullCalendar/v-calendar/vue-cal)는 modern DX·headless 구조·DnD/Timeline/Recurring 지원이 빈 공간으로 확인됨.
+> 남은 유효 원칙: 실 사용자가 생기기 전(`1.0.0` 시점)까지 §1.5의 기술 부채는 여전히 정리 대상.
 
 ---
 
@@ -11,8 +12,9 @@
 
 ### 0.1 한 줄 비전
 
-> **"zero-dependency · controlled · CSS-variable 테마"** 를 공통 DNA로 갖는 Vue 3 디자인 시스템.
-> PrimeVue·Vuetify가 무겁고, shadcn-vue는 복붙형이라면 — `@vuepkg`는 **가볍고 타입 안전하며 부모가 상태를 소유하는(emit-only)** 중간 지점을 노린다.
+> **Vue 3 Composition API 네이티브 · headless 가능 · zero-dependency** 한 Modern Calendar Engine.
+> FullCalendar는 무겁고 핵심 기능 다수가 유료 라이선스에 막혀 있고, v-calendar·vue-cal은 정체되어 있다면 — `@vuepkg/calendar`는 **Tailwind/shadcn 친화적 커스터마이징, macOS/Google Calendar 수준 UX, DnD·Timeline·Recurring Event**를 갖춘 캘린더 엔진을 노린다.
+> `"zero-dependency · controlled · CSS-variable 테마"` DNA는 그대로 유지 — 다만 이건 이제 **calendar 자체의 구현 원칙**이지, "범용 디자인 시스템 판매"의 차별화 포인트가 아니다.
 
 ### 0.2 왜 지금 가능한가 — calendar는 이미 미니 프레임워크다
 
@@ -28,7 +30,7 @@
 | `useScheduleCalendarHost` (controlled 패턴) | `core` 의 controlled-component 컨벤션 | ✅ 완료 (Phase 0) |
 | `utils/date.ts`, `utils/holiday.ts` | `@vuepkg/core` 유틸 | ✅ 완료 (Phase 0) |
 
-→ **즉, "calendar를 분해 → 공통 토대 추출 → 그 위에 calendar 재조립"** 이 로드맵의 중심 동선이다. 이 동선은 calendar 품질도 같이 끌어올린다.
+→ **즉, "calendar를 분해 → 공통 토대 추출 → 그 위에 calendar 재조립"** 이 로드맵의 중심 동선이었다. 이 동선(Phase 0~2)은 2026-06-30 기준 완료됐다. 앞으로는 이 토대 위에서 **calendar 도메인 기능 자체를 고도화**하는 데 집중한다 (→ Phase 4).
 
 ### 0.3 차별화 포지셔닝 (지켜야 할 원칙)
 
@@ -59,8 +61,8 @@ vuepkg/                         # monorepo 루트 (pnpm workspace)
 │   │   ├── base.css            #   reset + primitive 토큰
 │   │   ├── light.css / dark.css
 │   │   └── presets/            #   브랜드 프리셋
-│   ├── ui/                     # @vuepkg/ui — 범용 primitive 컴포넌트 (구현: 평면 src/*.vue)
-│   │   ├── Button.vue  IconButton.vue  SegmentedControl.vue  Chip.vue  Popover.vue  DataTable.vue  (완료)
+│   ├── ui/                     # @vuepkg/ui — calendar 전용 내부 primitive (외부 단독 채택 비목표, 평면 src/*.vue)
+│   │   ├── Button.vue  IconButton.vue  SegmentedControl.vue  Chip.vue  Popover.vue  DataTable.vue  (완료, 신규 추가는 calendar 기능 요구 발생 시에만)
 │   │   └── index.ts
 │   └── calendar/               # @vuepkg/calendar — ui·core 위에 재구성
 │       └── (기존 src/components/calendar 이관)
@@ -114,7 +116,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | ~~`@vuepkg/calendar`의 `package.json` `types`/`exports.types`가 `./dist/src/components/calendar/index.d.ts`를 가리키나 실제 빌드 출력은 `./dist/components/calendar/index.d.ts`였음 (`src` 세그먼트 없음)~~ | F2-4 작업 중 발견 (2026-06-30), `main` 기준 재현 확인 | 0.1.0~0.1.3 전체 배포 버전에서 동일하게 깨져 있었음 — TS 소비자가 타입을 못 찾을 수 있었음 | 게시된 패키지의 TypeScript 지원이 깨졌을 가능성 (높은 심각도) | ✅ 수정 완료 (2026-06-30) — `package.json`의 `types`/`exports.types` 3곳을 실제 빌드 경로로 정정, `vite.lib.config.ts`의 stale 주석도 함께 정정. 빌드 재실행으로 경로 일치 확인 |
 | `vite-plugin-dts`가 일부 내부 컴포넌트 `.d.ts`에 깨진 상대경로(`'../../../../core/src'` 등)를 남김 | F2-4 작업 중 발견 (2026-06-30) | `vite.lib.config.ts`의 `@vuepkg/core`/`@vuepkg/ui` alias(원시 src 지정) 때문에 `vite-plugin-dts`가 그 경로를 그대로 `.d.ts` import에 박아넣음. **주의**: 이 alias는 의도된 설계다 — calendar는 core/ui를 원시 소스로 직접 컴파일해 번들링하는 자기완결형(self-contained) 패키지이며(`architecture.md`에 명시), 이 alias가 동시에 `@vuepkg/ui` 컴포넌트들의 `<style>` 블록을 calendar의 `style.css`로 추출해주는 역할도 겸하고 있음. **시도했던 수정(alias 제거 → node_modules 경유 resolve)은 되돌림**: dts는 깨끗해지지만 `@vuepkg/ui` 컴포넌트 스타일(`.vp-button`/`.vp-chip`/`.vp-popover`/`.vp-segmented-control` 등)이 calendar의 `style.css`에서 통째로 빠지는 회귀를 직접 확인함(`grep`으로 검증) | 현재는 공개 엔트리(`dist/components/calendar/index.d.ts`)의 타입 그래프 밖이라 일반 소비자에게는 무해. `MonthOverflowPopover.vue.d.ts` 같은 비공개 컴포넌트를 deep-import하거나, F3-2(`vue-component-meta` 자동 문서화)에서 전 컴포넌트를 introspect할 때 문제될 수 있음 | 🟡 BLOCKED(범위밖 근본원인) — CSS 번들링과 타입 생성이 같은 alias에 결합되어 있어, 분리하려면 ui 컴포넌트 CSS를 calendar 빌드에 주입하는 별도 메커니즘이 필요. 설계 결정 필요 |
 
-**처리 방침**: `types` 경로 버그는 수정·검증 완료. 남은 dts 누수 항목은 영향도가 낮고 (CSS 회귀 없이) 고치려면 별도 설계가 필요해 F2-5 이후, 혹은 F3-2 착수 직전에 재검토 권장.
+**처리 방침**: `types` 경로 버그는 수정·검증 완료. 남은 dts 누수 항목은 영향도가 낮고 (CSS 회귀 없이) 고치려면 별도 설계가 필요해 Phase 4 착수와 별개로 여유 있을 때 재검토 권장.
 
 ---
 
@@ -163,9 +165,9 @@ component     --vp-chip-bg: var(--vp-color-surface);
 
 ---
 
-### Phase 2 — Primitive 승격 (`@vuepkg/ui`) ✅ 완료 (2026-06-30, F2-6/F2-7 신규 항목 제외)
+### Phase 2 — Primitive 승격 (`@vuepkg/ui`) ✅ 완료 (2026-06-30, F2-6 취소·F2-7 보류)
 
-**목표**: calendar 내부 구현을 범용 primitive로 추출. calendar는 ui를 소비하도록 재조립.
+**목표**: calendar 내부 구현에서 재사용되는 부분만 primitive로 추출해 중복을 없앤다. **`ui`를 독립 판매 가능한 범용 컴포넌트 라이브러리로 키우는 것은 더 이상 목표가 아니다** (2026-06-30 방향 전환) — calendar 품질을 높이는 부산물로만 유지한다.
 
 추출 순서는 **calendar가 실제로 쓰는 것 우선** (당장 검증되고, 중복 제거 효과 즉시 발생):
 
@@ -175,9 +177,9 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | F2-2 | `SegmentedControl` | `CalendarToolbar` | 🟡 | ✅ (2026-06-29) — 화살표 키 네비게이션·roving tabindex 신규 추가 |
 | F2-3 | `Chip` | `ScheduleEventChip`, `HolidayChip` | 🟢 | ✅ (2026-06-29) — `Badge`는 보류 (today-badge 단일 사용처, 2회 미만이라 추출 기준 미충족) |
 | F2-4 | `Popover` | `MonthOverflowPopover` (bounds·flip 로직 재사용) | 🔴 | ✅ (2026-06-30) — `RectBounds`/위치 계산 함수는 `@vuepkg/core`로 이관, `Popover`가 Teleport·backdrop·Esc·외부클릭(backdrop)·focus trap·focus 복원을 신규 구현 |
-| F2-5 | `DataTable` | `ListView` (페이지네이션·반응형 컬럼) | 🔴 | ✅ (2026-06-30) — 제네릭(`<script setup generic="T">`) 컴포넌트, `cell-{key}` named slot, 페이지네이션은 `IconButton` 재사용 + `useControllableState`(v-model). 정렬 aria·caption은 스코프 제외(로드맵 권장대로 페이지네이션만으로 제한) |
-| F2-6 | `Dialog` / `Modal` (신규 — calendar의 상세/생성 모달 수요) | 신규 | 🔴 | focus trap, scroll-lock, aria-modal |
-| F2-7 | `Select` (신규 — 폼 기반 확장 대비) | 신규 | 🔴 | listbox 패턴 |
+| F2-5 | `DataTable` | `ListView` (페이지네이션·반응형 컬럼) | 🔴 | ✅ (2026-06-30) — 제네릭(`<script setup generic="T">`) 컴포넌트, `cell-{key}` named slot, 페이지네이션은 `IconButton` 재사용 + `useControllableState`(v-model). 정렬 aria·caption은 스코프 제외 |
+| F2-6 | ~~`Select`~~ (취소, 2026-06-30) | — | — | "폼 기반 확장 대비"용으로 잡혀 있던 신규 컴포넌트 — calendar에 실수요가 없어 범용 프레임워크 방향 폐기와 함께 취소 |
+| F2-7 | `Dialog` / `Modal` — calendar 일정 상세/생성 모달용 | calendar 신규 기능 종속 | 🔴 | 단독 추출 안 함. Phase 4 `F4-3`(일정 CRUD UI)가 실제로 착수될 때 그 작업과 함께 진행 |
 | F2-8 | calendar를 ui primitive 소비로 리팩토링 (내부 중복 제거) | calendar | 🟡 | ✅ 완료 (2026-06-30) — `CalendarPeriodNav`/`CalendarMonthNav`/`CalendarToolbar`/`HolidayChip`/`ScheduleEventChip`/`MonthOverflowPopover`/`ListView` 전부 ui primitive 소비로 전환 |
 
 **각 primitive 공통 산출물**:
@@ -186,15 +188,15 @@ component     --vp-chip-bg: var(--vp-color-surface);
 - 단위 테스트(Vitest) + 접근성 테스트
 - 문서 페이지 (Phase 3 사이트에 편입)
 
-**완료 기준**: calendar의 `CalendarToolbar`/`MonthOverflowPopover`/`ListView`가 `@vuepkg/ui` primitive 위에서 재구현되고, 기존 E2E 전부 통과. ui 단독으로도 `import { Button } from '@vuepkg/ui'` 사용 가능.
+**완료 기준**: calendar의 `CalendarToolbar`/`MonthOverflowPopover`/`ListView`가 `@vuepkg/ui` primitive 위에서 재구현되고, 기존 E2E 전부 통과. (달성)
 
-**가드레일 (scope creep 방지)**: "calendar가 쓰지 않는 primitive"는 Phase 4로 미룬다. F2-6/F2-7(Dialog/Select)은 calendar의 명확한 수요(일정 상세·생성 모달, 타입 필터 셀렉트)가 있을 때만 착수.
+**가드레일 (영구 원칙, 2026-06-30 갱신)**: "calendar가 쓰지 않는 primitive"는 유예가 아니라 폐기한다. 모든 신규 primitive는 calendar의 실제 기능 요구가 먼저 있고, 그 부산물로만 추출한다 — 범용 컴포넌트를 먼저 만들고 calendar가 나중에 쓰는 순서는 금지.
 
 ---
 
 ### Phase 3 — DX & 생태계
 
-**목표**: 외부 개발자가 발견·학습·도입할 수 있게. "프레임워크"의 체감은 문서에서 결정된다.
+**목표**: 외부 개발자가 발견·학습·도입할 수 있게. "캘린더 엔진"으로서의 체감은 문서·데모에서 결정된다.
 
 | ID | 작업 | 난이도 | 비고 |
 | -- | ---- | ------ | ---- |
@@ -204,25 +206,34 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | F3-4 | SSR / Nuxt 호환 검증 + `@vuepkg/nuxt` 모듈 (auto-import) | 🔴 | hydration·CSS 주입 |
 | F3-5 | 접근성 감사 — 전 컴포넌트 키보드·스크린리더 점검 (axe) | 🟡 | a11y 배지 |
 | F3-6 | 마이그레이션 가이드 (`@vuepkg/calendar` 0.0.x → 신 버전) | 🟢 | breaking 정리 |
-| F3-7 | 시작 템플릿 (Vite/Nuxt starter) + StackBlitz 데모 링크 | 🟢 | 유입 채널 |
+| F3-7 | 시작 템플릿 (Vite/Nuxt starter) + StackBlitz 데모 링크 | 🟢 | 예약/일정관리 앱 시나리오로 데모 구성 — 범용 UI 데모 아님 |
 
 **완료 기준**: `vuepkg.dev`(가칭) 문서 사이트 배포. 각 컴포넌트 라이브 데모 + 자동 API 표. calendar i18n(요일·라벨) 동작.
 
 ---
 
-### Phase 4 — 확장 & 스케일
+### Phase 4 — Calendar 도메인 고도화 (Modern Calendar Engine) — 신규 종착점 (2026-06-30)
 
-**목표**: 컴포넌트 커버리지 확대 + 지속 가능한 운영 체계.
+**목표**: FullCalendar/v-calendar/vue-cal 대비 빈 공간(modern DX, headless 구조, DnD, Timeline/Scheduler, Recurring Event, Virtualization)을 메운다. 구버전 로드맵의 범용 컴포넌트 확장(폼 계열 `Input`/`Checkbox`/`Select`, 오버레이 계열 `Tooltip`/`Toast`/`Drawer`)은 **전면 폐기** — calendar와 무관한 범용 primitive는 더 이상 만들지 않는다.
 
 | ID | 작업 | 난이도 | 비고 |
 | -- | ---- | ------ | ---- |
-| F4-1 | 폼 계열 확장: `Input`, `Checkbox`, `Radio`, `Switch`, `DatePicker` | 🟡~🔴 | DatePicker는 core/date 재사용 |
-| F4-2 | 오버레이 계열: `Tooltip`, `Toast`, `Drawer` | 🟡 | Popover 토대 재사용 |
-| F4-3 | calendar 도메인 심화(선택적): 드래그 시간 슬롯(IMP-04), 2/3-week 뷰(IMP-05), DnD 이벤트 이동(IMP-06) | 🔴 | 별도 스프린트 |
-| F4-4 | 번들 사이즈 예산 + size-limit CI 게이트 | 🟢 | 패키지별 budget |
-| F4-5 | RFC 프로세스 + CONTRIBUTING + 컴포넌트 추가 체크리스트 | 🟢 | 기여자 온보딩 |
-| F4-6 | 시맨틱 버저닝 자동 릴리즈 (changesets → npm publish 자동화) | 🟢 | F0-3 확장 |
-| F4-7 | 커뮤니티 노출: awesome-vue PR, 데모, 소개글, npm 배지 | 🟢 | 실유입 전환 |
+| F4-1 | 드래그로 시간 슬롯 범위 선택 (IMP-04) | 🟡 | 클릭 1회=1시간 고정 → `mousedown→mousemove→mouseup` 드래그로 임의 범위. 순수 pointer event, 외부 라이브러리 없음 — **다음 작업 후보** |
+| F4-2 | 2-week / 3-week 월간 뷰 변형 (IMP-05) | 🟡 | `monthWeekCount?: 2\|3\|6` prop |
+| F4-3 | 일정 상세/생성 모달 (CRUD UI) | 🔴 | `Dialog` primitive(F2-7)를 이 작업과 함께 추출 |
+| F4-4 | 드래그&드롭 이벤트 이동·리사이즈 (IMP-06, 보류 해제) | 🔴 | emit-only 아키텍처와 정합되는 `schedule-update` emit 설계 필요. 외부 드래그 라이브러리 도입 여부 결정 필요 |
+| F4-5 | Recurring Event (반복 일정) — 신규 | 🔴 | RRULE 서브셋 또는 자체 recurrence 규칙. 현재 로드맵에서 가장 큰 차별화 포인트 |
+| F4-6 | Timeline / Resource Scheduler 뷰 — 신규 | 🔴 | 다중 리소스(인원/장소)를 가로 타임라인으로. FullCalendar Premium 라이선스 영역과 직접 겹침 — §4.1 수익화 시사점 참고 |
+| F4-7 | 대량 일정 Virtualization | 🔴 | 월/리스트 뷰에 수백~수천 건 렌더링 시 성능 확보 |
+| F4-8 | 타임존 지원 (IMP-07, 재검토) | 🔴 | "국내 단일 타임존이라 ROI 낮음" 판단을 글로벌 캘린더 엔진 포지션 기준으로 재검토. 즉시 착수 아님 — F4-1~F4-7 이후 |
+| F4-9 | 번들 사이즈 예산 + size-limit CI 게이트 | 🟢 | 패키지별 budget |
+| F4-10 | RFC 프로세스 + CONTRIBUTING + 기능 추가 체크리스트 | 🟢 | 기여자 온보딩 |
+| F4-11 | 시맨틱 버저닝 자동 릴리즈 (changesets → npm publish 자동화) | 🟢 | F0-3 확장 |
+| F4-12 | 커뮤니티 노출 — "Vue 캘린더/스케줄러" 니치 타겟 | 🟢 | awesome-vue calendar 섹션, 예약·일정관리 SaaS 빌더 커뮤니티. 범용 UI 라이브러리 커뮤니티는 더 이상 타겟 아님 |
+
+#### 4.1 수익화 시사점 (참고)
+
+`F4-5`(반복 일정)·`F4-6`(Timeline/Scheduler)는 FullCalendar가 Premium 라이선스로 유료화한 영역과 정확히 겹친다. 장기적으로 "코어 무료 + 고급 뷰 유료" 모델을 검토할 수 있는 후보 — 지금 당장 결정할 사항은 아니지만, F4-6 설계 시 무료/유료 경계를 의식해두면 나중에 분리 비용이 줄어든다.
 
 ---
 
@@ -234,6 +245,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | ---- | ---- |
 | Phase 0~1 (내부 구조 변경) | **공개 API 무변경**. import 경로·테마는 내부 사항. patch/minor 릴리즈. |
 | Phase 2 (ui 의존성 추가) | calendar가 ui를 내부 의존성으로 흡수 — 소비자는 여전히 `@vuepkg/calendar`만 설치. 공개 API 동일 유지. |
+| Phase 4 (도메인 기능 추가) | 신규 prop/emit은 옵셔널 기본값으로 추가, 기존 기본 동작 불변. |
 | 토큰 도입으로 기본 색상 변화 | 시각 변화는 **minor**로, 기존 룩 유지 옵션(legacy 토큰 프리셋) 제공. |
 | 불가피한 breaking | `0.x` 동안은 minor로 허용하되 CHANGELOG·마이그레이션 노트 필수. `1.0.0`에서 API 동결. |
 
@@ -246,32 +258,34 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | 리스크 | 영향 | 완화책 |
 | ------ | ---- | ------ |
 | **단일 메인테이너 부담** | 범위 대비 인력 부족 → 정체 | Phase 독립 출시 설계, "calendar가 쓰는 것만" 우선순위, 각 Phase가 단독으로 가치 |
-| **Scope creep** (컴포넌트 욕심) | primitive 난립, 미완성 다수 | F2 가드레일: calendar 수요 없는 primitive는 F4로. "추출 우선, 신규 후순위" |
+| **Scope creep** (범용 프레임워크 회귀 유혹) | "이왕 ui 만든 거 더 키우자"는 유혹으로 방향이 재차 흔들림 | 2026-06-30 결정 고정: `ui`는 calendar 내부 전용으로 동결, 신규 primitive는 calendar 기능 요구가 선행될 때만 추출. PrimeVue/Vuetify/shadcn-vue와 직접 경쟁하지 않는다 |
 | **추상화 비용 > 이득** | primitive 일반화가 오히려 복잡 | 기존 `componentization-backlog.md`의 CMP-X 비권장 기준 계승. 2회 이상 재사용 전엔 추출 보류 |
 | **테마 시스템 과설계** | 토큰 계층 복잡, 학습 곡선 | CSS 변수만(런타임 JS 0), semantic 계층 최소화 |
 | **시각 회귀** | 토큰 전환 중 UI 깨짐 | Phase 1에 Visual regression 기준선 선행 |
 | **SSR/hydration 이슈** | Nuxt 사용자 이탈 | F3-4에서 명시적 검증, Popover/Dialog의 teleport·id 안정화 |
+| **캘린더 niche 시장 규모 한계** | 범용 UI 라이브러리 대비 TAM(시장 규모)이 작음 | B2B 임베딩(예약/스케줄링 SaaS)·고급 뷰 유료화(§4.1)로 단가 보전. "넓은 사용자" 대신 "깊은 사용처"를 노림 |
 
 ---
 
 ## 5. 성공 지표 (KPI)
 
-| 지표 | 현재 (2026-06-30, F2-5 완료 — Phase 2 종료) | Phase 2 목표 | Phase 4 목표 |
+| 지표 | 현재 (2026-06-30, Phase 2 종료) | Phase 2 목표 | Phase 4 목표 (신규 — calendar 도메인 고도화) |
 | ---- | ---------------------------- | ------------ | ------------ |
-| 패키지 수 | **4 (core/theme/ui/calendar)** | 4 (core/theme/ui/calendar) ✅ 달성 | 6+ |
-| 실 주간 다운로드(봇 제외) | ~0 (배포 직후 크롤러 484) | 측정 체계 구축 | 의미 있는 유입 |
-| 컴포넌트 수 | calendar 1 + **ui primitive 6종** (Button/IconButton/SegmentedControl/Chip/Popover/DataTable) | ✅ 달성 | 15+ |
-| calendar 번들 사이즈 (gzip) | index.js ~12.1KB + style.css ~4.9KB (`@vuepkg/ui` 소비 포함, §1.5 dts 누수 부채 영향권) | core 분리로 ↓ | budget 내 유지 |
-| 문서 커버리지 | docs/ 내부 문서 + theming.md + `@vuepkg/ui` README | 사이트 + 자동 API | 전 컴포넌트 라이브 데모 |
+| 패키지 수 | **4 (core/theme/ui/calendar)** | 4 ✅ 달성 | 4 유지 — `ui`는 calendar 전용으로 동결, 더 늘리지 않음 |
+| 실 주간 다운로드(봇 제외) | ~0 (배포 직후 크롤러 484) | 측정 체계 구축 | 의미 있는 유입 (캘린더/스케줄링 니치 타겟) |
+| `ui` primitive 수 (calendar 내부용, 동결) | **6종** (Button/IconButton/SegmentedControl/Chip/Popover/DataTable) | 6종 ✅ 달성 | 6~7종 유지 — `Dialog`는 F4-3 착수 시에만 추가, 그 외 신규 없음 |
+| **캘린더 도메인 기능 커버리지** (신규 KPI) | month/week/day/list 뷰, 공휴일, overflow popover, 클릭 1시간 단위 슬롯 선택 | — | 반복 일정(F4-5), DnD 이동·리사이즈(F4-4), Timeline/Resource 뷰(F4-6), 대량 데이터 virtualization(F4-7), 타임존(F4-8) |
+| calendar 번들 사이즈 (gzip) | index.js ~12.1KB + style.css ~4.9KB (§1.5 dts 누수 부채 영향권) | core 분리로 ↓ | budget 내 유지 — 도메인 기능 추가에도 size-limit CI(F4-9)로 가드 |
+| 문서 커버리지 | docs/ 내부 문서 + theming.md + `@vuepkg/ui` README | 사이트 + 자동 API | 전 도메인 기능 라이브 데모(드래그·반복·Timeline 시연 포함) |
 | a11y | `@vuepkg/ui` 6종 키보드·aria 완비(Popover focus trap·Esc·외부클릭, DataTable row Enter/Space), calendar 전체는 부분 | ✅ primitive 키보드 100% 달성 | axe 통과 |
-| 테스트 | Vitest calendar 200 + ui 65 + core 70 / E2E 142(시각회귀 8 포함) | 패키지별 유지·증가 | + 시각 회귀 |
+| 테스트 | Vitest calendar 200 + ui 65 + core 70 / E2E 142(시각회귀 8 포함) | 패키지별 유지·증가 | 도메인 기능별(드래그/반복/DnD) 신규 테스트 스위트 |
 
 > **다운로드 KPI 주의**: 현재 501/주는 신규 배포 크롤러 트래픽(6/26 484 + 6/27 17)이며 실사용 아님. 실유입 측정 체계(README npm 배지, 문서 사이트 analytics)부터 Phase 3에 구축.
 
 ### 5.1 번들 사이즈 기준선 (baseline)
 
 > Phase 0 기준 측정: 2026-06-29 · `@vuepkg/calendar@0.0.4` · `pnpm turbo run build:lib` (ESM, `vite 8.0.16`)
-> Vue는 peer dependency라 제외. Phase 4 `F4-4`의 size-limit CI 게이트 기준값으로 사용.
+> Vue는 peer dependency라 제외. Phase 4 `F4-9`의 size-limit CI 게이트 기준값으로 사용.
 
 **Phase 0 완료 직후 (테마 토큰 이전)**
 
@@ -332,33 +346,31 @@ component     --vp-chip-bg: var(--vp-color-surface);
 
 ---
 
-## 6. 즉시 착수 가능한 첫 3걸음
+## 6. 진행 이력 & 다음 단계
 
-로드맵 전체는 길지만, **이번 주에 시작할 수 있는 것**:
+**완료된 첫 단계들**:
+1. ~~F0-1/F0-4 스파이크~~ ✅ — pnpm workspace + `@vuepkg/core` 분리
+2. ~~F1-1 토큰 RFC~~ ✅ — `--vp-*` 네이밍·3계층 확정
+3. ~~F2-1 `Button` 추출 PoC~~ ✅ (2026-06-29)
+4. ~~Phase 2 전체 (F2-1~F2-5, F2-8)~~ ✅ (2026-06-30) — `@vuepkg/ui` 6종 추출, calendar 전체가 ui 소비로 전환 완료
 
-1. ~~**F0-1/F0-4 스파이크**: 현 레포를 `packages/calendar`로 옮기고 pnpm workspace + `@vuepkg/core` 빈 패키지 생성. `utils/date.ts`만 먼저 이관해서 동선 검증. (반나절)~~ ✅ 완료
-2. ~~**F1-1 토큰 RFC**: `--vp-*` 네이밍과 3계층 구조를 1페이지로 확정. (1~2시간)~~ ✅ 완료
-3. ~~**F2-1 `Button` 추출 PoC**: `CalendarPeriodNav`의 버튼을 `@vuepkg/ui/Button`으로 빼보고, 추출 비용이 실제로 감당되는지 1개로 체감. (반나절)~~ ✅ 완료 (2026-06-29) — `Button`/`IconButton` 둘 다 추출, `CalendarPeriodNav` + `CalendarMonthNav` 적용
+### 다음 단계 — Phase 4 착수 (난이도 🔴, 2026-06-30 갱신)
 
-→ 3축 검증 완료. Phase 2를 F2-2(`SegmentedControl`)·F2-3(`Chip`)·F2-4(`Popover`)·F2-5(`DataTable`)까지 이어서 완료 — **Phase 2 종료 (2026-06-30)**.
-
-### 다음 단계 — Phase 3 착수 전 정리
-
-> **진행 현황 (2026-06-30)**: F2-5(DataTable) 완료로 Phase 2의 핵심 추출 목표(calendar가 실제로 쓰는 모든 내부 구현 → `@vuepkg/ui` primitive화) 달성. F2-6/F2-7(Dialog/Select)은 가드레일에 따라 calendar에 실제 수요가 생길 때까지 보류. §1.5의 기존 기술 부채는 대부분 해소·정리됨 — 남은 건 영향도 낮은 dts 누수 1건뿐.
+> **진행 현황 (2026-06-30)**: Phase 2(`@vuepkg/ui` primitive 승격)가 전부 완료됐다. 같은 날 전략 방향이 "범용 UI 프레임워크"에서 "calendar 도메인 고도화"로 전환되며, Phase 4가 폼/오버레이 계열 확장에서 calendar 기능 심화로 전면 재정의됐다. §1.5의 기술 부채는 대부분 해소됐고, 남은 건 영향도 낮은 dts 누수 1건뿐.
 
 | ID | 작업 | 난이도 | 비고 |
 | -- | ---- | ------ | ---- |
-| — | §1.5 잔여 항목 (`vite-plugin-dts` 상대경로 누수) 설계 검토 | 🟡 | 영향도 낮음 — Phase 3(`F3-2` `vue-component-meta`) 착수 직전 재검토 권장 |
-| F2-6/F2-7 | `Dialog`/`Select` (신규 primitive) | 🔴 | calendar에 명확한 수요(상세/생성 모달, 타입 필터 셀렉트) 발생 시에만 착수 |
-| F3-1 | VitePress 문서 사이트 + 라이브 플레이그라운드 | 🟡 | Phase 3 본격 착수 시 첫 항목 |
+| F4-1 | 드래그 시간 슬롯 범위 선택 (IMP-04) | 🟡 | 백로그 중 가장 낮은 난이도 — **다음 작업 후보** |
+| F4-4 | 드래그&드롭 이벤트 이동·리사이즈 (IMP-06) | 🔴 | F4-1과 pointer event 인프라 일부 공유 가능 |
+| — | §1.5 잔여 항목 (`vite-plugin-dts` 상대경로 누수) 설계 검토 | 🟡 | 영향도 낮음 — Phase 4 착수와 별개로 여유 있을 때 처리 |
 
-Phase 2를 마쳤으니, 다음 큰 단위는 Phase 3(DX·생태계)다. 착수 전 "실 채택" 목표에 맞춰 우선순위(문서 사이트 vs i18n vs SSR 검증)를 한 번 더 점검 권장.
+F4-5(반복 일정)·F4-6(Timeline) 같은 고난도 항목은 F4-1/F4-4로 드래그·이벤트 갱신 인프라를 먼저 다진 뒤 착수 권장.
 
 ---
 
 ## 7. 참고 (기존 문서 연결)
 
-- [roadmap.md](./roadmap.md) — calendar 단일 컴포넌트 기능 백로그 (IMP-02~08). 본 문서의 Phase 4 `F4-3`에 흡수.
+- [roadmap.md](./roadmap.md) — calendar 단일 컴포넌트 기능 백로그 (IMP-02~08). 본 문서의 Phase 4(`F4-1`/`F4-2`/`F4-4`/`F4-8`)에 흡수.
 - [componentization-backlog.md](./componentization-backlog.md) — CMP-01~11 내부 분리. Phase 2 primitive 추출과 연계(특히 CMP-09 `MonthWeekdayHeader` → i18n).
 - [architecture.md](./architecture.md) — 현 단일 패키지 구조. Phase 0 이후 패키지별로 분할 갱신 필요.
 - [improvement-backlog.md](./improvement-backlog.md) — IMP 항목 원장.

@@ -250,6 +250,8 @@ function onRowClick(row: CalendarListRow) {
 
 .col-period {
   width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 

@@ -7,10 +7,10 @@ export default defineConfig({
     'Vue 3 Modern Calendar Engine — zero dependencies, controlled/emit-only, CSS-variable theming.',
   lang: 'ko',
 
-  base: '/vue3-calendar/',
+  base: '/calendar/',
 
   head: [
-    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/vue3-calendar/favicon.svg' }],
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/calendar/favicon.svg' }],
     ['meta', { name: 'og:type', content: 'website' }],
     ['meta', { name: 'og:title', content: '@vuepkg/calendar' }],
     [
@@ -38,7 +38,7 @@ export default defineConfig({
           },
           {
             text: 'GitHub',
-            link: 'https://github.com/Seongwon-developer/vue3-calendar',
+            link: 'https://github.com/vuepkg/calendar',
           },
         ],
       },
@@ -99,7 +99,7 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/Seongwon-developer/vue3-calendar' },
+      { icon: 'github', link: 'https://github.com/vuepkg/calendar' },
       { icon: 'npm', link: 'https://www.npmjs.com/package/@vuepkg/calendar' },
     ],
 
@@ -110,7 +110,7 @@ export default defineConfig({
 
     editLink: {
       pattern:
-        'https://github.com/Seongwon-developer/vue3-calendar/edit/main/apps/docs/:path',
+        'https://github.com/vuepkg/calendar/edit/main/apps/docs/:path',
       text: 'GitHub에서 이 페이지 수정',
     },
 

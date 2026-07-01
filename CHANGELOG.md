@@ -3,6 +3,18 @@
 ## [Unreleased]
 
 ### Added
+- **F4-5** Recurring events — daily/weekly/monthly/yearly repetition
+  - `Schedule.recurrence: RecurrenceRule` — `freq`/`interval`/`byWeekday`(weekly)/`count`/`until`/`exceptions`
+  - `expandRecurringSchedules()` — pure function generating in-range occurrences; wired into `useCalendar`'s
+    `schedules` computed via a view-derived visible range (month grid / week / day / list). Non-recurring
+    schedules pass through unchanged
+  - Generated occurrences are derived `Schedule` objects (`id: "${masterId}::YYYY-MM-DD"`, `recurrenceId`,
+    `isRecurrenceInstance: true`) — never written back into the parent's array
+  - `ScheduleFormModal` recurrence section — frequency, interval, weekly weekday picker, end condition
+    (never / after N occurrences / until date)
+  - `ScheduleEventChip` shows a ⟳ icon for recurring instances
+  - **Scope**: v1 supports series-level edit/delete only (editing an occurrence edits the whole series).
+    Per-occurrence exceptions exist in the data model (`recurrence.exceptions`) but aren't exposed in the UI yet
 - **F4-3** `ScheduleFormModal` — optional schedule create/edit/delete form component
   - Controlled component: parent owns `open` state and applies `submit`/`delete` to its own `schedules`
   - `submit` emits a fully-built `Schedule` via `buildScheduleFromDraft` — pass straight to `upsertSchedule`

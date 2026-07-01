@@ -15,6 +15,7 @@ Vue 3 schedule calendar — Month / Week / Day / List views, **zero extra depend
 - **월간 `+N` 팝오버** — 숨긴 일정 목록
 - **멀티데이 spanning 바** — 2일 이상 종일 일정 바 표시
 - **Week/Day 시간 슬롯 선택** — 빈 셀 클릭 시 1시간 `start`/`end` 전달
+- **반복 일정** — 매일/매주(요일 지정)/매월/매년, 횟수·종료일 조건. `ScheduleFormModal`에 내장
 - **공휴일·기념일** — 사내 기념일 prop + 한국 공공 API opt-in
 - **커스텀 일정 타입** — `scheduleTypeOptions`로 도메인 타입·색상 등록
 - **CSS 변수 테마** — `--vp-*` 변수로 색상·크기·간격 전면 커스터마이징, 다크 모드 지원
@@ -134,9 +135,11 @@ const { view, date, listFilterDate, viewScope, scheduleTypes, calendarListeners 
       modalOpen.value = true
     },
     onScheduleClick(payload) {
-      // 일정 칩 클릭 — 수정 모드로 오픈
+      // 일정 칩 클릭 — 수정 모드로 오픈.
+      // 반복 일정 회차를 클릭했다면 recurrenceId로 마스터 일정을 찾아 시리즈 전체를 연다.
+      const masterId = payload.schedule.recurrenceId ?? payload.schedule.id
       modalMode.value = 'edit'
-      activeSchedule.value = payload.schedule
+      activeSchedule.value = schedules.value.find((s) => s.id === masterId) ?? payload.schedule
       modalOpen.value = true
     },
   })
@@ -207,6 +210,37 @@ schedules.value = removeSchedule(schedules.value, targetId)
 | `close` | — | 취소·Esc·배경 클릭 |
 | `submit` | `Schedule` | `buildScheduleFromDraft`로 완성된 일정 — `upsertSchedule`에 바로 전달 |
 | `delete` | `string` (scheduleId) | edit 모드 삭제 버튼 — `removeSchedule`에 바로 전달 |
+
+---
+
+## 반복 일정
+
+`Schedule.recurrence`에 `RecurrenceRule`을 지정하면 캘린더가 표시 중인 기간 내에서 자동으로 개별 회차를 생성합니다. 부모는 마스터 일정 한 건만 관리하면 됩니다 — 반복 펼침은 `ScheduleCalendar` 내부에서 처리됩니다.
+
+```ts
+import type { Schedule } from '@vuepkg/calendar'
+
+const schedule: Schedule = {
+  id: 's-standup',
+  title: '주간 스탠드업',
+  type: 'team_schedule',
+  participantId: 'user-1',
+  participantName: '홍길동',
+  start: new Date(2026, 3, 6, 9, 0),
+  end: new Date(2026, 3, 6, 9, 30),
+  recurrence: {
+    freq: 'weekly', // 'daily' | 'weekly' | 'monthly' | 'yearly'
+    interval: 1, // 기본 1. weekly + interval 2 → 격주
+    byWeekday: [1, 3, 5], // weekly 전용, 0=일 ~ 6=토
+    count: 20, // count 또는 until 중 하나 — 둘 다 없으면 열려있는 반복
+  },
+}
+```
+
+- 화면에 렌더링되는 각 회차는 `id: "${마스터id}::YYYY-MM-DD"`, `recurrenceId: 마스터id`, `isRecurrenceInstance: true`를 가진 파생 `Schedule` 객체입니다. 원본 배열에는 추가되지 않습니다.
+- `schedule-click`/`schedule-move`/`schedule-resize` 등 이벤트 payload의 `schedule`이 회차인 경우, `recurrenceId`로 마스터를 찾아 시리즈 전체에 반영하세요 (단일 회차만 수정/삭제하는 기능은 아직 없습니다 — v1 범위 밖).
+- `ScheduleFormModal`은 반복 없음/매일/매주/매월/매년 선택, 요일(weekly), 종료 없음/횟수/종료일 조건을 폼으로 제공합니다.
+- 반복 일정 칩에는 시작 부분에 ⟳ 아이콘이 표시됩니다.
 
 ---
 

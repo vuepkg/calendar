@@ -1,6 +1,12 @@
 # @vuepkg/calendar
 
+[![npm](https://img.shields.io/npm/v/@vuepkg/calendar)](https://www.npmjs.com/package/@vuepkg/calendar)
+[![license](https://img.shields.io/badge/license-MIT-blue)](../../LICENSE)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/@vuepkg/calendar)](https://bundlephobia.com/package/@vuepkg/calendar)
+
 Vue 3 schedule calendar — Month / Week / Day / List views, **zero extra dependencies** (`vue` peer only).
+
+**지원 브라우저**: 최신 Chrome / Firefox / Safari / Edge (Evergreen browsers) — IE 미지원
 
 ## 주요 기능
 
@@ -185,6 +191,16 @@ document.documentElement.classList.toggle('vp-dark')
 ```
 
 토큰 전체 목록과 사용 예시는 [테마 커스터마이징 가이드](./docs/guide/theming.md)를 참고하세요.
+
+---
+
+## 접근성 (a11y)
+
+- **뷰 탭** — `role="group"` + `aria-pressed`로 현재 뷰 상태 노출, 화살표 키 네비게이션(roving tabindex)
+- **월간 셀** — `role="grid"`, 날짜 `aria-label`
+- **팝오버** — focus trap, `Esc` 닫기, 외부 클릭 닫기, 닫힘 시 트리거로 focus 복원
+- **데이터 테이블(List 뷰)** — 행 `Enter`/`Space` 활성화, `aria-label`
+- **키보드 포커스** — 모든 인터랙티브 요소에 `:focus-visible` 아웃라인
 
 ---
 

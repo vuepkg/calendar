@@ -9,23 +9,11 @@
 
 ### 🟢 빠르게 처리 가능
 
-- [ ] **npm 배지 추가** — README 제목 아래에 배지 삽입
-  ```md
-  [![npm](https://img.shields.io/npm/v/@vuepkg/calendar)](https://www.npmjs.com/package/@vuepkg/calendar)
-  [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
-  [![bundle size](https://img.shields.io/bundlephobia/minzip/@vuepkg/calendar)](https://bundlephobia.com/package/@vuepkg/calendar)
-  ```
-  > 배포 완료 후 추가 가능
+- [x] **npm 배지 추가** — README 제목 아래에 배지 삽입 (2026-07-01, `@vuepkg/calendar@0.1.3` 배포 확인 후 추가)
 
-- [ ] **브라우저 지원 명시** — README에 한 줄 추가
-  ```
-  Modern browsers (Chrome, Firefox, Safari, Edge) — IE 미지원
-  ```
+- [x] **브라우저 지원 명시** — README에 한 줄 추가 (2026-07-01)
 
-- [ ] **접근성(a11y) 현황 문서화** — 이미 구현된 내용을 README에 노출
-  - `aria-pressed` (뷰 탭 SelectButton)
-  - `role="grid"`, `aria-label` (월간 셀)
-  - 키보드 네비게이션 지원 여부 명시
+- [x] **접근성(a11y) 현황 문서화** — 이미 구현된 내용을 README에 노출 (2026-07-01)
 
 ### 🟡 중간 작업
 

@@ -128,4 +128,31 @@ describe('expandRecurringSchedules', () => {
 
     expect(result.map((item) => item.start.getDate())).toEqual([7, 8])
   })
+
+  it('clamps interval to at least 1', () => {
+    const schedule = makeSchedule({ recurrence: { freq: 'daily', interval: 0, count: 2 } })
+    const result = expandRecurringSchedules([schedule], new Date(2026, 4, 1), new Date(2026, 4, 31))
+
+    expect(result).toHaveLength(2)
+    expect(result.map((item) => item.start.getDate())).toEqual([6, 7])
+  })
+
+  it('expands multiple schedules in one call', () => {
+    const first = makeSchedule({ id: 's-a', recurrence: { freq: 'daily', count: 2 } })
+    const second = makeSchedule({
+      id: 's-b',
+      start: new Date(2026, 4, 6, 14, 0),
+      end: new Date(2026, 4, 6, 15, 0),
+      recurrence: { freq: 'daily', count: 2 },
+    })
+    const result = expandRecurringSchedules([first, second], new Date(2026, 4, 1), new Date(2026, 4, 31))
+
+    expect(result).toHaveLength(4)
+    expect(result.filter((item) => item.recurrenceId === 's-a')).toHaveLength(2)
+    expect(result.filter((item) => item.recurrenceId === 's-b')).toHaveLength(2)
+  })
+
+  it('returns an empty array for empty input', () => {
+    expect(expandRecurringSchedules([], new Date(2026, 4, 1), new Date(2026, 4, 31))).toEqual([])
+  })
 })

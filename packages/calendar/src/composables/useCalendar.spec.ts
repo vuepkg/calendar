@@ -9,7 +9,9 @@ import {
   MULTI_DAY_ALL_DAY_ID,
   MULTI_DAY_ALL_DAY_MIDDLE,
   MULTI_DAY_ALL_DAY_START,
+  mockRecurringSchedules,
   mockSchedules,
+  RECURRING_SCHEDULE_ID,
   WEEK_OVERLAP_DATE,
 } from '@/data/mockSchedules'
 import { ALL_DAY_SECTION_MAX_HEIGHT, DAY_VIEW_ALL_DAY_VISIBLE_MAX } from '@/constants/calendarView'
@@ -446,6 +448,67 @@ describe('useCalendar requirements', () => {
       calendar.clearListFilter()
       expect(calendar.state.listFilterDate).toBeNull()
       expect(calendar.listRows.value.length).toBeGreaterThan(0)
+    })
+  })
+
+  describe('recurring schedules (F4-5)', () => {
+    it('expands weekly instances into month cells within the visible grid range', () => {
+      const calendar = useCalendar({
+        schedules: mockRecurringSchedules,
+        initialDate: new Date(2026, 3, 1),
+        initialView: 'month',
+      })
+
+      const tueApr7 = calendar.monthCells.value.find((cell) => cell.key === '2026-04-07')
+      const thuApr9 = calendar.monthCells.value.find((cell) => cell.key === '2026-04-09')
+      const wedApr8 = calendar.monthCells.value.find((cell) => cell.key === '2026-04-08')
+
+      expect(tueApr7!.schedules.some((s) => s.title === '주간 스탠드업 (반복)')).toBe(true)
+      expect(thuApr9!.schedules.some((s) => s.title === '주간 스탠드업 (반복)')).toBe(true)
+      expect(wedApr8!.schedules.some((s) => s.title === '주간 스탠드업 (반복)')).toBe(false)
+
+      const instance = tueApr7!.schedules.find((s) => s.recurrenceId === RECURRING_SCHEDULE_ID)
+      expect(instance?.isRecurrenceInstance).toBe(true)
+      expect(instance?.id).toBe('s-r001::2026-04-07')
+    })
+
+    it('includes expanded instances in week view schedules', () => {
+      const calendar = useCalendar({
+        schedules: mockRecurringSchedules,
+        initialDate: new Date(2026, 3, 7),
+        initialView: 'week',
+      })
+
+      const expanded = calendar.schedules.value.filter(
+        (schedule) => schedule.recurrenceId === RECURRING_SCHEDULE_ID,
+      )
+      expect(expanded.length).toBeGreaterThanOrEqual(2)
+    })
+
+    it('includes expanded instances in list rows for the month', () => {
+      const calendar = useCalendar({
+        schedules: mockRecurringSchedules,
+        initialDate: new Date(2026, 3, 1),
+        initialView: 'list',
+      })
+
+      const recurringRows = calendar.listRows.value.filter(
+        (row) => row.schedule.recurrenceId === RECURRING_SCHEDULE_ID,
+      )
+      expect(recurringRows.length).toBeGreaterThan(0)
+    })
+
+    it('does not expand recurring schedules outside the visible range', () => {
+      const calendar = useCalendar({
+        schedules: mockRecurringSchedules,
+        initialDate: new Date(2026, 0, 1),
+        initialView: 'month',
+      })
+
+      const janCellsWithRecurring = calendar.monthCells.value.filter((cell) =>
+        cell.schedules.some((s) => s.recurrenceId === RECURRING_SCHEDULE_ID),
+      )
+      expect(janCellsWithRecurring).toHaveLength(0)
     })
   })
 })

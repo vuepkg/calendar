@@ -173,6 +173,49 @@ test.describe('ScheduleCalendar E2E', () => {
     await expect(page.getByText('고객사 A 미팅')).toBeVisible()
   })
 
+  // GAP-01: List 행 schedule-click E2E
+  test('opens schedule form when a list row is clicked (GAP-01)', async ({ page }) => {
+    await viewTab(page, 'List').click()
+
+    await page.locator('.vp-data-table-row').first().click()
+    await expect(page.locator('.schedule-form')).toBeVisible()
+    await expect(page.locator('.schedule-form-title')).toHaveText('일정 수정')
+  })
+
+  // F4-5: 반복 일정 E2E
+  test.describe('F4-5: recurring events', () => {
+    test('shows recurring standup on tuesday and thursday in april month view', async ({ page }) => {
+      await viewTab(page, 'Month').click()
+
+      function aprilCell(day: string) {
+        return page
+          .locator('.month-cell:not(.outside)')
+          .filter({ has: page.locator('.cell-date', { hasText: new RegExp(`^${day}$`) }) })
+      }
+
+      await expect(aprilCell('7').getByText('주간 스탠드업 (반복)')).toBeVisible()
+      await expect(aprilCell('9').getByText('주간 스탠드업 (반복)')).toBeVisible()
+      await expect(aprilCell('8').getByText('주간 스탠드업 (반복)')).toHaveCount(0)
+    })
+
+    test('opens edit modal with master schedule when recurring chip is clicked', async ({
+      page,
+    }) => {
+      await viewTab(page, 'Month').click()
+
+      const apr7Cell = page
+        .locator('.month-cell:not(.outside)')
+        .filter({ has: page.locator('.cell-date', { hasText: /^7$/ }) })
+      await apr7Cell.getByText('주간 스탠드업 (반복)').click()
+
+      await expect(page.locator('.schedule-form')).toBeVisible()
+      await expect(page.locator('.schedule-form-title')).toHaveText('일정 수정')
+      await expect(
+        page.locator('select.schedule-form-input').nth(2),
+      ).toHaveValue('weekly')
+    })
+  })
+
   test('navigates months in list view', async ({ page }) => {
     await viewTab(page, 'List').click()
 

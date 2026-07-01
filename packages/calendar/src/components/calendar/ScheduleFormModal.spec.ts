@@ -278,4 +278,100 @@ describe('ScheduleFormModal', () => {
     expect(checkedRadio.value).toBe('count')
     wrapper.unmount()
   })
+
+  it('builds a daily recurrence with until end condition', async () => {
+    const initialStart = new Date(2026, 5, 15, 10, 0)
+    const initialEnd = new Date(2026, 5, 15, 11, 0)
+    const wrapper = mountModal({ mode: 'create', initialStart, initialEnd })
+    await flushPromises()
+
+    setInputValue(
+      document.body.querySelector<HTMLInputElement>('.schedule-form-input[type="text"]')!,
+      '일일 반복',
+    )
+
+    const freqSelect = document.body.querySelectorAll<HTMLSelectElement>(
+      'select.schedule-form-input',
+    )[2]!
+    freqSelect.value = 'daily'
+    freqSelect.dispatchEvent(new Event('change'))
+    await flushPromises()
+
+    const untilRadio = document.body.querySelector<HTMLInputElement>(
+      'input[type="radio"][value="until"]',
+    )!
+    untilRadio.checked = true
+    untilRadio.dispatchEvent(new Event('change'))
+    await flushPromises()
+
+    const untilDateInput = document.body.querySelector<HTMLInputElement>(
+      '.schedule-form-end input[type="date"]',
+    )!
+    setDateInputValue(untilDateInput, '2026-06-20')
+    await flushPromises()
+
+    document.body.querySelector('form')!.dispatchEvent(new Event('submit', { cancelable: true }))
+    await flushPromises()
+
+    const emitted = wrapper.emitted('submit')?.[0]?.[0] as Schedule
+    expect(emitted.recurrence).toMatchObject({
+      freq: 'daily',
+      interval: 1,
+    })
+    expect(emitted.recurrence?.until).toBeInstanceOf(Date)
+    expect(emitted.recurrence?.until?.toISOString().slice(0, 10)).toBe('2026-06-20')
+    wrapper.unmount()
+  })
+
+  it('builds a yearly recurrence with never end condition', async () => {
+    const initialStart = new Date(2026, 5, 15, 10, 0)
+    const initialEnd = new Date(2026, 5, 15, 11, 0)
+    const wrapper = mountModal({ mode: 'create', initialStart, initialEnd })
+    await flushPromises()
+
+    setInputValue(
+      document.body.querySelector<HTMLInputElement>('.schedule-form-input[type="text"]')!,
+      '연간 반복',
+    )
+
+    const freqSelect = document.body.querySelectorAll<HTMLSelectElement>(
+      'select.schedule-form-input',
+    )[2]!
+    freqSelect.value = 'yearly'
+    freqSelect.dispatchEvent(new Event('change'))
+    await flushPromises()
+
+    document.body.querySelector('form')!.dispatchEvent(new Event('submit', { cancelable: true }))
+    await flushPromises()
+
+    const emitted = wrapper.emitted('submit')?.[0]?.[0] as Schedule
+    expect(emitted.recurrence).toEqual({
+      freq: 'yearly',
+      interval: 1,
+    })
+    wrapper.unmount()
+  })
+
+  it('clears recurrence when freq is set to none in edit mode', async () => {
+    const schedule: Schedule = {
+      ...mockSchedules[0]!,
+      recurrence: { freq: 'weekly', byWeekday: [1], count: 4 },
+    }
+    const wrapper = mountModal({ mode: 'edit', schedule })
+    await flushPromises()
+
+    const freqSelect = document.body.querySelectorAll<HTMLSelectElement>(
+      'select.schedule-form-input',
+    )[2]!
+    freqSelect.value = 'none'
+    freqSelect.dispatchEvent(new Event('change'))
+    await flushPromises()
+
+    document.body.querySelector('form')!.dispatchEvent(new Event('submit', { cancelable: true }))
+    await flushPromises()
+
+    const emitted = wrapper.emitted('submit')?.[0]?.[0] as Schedule
+    expect(emitted.recurrence).toBeUndefined()
+    wrapper.unmount()
+  })
 })

@@ -4,6 +4,64 @@
 
 ---
 
+## 다음 개발 추천 (2026-07-01 기준)
+
+> **현재 상태**: `@vuepkg/calendar@0.2.2` 배포 완료. F4-1~5 주요 기능, F3-1 문서 사이트, F4-11 자동 릴리즈까지 완료.
+
+### 🥇 1순위 — IMP-02/03 소형 prop 추가 (난이도 🟢, 예상 1~2일)
+
+**바로 착수 가능. 영향 작고 실용성 높음.**
+
+#### IMP-02 `weekdayLabels` prop
+
+- **현황**: `['SUN','MON','TUE','WED','THU','FRI','SAT']`가 `MonthView.vue`에 하드코딩
+- **작업**: `ScheduleCalendar`에 `weekdayLabels?: string[]` prop 추가, 미전달 시 영문 기본값 유지
+- **영향 파일**: `ScheduleCalendar.vue`, `MonthView.vue`, `TimedGrid.vue`
+
+#### IMP-03 `startHour` / `endHour` prop
+
+- **현황**: `TIMED_VIEW_START_HOUR = 0`, `TIMED_VIEW_END_HOUR = 23` 상수로 고정
+- **작업**: `startHour?: number`, `endHour?: number` prop 추가 (기본 0~23), `TimedGrid.vue` 그리드 높이·레이블 계산에 반영
+- **영향 파일**: `ScheduleCalendar.vue`, `TimedGrid.vue`, `constants/calendarView.ts`, `utils/timed.ts`
+
+---
+
+### 🥈 2순위 — F3-3 i18n/locale 시스템 (난이도 🟡, 예상 2~3일)
+
+**IMP-02와 자연스럽게 연결. 글로벌 npm 소비자 대응.**
+
+- **작업**: `locale?: string` prop 추가, `Intl.DateTimeFormat` 기반으로 요일·월 이름 자동 현지화 (브라우저 API라 zero-dep 유지)
+- IMP-02의 `weekdayLabels`를 locale 자동화로 일반화 — 수동 override도 병행 지원
+- **영향 파일**: `ScheduleCalendar.vue`, `MonthView.vue`, `TimedGrid.vue`, `@vuepkg/core/locale`
+- README 영문 섹션 추가 이후 타이밍 좋음
+
+---
+
+### 🥉 3순위 — 번들 정리 후 F4-6 Timeline 뷰 (난이도 🔴, 예상 1주+)
+
+**가장 큰 차별화 기능. 단, 착수 전 사전 작업 필수.**
+
+- **착수 전 필수**: 현재 번들이 budget의 **96%**(15.35KB / 16KB limit). F4-6 추가 시 초과 확실 → `size-limit` budget 상향(예: 20KB) 또는 동적 import 코드 분할 먼저 결정
+- **작업**: 다중 리소스(인원/장소) × 시간 타임라인 뷰. FullCalendar Premium 영역과 직접 겹침(§4.1 수익화 시사점 참고)
+- `useTimeSlotSelection`(F4-1)·`useScheduleDrag`(F4-4)·`expandRecurringSchedules`(F4-5) 인프라 재사용 가능
+- **영향 파일**: 신규 `TimelineView.vue`, `ScheduleCalendar.vue` 뷰 라우팅, `calendarView.ts` 상수
+
+---
+
+### 보너스 — F3-5 a11y 감사 (난이도 🟡, 독립 작업)
+
+**언제든 독립적으로 착수 가능. axe 통과 배지로 신뢰도 향상.**
+
+- **작업**: `axe-playwright` 통합 or `vitest-axe`로 전 컴포넌트 자동 접근성 점검
+- README에 a11y 항목 이미 노출 중 → 실제 axe 통과 배지 추가 시 신뢰도 상승
+- **영향 파일**: `e2e/accessibility.spec.ts` (신규), 필요 시 각 컴포넌트 `aria-*` 보완
+
+---
+
+**추천 착수 순서**: `IMP-02/03` → `F3-3 i18n` → 번들 분할 검토 → `F4-6 Timeline`
+
+---
+
 ## 완료 항목
 
 | 항목 | 내용 | 완료일 |

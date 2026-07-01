@@ -1,0 +1,14 @@
+# 모든 텍스트 파일의 줄바꿈을 LF로 통일합니다.
+# core.autocrlf 로컬 설정과 무관하게 저장소/워킹 디렉토리 모두 LF를 사용해
+# prettier/eslint의 endOfLine: "lf" 규칙과 충돌하지 않도록 합니다.
+* text=auto eol=lf
+
+# 바이너리 파일은 줄바꿈 변환에서 제외합니다.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+*.woff binary
+*.woff2 binary

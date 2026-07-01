@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { toRectBounds } from '@vuepkg/core'
 import { useMonthMeasuredCellHeight } from '@/composables/useMonthMeasuredCellHeight'
 import {
@@ -20,7 +20,7 @@ import {
   sliceMonthCellsForWeekCount,
   sortSchedulesForOverflowPopover,
 } from '@/utils/month'
-import { formatWeekdayLabels } from '@/utils/date'
+import { formatWeekdayLabels, toDateKey } from '@/utils/date'
 import CalendarMonthNav from '../CalendarMonthNav.vue'
 import MonthCell from '../MonthCell.vue'
 import AllDayBar from '../AllDayBar.vue'
@@ -103,11 +103,6 @@ function onOverflowScheduleClick(schedule: Schedule) {
   closeOverflowPopover()
 }
 
-watch(
-  () => props.calendar.monthLabel.value,
-  () => closeOverflowPopover(),
-)
-
 const monthWeeksRef = ref<HTMLElement | null>(null)
 const { cellHeightPx } = useMonthMeasuredCellHeight(monthWeeksRef, () => props.monthWeekCount)
 
@@ -116,6 +111,96 @@ const visibleMonthCells = computed(() =>
   sliceMonthCellsForWeekCount(props.calendar.monthCells.value, props.monthWeekCount),
 )
 const monthWeeks = computed(() => layoutMonthWeeks(visibleMonthCells.value, cellHeightPx.value))
+
+// ── Roving tabindex (SRV-P2-09, WCAG grid pattern) ──────────────────────
+const cellRefs = ref<Record<string, InstanceType<typeof MonthCell> | null>>({})
+function setCellRef(el: InstanceType<typeof MonthCell> | null, key: string) {
+  cellRefs.value[key] = el
+}
+
+const focusedCellKey = ref<string | null>(null)
+
+const defaultFocusKey = computed(() => {
+  const cells = visibleMonthCells.value
+  const preferred = cells.find((c) => c.isSelected) ?? cells.find((c) => c.isToday) ?? cells[0]
+  return preferred?.key ?? null
+})
+
+const activeFocusKey = computed(() => focusedCellKey.value ?? defaultFocusKey.value)
+
+watch(
+  () => props.calendar.monthLabel.value,
+  () => {
+    closeOverflowPopover()
+    focusedCellKey.value = null
+  },
+)
+
+watch(
+  () => props.monthWeekCount,
+  () => {
+    focusedCellKey.value = null
+  },
+)
+
+function onCellDateSelect(date: Date) {
+  focusedCellKey.value = toDateKey(date)
+  emit('date-select', { date, source: 'month-cell' })
+}
+
+function findCellPosition(key: string | null): { weekIndex: number; colIndex: number } | null {
+  if (key === null) {
+    return null
+  }
+
+  for (let weekIndex = 0; weekIndex < monthWeeks.value.length; weekIndex += 1) {
+    const colIndex = monthWeeks.value[weekIndex]!.cells.findIndex((cell) => cell.key === key)
+    if (colIndex !== -1) {
+      return { weekIndex, colIndex }
+    }
+  }
+
+  return null
+}
+
+function moveFocus(deltaWeek: number, deltaCol: number) {
+  const current = findCellPosition(activeFocusKey.value)
+  if (!current) {
+    return
+  }
+
+  const targetCell =
+    monthWeeks.value[current.weekIndex + deltaWeek]?.cells[current.colIndex + deltaCol]
+  if (!targetCell) {
+    return
+  }
+
+  focusedCellKey.value = targetCell.key
+  void nextTick(() => {
+    cellRefs.value[targetCell.key]?.focus()
+  })
+}
+
+function onGridKeydown(event: KeyboardEvent) {
+  switch (event.key) {
+    case 'ArrowUp':
+      event.preventDefault()
+      moveFocus(-1, 0)
+      break
+    case 'ArrowDown':
+      event.preventDefault()
+      moveFocus(1, 0)
+      break
+    case 'ArrowLeft':
+      event.preventDefault()
+      moveFocus(0, -1)
+      break
+    case 'ArrowRight':
+      event.preventDefault()
+      moveFocus(0, 1)
+      break
+  }
+}
 </script>
 
 <template>
@@ -146,14 +231,27 @@ const monthWeeks = computed(() => layoutMonthWeeks(visibleMonthCells.value, cell
         </div>
       </div>
 
-      <div ref="monthWeeksRef" class="month-weeks-body">
-        <div v-for="(week, weekIndex) in monthWeeks" :key="`week-${weekIndex}`" class="month-week">
+      <div
+        ref="monthWeeksRef"
+        class="month-weeks-body"
+        role="grid"
+        aria-label="Month calendar"
+        @keydown="onGridKeydown"
+      >
+        <div
+          v-for="(week, weekIndex) in monthWeeks"
+          :key="`week-${weekIndex}`"
+          class="month-week"
+          role="row"
+        >
           <MonthCell
             v-for="cell in week.cells"
+            :ref="(el) => setCellRef(el as InstanceType<typeof MonthCell> | null, cell.key)"
             :key="cell.key"
             :cell="cell"
             :get-type-style="calendar.getTypeStyle"
-            @date-select="emit('date-select', { date: $event, source: 'month-cell' })"
+            :tabindex="cell.key === activeFocusKey ? 0 : -1"
+            @date-select="onCellDateSelect($event)"
             @schedule-click="emit('schedule-click', $event)"
             @open-overflow="onOpenOverflow($event)"
           />

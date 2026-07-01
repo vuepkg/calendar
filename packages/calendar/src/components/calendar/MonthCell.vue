@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import type {
   CalendarScheduleClickPayload,
   CalendarOverflowClickPayload,
@@ -9,10 +10,17 @@ import { toRectBounds } from '@vuepkg/core'
 import HolidayChip from './HolidayChip.vue'
 import ScheduleEventChip from './ScheduleEventChip.vue'
 
-const props = defineProps<{
-  cell: MonthWeekCell
-  getTypeStyle: (type: Schedule['type']) => { color: string; backgroundColor: string }
-}>()
+const props = withDefaults(
+  defineProps<{
+    cell: MonthWeekCell
+    getTypeStyle: (type: Schedule['type']) => { color: string; backgroundColor: string }
+    /** roving tabindex — grid 내 단일 활성 셀만 0, 나머지 -1 (SRV-P2-09) */
+    tabindex?: number
+  }>(),
+  {
+    tabindex: 0,
+  },
+)
 
 const emit = defineEmits<{
   'date-select': [date: Date]
@@ -53,13 +61,20 @@ function onOpenOverflow(event: MouseEvent) {
     containerBounds,
   })
 }
+
+const rootEl = ref<HTMLElement | null>(null)
+
+defineExpose({
+  focus: () => rootEl.value?.focus(),
+})
 </script>
 
 <template>
   <div
+    ref="rootEl"
     class="month-cell"
     role="gridcell"
-    tabindex="0"
+    :tabindex="tabindex"
     :class="{
       outside: !cell.inCurrentMonth,
       today: cell.isToday,

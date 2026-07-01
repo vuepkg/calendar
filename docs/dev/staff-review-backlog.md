@@ -73,7 +73,7 @@
 | [SRV-P2-06](#srv-p2-06-공휴일-api-키-가이드) | MINOR | 보안 | `serviceKey` 클라이언트 노출 가능 — BFF 미강제 | **완료** (부분) | DEV warn + JSDoc 강화 (2026-07-01). 런타임 DTO 검증은 [SRV-P2-10](#srv-p2-10-공휴일-api-응답-검증) |
 | [SRV-P2-07](#srv-p2-07-headless-export) | MINOR | 로드맵 | `useCalendar` 미공개 — headless 포지셔닝 약함 | **완료** (부분) | `index.ts`에 `export { useCalendar }` (2026-07-01). 서브패스는 [SRV-P2-11](#srv-p2-11-headless-서브패스) |
 | [SRV-P2-08](#srv-p2-08-scheduleformmodal-단일-대형-파일) | MINOR | 유지보수 | `ScheduleFormModal.vue` **611줄** — 폼·반복 UI·검증 단일 파일 | **미착수** | recurrence 섹션·폼 필드 컴포넌트 분리 검토 |
-| [SRV-P2-09](#srv-p2-09-month-cell-roving-tabindex) | MINOR | 접근성 | 모든 월간 셀 `tabindex="0"` — Tab 순서 과다 | **미착수** | `role="grid"` + roving `tabindex` 패턴 |
+| [SRV-P2-09](#srv-p2-09-month-cell-roving-tabindex) | MINOR | 접근성 | 모든 월간 셀 `tabindex="0"` — Tab 순서 과다 | **완료** | `role="grid"`/`row` + roving `tabindex` + 화살표 키 이동 (2026-07-02) |
 | [SRV-P2-10](#srv-p2-10-공휴일-api-응답-검증) | MINOR | 타입/보안 | `response.json() as SpcdeApiResponse` 단언 | **미착수** | 경량 스키마 검증 또는 실패 시 빈 배열 + warn |
 | [SRV-P2-11](#srv-p2-11-headless-서브패스) | MINOR | 로드맵 | `@vuepkg/calendar/headless` 서브패스 미구현 | **미착수** | Phase 3 F3-2와 연계 — tree-shake·번들 분리에도 유리 |
 
@@ -271,11 +271,13 @@
 
 ### SRV-P2-09: Month cell roving tabindex
 
-**위치:** `MonthCell.vue` L61~62
+**위치:** `MonthCell.vue`, `views/MonthView.vue`
 
 **문제:** 모든 셀 `tabindex="0"` — 35~42개 포커스 정지점. WCAG grid 패턴과 불일치.
 
-**수정 방향:** `MonthView` 루트 `role="grid"`, 단일 활성 셀만 `tabindex="0"`, 화살표 키 이동.
+**수정:** `MonthCell`에 `tabindex` prop 추가(기본 `0`, 단독 마운트 시 하위 호환). `MonthView`가 `activeFocusKey`(선택일 → 오늘 → 첫 셀 순 fallback)를 계산해 해당 셀에만 `tabindex="0"`, 나머지는 `-1`. `.month-weeks-body`에 `role="grid"`, `.month-week`에 `role="row"`, 화살표 키(상하좌우)로 `cellRefs`를 통해 포커스 이동 — grid 경계에서는 이동하지 않음. 셀 클릭 시에도 `activeFocusKey`를 클릭한 셀로 동기화. 월 이동·`monthWeekCount` 변경 시 포커스 상태 리셋.
+
+**검증:** ✅ `MonthView.spec.ts` `describe('roving tabindex (SRV-P2-09)')` 5건 — role 노출, 단일 tabindex=0, 화살표 4방향 이동, 경계 무이동, 클릭 시 동기화 (2026-07-02).
 
 **검증:** 미착수.
 

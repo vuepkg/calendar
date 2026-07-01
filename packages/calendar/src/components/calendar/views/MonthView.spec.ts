@@ -226,4 +226,82 @@ describe('MonthView', () => {
       expect(labels).toEqual(['S', 'M', 'T', 'W', 'T', 'F', 'S'])
     })
   })
+
+  describe('roving tabindex (SRV-P2-09)', () => {
+    it('exposes role=grid/row on the grid and row containers', () => {
+      const wrapper = mountMonthView(startOfDay(new Date(2026, 4, 1)))
+      expect(wrapper.find('.month-weeks-body').attributes('role')).toBe('grid')
+      expect(wrapper.findAll('.month-week').every((row) => row.attributes('role') === 'row')).toBe(
+        true,
+      )
+    })
+
+    it('gives exactly one cell tabindex 0 (the selected date) and -1 to the rest', () => {
+      const wrapper = mountMonthView(startOfDay(new Date(2026, 4, 1)))
+      const cells = wrapper.findAll('.month-cell')
+      const zeroTabindexCells = cells.filter((cell) => cell.attributes('tabindex') === '0')
+
+      expect(zeroTabindexCells).toHaveLength(1)
+      expect(cells.filter((cell) => cell.attributes('tabindex') === '-1')).toHaveLength(
+        cells.length - 1,
+      )
+      expect(zeroTabindexCells[0]!.find('.cell-date').text()).toBe('1')
+    })
+
+    it('moves the active cell right/left/down/up with arrow keys', async () => {
+      const wrapper = mountMonthView(startOfDay(new Date(2026, 4, 1)))
+      const grid = wrapper.get('.month-weeks-body')
+
+      function activeIndex() {
+        return wrapper.findAll('.month-cell').findIndex((c) => c.attributes('tabindex') === '0')
+      }
+
+      const initialIndex = activeIndex()
+
+      await grid.trigger('keydown', { key: 'ArrowRight' })
+      expect(activeIndex()).toBe(initialIndex + 1)
+
+      await grid.trigger('keydown', { key: 'ArrowLeft' })
+      expect(activeIndex()).toBe(initialIndex)
+
+      await grid.trigger('keydown', { key: 'ArrowDown' })
+      expect(activeIndex()).toBe(initialIndex + 7)
+
+      await grid.trigger('keydown', { key: 'ArrowUp' })
+      expect(activeIndex()).toBe(initialIndex)
+    })
+
+    it('does not move past the grid boundary', async () => {
+      const wrapper = mountMonthView(startOfDay(new Date(2026, 4, 1)))
+      const grid = wrapper.get('.month-weeks-body')
+
+      function activeIndex() {
+        return wrapper.findAll('.month-cell').findIndex((c) => c.attributes('tabindex') === '0')
+      }
+
+      // move to the very first cell (top-left) then try to move further up/left
+      for (let i = 0; i < 10; i += 1) {
+        await grid.trigger('keydown', { key: 'ArrowLeft' })
+        await grid.trigger('keydown', { key: 'ArrowUp' })
+      }
+      expect(activeIndex()).toBe(0)
+
+      await grid.trigger('keydown', { key: 'ArrowUp' })
+      expect(activeIndex()).toBe(0)
+      await grid.trigger('keydown', { key: 'ArrowLeft' })
+      expect(activeIndex()).toBe(0)
+    })
+
+    it('updates the active cell when a different cell is clicked', async () => {
+      const wrapper = mountMonthView(startOfDay(new Date(2026, 4, 1)))
+      const may15Cell = wrapper
+        .findAll('.month-cell:not(.outside)')
+        .find((el) => el.find('.cell-date').text() === '15')!
+
+      await may15Cell.trigger('click')
+
+      expect(may15Cell.attributes('tabindex')).toBe('0')
+      expect(wrapper.findAll('.month-cell[tabindex="0"]')).toHaveLength(1)
+    })
+  })
 })

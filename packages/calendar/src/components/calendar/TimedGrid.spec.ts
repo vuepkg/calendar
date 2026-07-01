@@ -175,6 +175,8 @@ describe('TimedGrid — drag-and-drop (useScheduleDrag)', () => {
     return {
       id: 'evt-1',
       title: 'Test Event',
+      participantId: 'user-test',
+      participantName: 'Test User',
       start: new Date(2026, 3, 22, 10, 0, 0, 0),
       end: new Date(2026, 3, 22, 11, 0, 0, 0),
       type: 'company',

@@ -23,10 +23,17 @@ const emit = defineEmits<{
     clickable
     :color="color"
     :background-color="backgroundColor"
-    :title="`${schedule.title} (${schedule.participantName})`"
+    :title="
+      schedule.recurrenceId
+        ? `${schedule.title} (${schedule.participantName}, 반복 일정)`
+        : `${schedule.title} (${schedule.participantName})`
+    "
     @click="emit('click', schedule)"
   >
-    <span class="event-title">{{ schedule.title }}</span>
+    <span class="event-title">
+      <span v-if="schedule.recurrenceId" class="event-recurrence-icon" aria-hidden="true">⟳</span
+      >{{ schedule.title }}
+    </span>
     <span v-if="showParticipant" class="event-participant">{{ schedule.participantName }}</span>
     <span v-if="!compact && !schedule.allDay" class="event-time">
       {{ formatPeriod(schedule.start, schedule.end) }}
@@ -57,6 +64,12 @@ const emit = defineEmits<{
 
 .event-title {
   font-weight: 600;
+}
+
+.event-recurrence-icon {
+  margin-right: 2px;
+  font-weight: 400;
+  opacity: var(--vp-chip-text-sub, 0.85);
 }
 
 .event-participant,

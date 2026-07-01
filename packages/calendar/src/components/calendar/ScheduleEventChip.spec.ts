@@ -45,4 +45,34 @@ describe('ScheduleEventChip', () => {
     expect(wrapper.attributes('tabindex')).toBe('0')
     expect(wrapper.attributes('title')).toContain(schedule.title)
   })
+
+  it('shows a recurrence icon and hint for recurring instances', () => {
+    const recurringInstance = {
+      ...schedule,
+      id: `${schedule!.id}::2026-05-07`,
+      recurrenceId: schedule!.id,
+    }
+    const wrapper = mount(ScheduleEventChip, {
+      props: {
+        schedule: recurringInstance,
+        color: '#1565c0',
+        backgroundColor: '#e3f2fd',
+      },
+    })
+
+    expect(wrapper.find('.event-recurrence-icon').exists()).toBe(true)
+    expect(wrapper.attributes('title')).toContain('반복 일정')
+  })
+
+  it('does not show a recurrence icon for a non-recurring schedule', () => {
+    const wrapper = mount(ScheduleEventChip, {
+      props: {
+        schedule,
+        color: '#1565c0',
+        backgroundColor: '#e3f2fd',
+      },
+    })
+
+    expect(wrapper.find('.event-recurrence-icon').exists()).toBe(false)
+  })
 })

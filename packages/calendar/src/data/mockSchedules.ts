@@ -370,6 +370,28 @@ export const mockSchedules: Schedule[] = [
   },
 ]
 
+/**
+ * F4-5 반복 일정 데모 샘플 — App.vue 데모 전용.
+ * `mockSchedules`(고정 개수를 전제로 하는 useCalendar/월간 overflow 테스트 다수가 참조)에는
+ * 포함하지 않는다. 매주 화/목 반복이라 기존 샘플 날짜(월/수/금·일 단위)와 겹치지 않는다.
+ */
+export const mockRecurringSchedules: Schedule[] = [
+  {
+    id: 's-r001',
+    title: '주간 스탠드업 (반복)',
+    type: 'team_schedule',
+    participantId: CURRENT_USER_ID,
+    participantName: 'HONG GILDONG',
+    start: at('2026-04-07', '09:00'),
+    end: at('2026-04-07', '09:30'),
+    remarks: '매주 화/목 09:00 ~ 09:30',
+    recurrence: { freq: 'weekly', byWeekday: [2, 4], count: 30 },
+  },
+]
+
+/** F4-5 반복 일정 데모 샘플 ID (매주 화/목) */
+export const RECURRING_SCHEDULE_ID = 's-r001'
+
 /** 3일 종일 일정 샘플 ID (제주 연수) */
 export const MULTI_DAY_ALL_DAY_ID = 's-022'
 

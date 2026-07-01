@@ -13,12 +13,15 @@ import {
 import {
   CURRENT_USER_ID,
   mockCompanyHolidays,
+  mockRecurringSchedules,
   mockSchedules,
   participants,
 } from '@/data/mockSchedules'
 import { startOfDay } from '@/utils/date'
 
-const allSchedules = ref<Schedule[]>(mockSchedules.map((schedule) => ({ ...schedule })))
+const allSchedules = ref<Schedule[]>(
+  [...mockSchedules, ...mockRecurringSchedules].map((schedule) => ({ ...schedule })),
+)
 
 const ALL_SCHEDULE_TYPES = SCHEDULE_TYPE_OPTIONS.map((option) => option.type)
 
@@ -44,8 +47,11 @@ const { view, date, listFilterDate, viewScope, scheduleTypes, calendarListeners 
       formModalOpen.value = true
     },
     onScheduleClick: (payload) => {
+      // 반복 일정 회차를 클릭한 경우 마스터 일정을 찾아 시리즈 전체를 수정 대상으로 연다.
+      const masterId = payload.schedule.recurrenceId ?? payload.schedule.id
       formModalMode.value = 'edit'
-      activeSchedule.value = payload.schedule
+      activeSchedule.value =
+        allSchedules.value.find((schedule) => schedule.id === masterId) ?? payload.schedule
       formModalOpen.value = true
     },
   })

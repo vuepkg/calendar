@@ -183,4 +183,99 @@ describe('ScheduleFormModal', () => {
     expect(wrapper.emitted('submit')).toBeUndefined()
     wrapper.unmount()
   })
+
+  it('omits recurrence from the built schedule by default', async () => {
+    const initialStart = new Date(2026, 5, 15, 10, 0)
+    const initialEnd = new Date(2026, 5, 15, 11, 0)
+    const wrapper = mountModal({ mode: 'create', initialStart, initialEnd })
+    await flushPromises()
+
+    setInputValue(
+      document.body.querySelector<HTMLInputElement>('.schedule-form-input[type="text"]')!,
+      '반복 없는 일정',
+    )
+    await flushPromises()
+
+    document.body.querySelector('form')!.dispatchEvent(new Event('submit', { cancelable: true }))
+    await flushPromises()
+
+    const emitted = wrapper.emitted('submit')?.[0]?.[0] as Schedule
+    expect(emitted.recurrence).toBeUndefined()
+    wrapper.unmount()
+  })
+
+  it('builds a weekly recurrence rule with selected weekdays and a count end condition', async () => {
+    const initialStart = new Date(2026, 5, 15, 10, 0) // Monday
+    const initialEnd = new Date(2026, 5, 15, 11, 0)
+    const wrapper = mountModal({ mode: 'create', initialStart, initialEnd })
+    await flushPromises()
+
+    setInputValue(
+      document.body.querySelector<HTMLInputElement>('.schedule-form-input[type="text"]')!,
+      '주간 반복 회의',
+    )
+
+    const freqSelect = document.body.querySelectorAll<HTMLSelectElement>(
+      'select.schedule-form-input',
+    )[2]!
+    freqSelect.value = 'weekly'
+    freqSelect.dispatchEvent(new Event('change'))
+    await flushPromises()
+
+    const weekdayButtons =
+      document.body.querySelectorAll<HTMLButtonElement>('.schedule-form-weekday')
+    // Monday(1) is pre-selected from the start date; also toggle on Wednesday(3)
+    weekdayButtons[3]!.click()
+    await flushPromises()
+
+    const countRadio = document.body.querySelector<HTMLInputElement>(
+      'input[type="radio"][value="count"]',
+    )!
+    countRadio.checked = true
+    countRadio.dispatchEvent(new Event('change'))
+    await flushPromises()
+
+    const countInput = document.body.querySelector<HTMLInputElement>(
+      '.schedule-form-input--inline[type="number"]',
+    )!
+    setInputValue(countInput, '4')
+    await flushPromises()
+
+    document.body.querySelector('form')!.dispatchEvent(new Event('submit', { cancelable: true }))
+    await flushPromises()
+
+    const emitted = wrapper.emitted('submit')?.[0]?.[0] as Schedule
+    expect(emitted.recurrence).toEqual({
+      freq: 'weekly',
+      interval: 1,
+      byWeekday: [1, 3],
+      count: 4,
+    })
+    wrapper.unmount()
+  })
+
+  it('prefills recurrence controls from an existing recurring schedule in edit mode', async () => {
+    const schedule: Schedule = {
+      ...mockSchedules[0]!,
+      recurrence: { freq: 'monthly', interval: 2, count: 6 },
+    }
+    const wrapper = mountModal({ mode: 'edit', schedule })
+    await flushPromises()
+
+    const freqSelect = document.body.querySelectorAll<HTMLSelectElement>(
+      'select.schedule-form-input',
+    )[2]!
+    expect(freqSelect.value).toBe('monthly')
+
+    const intervalInput = document.body.querySelector<HTMLInputElement>(
+      '.schedule-form-field--interval .schedule-form-input',
+    )!
+    expect(intervalInput.value).toBe('2')
+
+    const checkedRadio = document.body.querySelector<HTMLInputElement>(
+      'input[type="radio"]:checked',
+    )!
+    expect(checkedRadio.value).toBe('count')
+    wrapper.unmount()
+  })
 })

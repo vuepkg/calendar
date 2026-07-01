@@ -193,6 +193,7 @@ export function buildScheduleFromDraft(
     start,
     end,
     allDay: draft.allDay,
+    recurrence: draft.recurrence,
     remarks: draft.allDay
       ? `${startKey} ~ ${endKey}`
       : `${startKey} ${formatTimeKey(start)} ~ ${endKey} ${formatTimeKey(end)}`,

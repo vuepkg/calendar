@@ -2,9 +2,20 @@
 import { computed, reactive, watch } from 'vue'
 import { Button, Dialog } from '@vuepkg/ui'
 import { SCHEDULE_TYPE_OPTIONS } from '@/constants/calendarView'
-import type { Participant, Schedule, ScheduleDraft, ScheduleTypeOption } from '@/types/schedule'
+import type {
+  Participant,
+  RecurrenceFrequency,
+  RecurrenceRule,
+  Schedule,
+  ScheduleDraft,
+  ScheduleTypeOption,
+} from '@/types/schedule'
 import { formatTime, toDateKey } from '@/utils/date'
 import { buildScheduleFromDraft } from '@/utils/schedule'
+
+type RecurrenceEndMode = 'never' | 'count' | 'until'
+
+const RECURRENCE_WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토']
 
 const props = withDefaults(
   defineProps<{
@@ -41,6 +52,14 @@ interface FormState {
   start: Date
   end: Date
   allDay: boolean
+  recurrenceFreq: 'none' | RecurrenceFrequency
+  recurrenceInterval: number
+  recurrenceByWeekday: number[]
+  recurrenceEndMode: RecurrenceEndMode
+  recurrenceCount: number
+  recurrenceUntil: Date | null
+  /** UI에 노출하지 않는 기존 단일 회차 삭제 예외 — 시리즈 저장 시 보존한다 */
+  recurrenceExceptions: string[]
 }
 
 function defaultStart(): Date {
@@ -53,6 +72,7 @@ function defaultEnd(): Date {
 
 function buildInitialForm(): FormState {
   if (props.mode === 'edit' && props.schedule) {
+    const rule = props.schedule.recurrence
     return {
       title: props.schedule.title,
       type: props.schedule.type,
@@ -60,16 +80,31 @@ function buildInitialForm(): FormState {
       start: props.schedule.start,
       end: props.schedule.end,
       allDay: props.schedule.allDay ?? false,
+      recurrenceFreq: rule?.freq ?? 'none',
+      recurrenceInterval: rule?.interval ?? 1,
+      recurrenceByWeekday: rule?.byWeekday ? [...rule.byWeekday] : [],
+      recurrenceEndMode: rule?.count !== undefined ? 'count' : rule?.until ? 'until' : 'never',
+      recurrenceCount: rule?.count ?? 5,
+      recurrenceUntil: rule?.until ?? null,
+      recurrenceExceptions: rule?.exceptions ? [...rule.exceptions] : [],
     }
   }
 
+  const start = defaultStart()
   return {
     title: '',
     type: props.scheduleTypeOptions[0]?.type ?? '',
     participantId: props.participants[0]?.id ?? '',
-    start: defaultStart(),
+    start,
     end: defaultEnd(),
     allDay: false,
+    recurrenceFreq: 'none',
+    recurrenceInterval: 1,
+    recurrenceByWeekday: [start.getDay()],
+    recurrenceEndMode: 'never',
+    recurrenceCount: 5,
+    recurrenceUntil: null,
+    recurrenceExceptions: [],
   }
 }
 
@@ -90,6 +125,60 @@ const rangeError = computed(() =>
   form.end.getTime() < form.start.getTime() ? '종료가 시작보다 빠를 수 없습니다.' : null,
 )
 const isValid = computed(() => !titleError.value && !rangeError.value)
+const isRecurring = computed(() => form.recurrenceFreq !== 'none')
+const recurrenceIntervalUnitLabel = computed(() => {
+  switch (form.recurrenceFreq) {
+    case 'daily':
+      return '일마다'
+    case 'weekly':
+      return '주마다'
+    case 'monthly':
+      return '월마다'
+    case 'yearly':
+      return '년마다'
+    default:
+      return ''
+  }
+})
+
+function toggleRecurrenceWeekday(weekday: number) {
+  form.recurrenceByWeekday = form.recurrenceByWeekday.includes(weekday)
+    ? form.recurrenceByWeekday.filter((day) => day !== weekday)
+    : [...form.recurrenceByWeekday, weekday].sort((a, b) => a - b)
+}
+
+function buildRecurrence(): RecurrenceRule | undefined {
+  if (form.recurrenceFreq === 'none') {
+    return undefined
+  }
+
+  const rule: RecurrenceRule = {
+    freq: form.recurrenceFreq,
+    interval: Math.max(1, form.recurrenceInterval || 1),
+  }
+
+  if (form.recurrenceFreq === 'weekly' && form.recurrenceByWeekday.length > 0) {
+    rule.byWeekday = [...form.recurrenceByWeekday]
+  }
+  if (form.recurrenceEndMode === 'count') {
+    rule.count = Math.max(1, form.recurrenceCount || 1)
+  }
+  if (form.recurrenceEndMode === 'until' && form.recurrenceUntil) {
+    rule.until = form.recurrenceUntil
+  }
+  if (form.recurrenceExceptions.length > 0) {
+    rule.exceptions = [...form.recurrenceExceptions]
+  }
+
+  return rule
+}
+
+function onRecurrenceUntilChange(event: Event) {
+  const value = (event.target as HTMLInputElement).value
+  form.recurrenceUntil = value
+    ? withDateKeepingTime(form.recurrenceUntil ?? form.start, value)
+    : null
+}
 
 function withDateKeepingTime(base: Date, dateKey: string): Date {
   const [year, month, day] = dateKey.split('-').map(Number)
@@ -138,6 +227,7 @@ function handleSubmit() {
     start: form.start,
     end: form.end,
     allDay: form.allDay,
+    recurrence: buildRecurrence(),
   }
 
   const built = buildScheduleFromDraft(draft, props.participants, props.existingSchedules)
@@ -238,6 +328,82 @@ function handleDelete() {
           </label>
         </div>
 
+        <label class="schedule-form-field">
+          <span class="schedule-form-label">반복</span>
+          <select v-model="form.recurrenceFreq" class="schedule-form-input">
+            <option value="none">반복 안 함</option>
+            <option value="daily">매일</option>
+            <option value="weekly">매주</option>
+            <option value="monthly">매월</option>
+            <option value="yearly">매년</option>
+          </select>
+        </label>
+
+        <div v-if="isRecurring" class="schedule-form-recurrence">
+          <div class="schedule-form-row">
+            <label class="schedule-form-field schedule-form-field--interval">
+              <span class="schedule-form-label">간격</span>
+              <input
+                v-model.number="form.recurrenceInterval"
+                type="number"
+                min="1"
+                class="schedule-form-input"
+              />
+            </label>
+            <span class="schedule-form-interval-unit">{{ recurrenceIntervalUnitLabel }}</span>
+          </div>
+
+          <div v-if="form.recurrenceFreq === 'weekly'" class="schedule-form-weekdays">
+            <button
+              v-for="(label, weekday) in RECURRENCE_WEEKDAY_LABELS"
+              :key="weekday"
+              type="button"
+              class="schedule-form-weekday"
+              :class="{ active: form.recurrenceByWeekday.includes(weekday) }"
+              :aria-pressed="form.recurrenceByWeekday.includes(weekday)"
+              @click="toggleRecurrenceWeekday(weekday)"
+            >
+              {{ label }}
+            </button>
+          </div>
+
+          <fieldset class="schedule-form-end">
+            <legend class="schedule-form-label">종료</legend>
+            <label class="schedule-form-radio">
+              <input v-model="form.recurrenceEndMode" type="radio" value="never" />
+              <span>없음</span>
+            </label>
+            <label class="schedule-form-radio">
+              <input v-model="form.recurrenceEndMode" type="radio" value="count" />
+              <span>
+                <input
+                  v-model.number="form.recurrenceCount"
+                  type="number"
+                  min="1"
+                  class="schedule-form-input schedule-form-input--inline"
+                  :disabled="form.recurrenceEndMode !== 'count'"
+                  @focus="form.recurrenceEndMode = 'count'"
+                />
+                회 반복
+              </span>
+            </label>
+            <label class="schedule-form-radio">
+              <input v-model="form.recurrenceEndMode" type="radio" value="until" />
+              <span>
+                <input
+                  type="date"
+                  class="schedule-form-input schedule-form-input--inline"
+                  :value="form.recurrenceUntil ? toDateKey(form.recurrenceUntil) : ''"
+                  :disabled="form.recurrenceEndMode !== 'until'"
+                  @focus="form.recurrenceEndMode = 'until'"
+                  @change="onRecurrenceUntilChange"
+                />
+                까지
+              </span>
+            </label>
+          </fieldset>
+        </div>
+
         <p v-if="titleError" class="schedule-form-error">{{ titleError }}</p>
         <p v-else-if="rangeError" class="schedule-form-error">{{ rangeError }}</p>
       </div>
@@ -332,6 +498,78 @@ function handleDelete() {
   gap: 6px;
   font-size: 13px;
   color: var(--vp-color-text);
+}
+
+.schedule-form-recurrence {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid var(--vp-color-border);
+  border-radius: 4px;
+  background: var(--vp-color-bg-subtle, transparent);
+}
+
+.schedule-form-field--interval {
+  flex: 0 0 80px;
+}
+
+.schedule-form-interval-unit {
+  align-self: flex-end;
+  padding-bottom: 6px;
+  font-size: 13px;
+  color: var(--vp-color-text);
+}
+
+.schedule-form-weekdays {
+  display: flex;
+  gap: 4px;
+}
+
+.schedule-form-weekday {
+  flex: 1;
+  padding: 4px 0;
+  font-size: 12px;
+  border: 1px solid var(--vp-color-border);
+  border-radius: 4px;
+  background: var(--vp-color-bg);
+  color: var(--vp-color-text);
+  cursor: pointer;
+}
+
+.schedule-form-weekday.active {
+  border-color: var(--vp-color-primary, #1565c0);
+  background: var(--vp-color-primary-subtle, #e3f2fd);
+  color: var(--vp-color-primary, #1565c0);
+  font-weight: 600;
+}
+
+.schedule-form-weekday:focus-visible {
+  outline: var(--vp-focus-ring);
+  outline-offset: 1px;
+}
+
+.schedule-form-end {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.schedule-form-radio {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--vp-color-text);
+}
+
+.schedule-form-input--inline {
+  width: auto;
+  display: inline-block;
+  padding: 2px 6px;
 }
 
 .schedule-form-error {

@@ -74,6 +74,10 @@ export default defineConfig({
           text: '마이그레이션',
           items: [{ text: '0.0.x → 0.1.x', link: '/guide/migration' }],
         },
+        {
+          text: '기여 & 릴리즈',
+          items: [{ text: '릴리즈 가이드', link: '/guide/release' }],
+        },
       ],
       '/api/': [
         {

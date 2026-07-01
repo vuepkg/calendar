@@ -1,0 +1,17 @@
+/* demo app 전용 — 라이브러리 소비자는 직접 import 금지 */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #edf2f7;
+  color: #1e293b;
+}
+
+#app {
+  height: 100%;
+}

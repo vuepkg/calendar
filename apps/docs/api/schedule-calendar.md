@@ -11,7 +11,7 @@
 | `fetchPublicHolidays` | `boolean` | `false` | 공공데이터포털 공휴일 자동 조회 |
 | `publicHolidayServiceKey` | `string` | — | 공공 API 인증키 (BFF 사용 시 생략 권장) |
 | `hideToolbar` | `boolean` | `false` | 뷰 전환 툴바 숨김 |
-| `scheduleTypeOptions` | `ScheduleTypeOption[]` | 기본 3종 | 일정 유형별 라벨·색상 |
+| `scheduleTypeOptions` | `ScheduleTypeOption[]` | 기본 3종 | 일정 유형별 라벨·색상 (`type`/`label`/`color`/`backgroundColor`) |
 | `monthWeekCount` | `2 \| 3 \| 6` | `6` | 월간 뷰 표시 주 수 |
 
 ## v-model

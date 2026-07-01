@@ -10,19 +10,4 @@ html {
   box-sizing: inherit;
 }
 
-html,
-body {
-  height: 100%;
-  overflow: hidden;
-}
-
-body {
-  margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #edf2f7;
-  color: #1e293b;
-}
-
-#app {
-  height: 100%;
-}
+/* 아래 규칙은 demo app(main.ts)에서만 사용. 라이브러리 소비자는 별도 app.css 참고. */

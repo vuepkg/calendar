@@ -56,7 +56,7 @@ interface Participant {
 
 ```ts
 interface ScheduleTypeOption {
-  value: string
+  type: string
   label: string
   color: string
   backgroundColor: string

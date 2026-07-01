@@ -356,7 +356,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 
 ### 다음 단계 — Phase 4 진행 현황 (2026-07-01 갱신)
 
-> **진행 현황 (2026-07-01)**: SRV-P1-01(MonthCell a11y)·SRV-P1-03(대형 뷰 분리) 완료 후 F4-1(드래그 슬롯 선택) 구현 완료. `useTimeSlotSelection` composable이 F4-4 DnD의 pointer event 인프라를 이미 갖추고 있다.
+> **진행 현황 (2026-07-01)**: SRV-P1-01/P1-03 완료 → F4-1(드래그 슬롯 선택) 완료 → SRV-P2 부채 전량 처리 완료 (P2-01~07 + NIT-01). `useTimeSlotSelection` composable이 F4-4 DnD의 pointer event 인프라를 이미 갖추고 있다.
 
 | ID | 작업 | 난이도 | 비고 |
 | -- | ---- | ------ | ---- |
@@ -364,7 +364,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | F4-4 | 드래그&드롭 이벤트 이동·리사이즈 (IMP-06) | 🔴 | F4-1의 `useTimeSlotSelection` pointer 인프라 재사용 가능 — **다음 작업 후보** |
 | F4-2 | 2-week / 3-week 월간 뷰 변형 (IMP-05) | 🟡 | `monthWeekCount?: 2\|3\|6` prop — F4-4와 병행 가능 |
 | — | §1.5 잔여 항목 (`vite-plugin-dts` 상대경로 누수) 설계 검토 | 🟡 | 영향도 낮음 — Phase 4 작업과 별개로 여유 있을 때 처리 |
-| — | [staff-review-backlog.md](./staff-review-backlog.md) P2 | 🟡~🔴 | SRV-P2-01~P2-07 — 1.0.0 전 처리 필요 |
+| ~~—~~ | ~~[staff-review-backlog.md](./staff-review-backlog.md) P2~~ | ~~🟡~🔴~~ | ~~SRV-P2-01~P2-07 — 1.0.0 전 처리 필요~~ → ✅ 완료 (2026-07-01) |
 
 F4-5(반복 일정)·F4-6(Timeline) 같은 고난도 항목은 F4-4로 DnD 인프라를 다진 뒤 착수 권장.
 

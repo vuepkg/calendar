@@ -48,19 +48,19 @@
 
 | ID | Severity | 카테고리 | 요약 | 상태 | 담당/비고 |
 | -- | -------- | -------- | ---- | ---- | --------- |
-| [SRV-P2-01](#srv-p2-01-calendarlisteners-강제) | MAJOR | API | bare `ScheduleCalendar` + v-model만 연결 시 UI dead | 미착수 | 문서화 또는 dev 경고 / compound API |
-| [SRV-P2-02](#srv-p2-02-usepublicholidays-retryloading) | MAJOR | 런타임 | `failedYears` 영구 스킵, 단일 `loading` 플래그 | 미착수 | retry 정책 + inflight 카운트 |
-| [SRV-P2-03](#srv-p2-03-overflow-popover-auto-close) | MINOR | UX | 월 이동·뷰 전환 시 overflow 팝오버 미닫힘 | 미착수 | `MonthView.vue` watch |
-| [SRV-P2-04](#srv-p2-04-listview-rowkey) | MINOR | 데이터 | `rowKey`가 인덱스 기반 (`row.no`) | 미착수 | `schedule.id` 사용 |
-| [SRV-P2-05](#srv-p2-05-usecalendar-dead-api) | MINOR | 아키텍처 | `setView`/`selectDate` dead path가 context에 노출 | 미착수 | 내부 전용 축소 |
-| [SRV-P2-06](#srv-p2-06-공휴일-api-키-가이드) | MINOR | 보안 | `serviceKey` 클라이언트 노출 가능 — BFF 미강제 | 미착수 | README/JSDoc + prod warn |
-| [SRV-P2-07](#srv-p2-07-headless-export) | MINOR | 로드맵 | `useCalendar` 미공개 — headless 포지셔닝 약함 | 미착수 | Phase 3 `@vuepkg/calendar/headless` |
+| [SRV-P2-01](#srv-p2-01-calendarlisteners-강제) | MAJOR | API | bare `ScheduleCalendar` + v-model만 연결 시 UI dead | **완료** | `onMounted` DEV 경고: `onNavigate` 리스너 미감지 시 `console.warn` (2026-07-01) |
+| [SRV-P2-02](#srv-p2-02-usepublicholidays-retryloading) | MAJOR | 런타임 | `failedYears` 영구 스킵, 단일 `loading` 플래그 | **완료** | TTL 30 s 재시도 (`Map<year, timestamp>`), `inflightCount` ref → `computed loading`. spec 3건 추가 (2026-07-01) |
+| [SRV-P2-03](#srv-p2-03-overflow-popover-auto-close) | MINOR | UX | 월 이동·뷰 전환 시 overflow 팝오버 미닫힘 | **완료** | `MonthView.vue` — `watch(monthLabel, closeOverflowPopover)` 추가 (2026-07-01) |
+| [SRV-P2-04](#srv-p2-04-listview-rowkey) | MINOR | 데이터 | `rowKey`가 인덱스 기반 (`row.no`) | **완료** | `ListView.vue` `:rowKey` → `row.schedule.id` (2026-07-01) |
+| [SRV-P2-05](#srv-p2-05-usecalendar-dead-api) | MINOR | 아키텍처 | `setView`/`selectDate` dead path가 context에 노출 | **완료** | `CalendarContext` 타입에 `@internal` JSDoc 추가 (2026-07-01) |
+| [SRV-P2-06](#srv-p2-06-공휴일-api-키-가이드) | MINOR | 보안 | `serviceKey` 클라이언트 노출 가능 — BFF 미강제 | **완료** | `fetchPublicHolidays` DEV warn + `UsePublicHolidaysOptions.serviceKey` JSDoc 강화 (2026-07-01) |
+| [SRV-P2-07](#srv-p2-07-headless-export) | MINOR | 로드맵 | `useCalendar` 미공개 — headless 포지셔닝 약함 | **완료** | `index.ts`에 `export { useCalendar }` 추가 (2026-07-01) |
 
 ### NIT
 
 | ID | Severity | 요약 | 상태 |
 | -- | -------- | ---- | ---- |
-| SRV-NIT-01 | NIT | `CalendarToolbar` `view as CalendarView` 단언 | 미착수 |
+| SRV-NIT-01 | NIT | `CalendarToolbar` `view as CalendarView` 단언 | **완료** — viewTabs 조회로 type-safe 교체 (2026-07-01) |
 
 ---
 

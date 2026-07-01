@@ -7,8 +7,8 @@
 | 스택      | Vue 3 (Composition API) + TypeScript + Vite 8                                     |
 | 빌드      | pnpm workspace + Turborepo (모노레포)                                             |
 | UI        | 커스텀 HTML/CSS — PrimeVue 의존성 없음 (List 뷰 포함 전체 네이티브 구현)          |
-| 테스트    | Vitest 3.x (calendar 201건 + ui 65건 + core 70건 = 336건), Playwright E2E 142건 (기능 134 + 시각 회귀 8) |
-| CI        | GitHub Actions **Node 24** — lint → typecheck → vitest → build → `test:e2e:ci`(134). 시각 회귀 8건은 [visual-regression.yml](../../.github/workflows/visual-regression.yml) 수동 실행 |
+| 테스트    | Vitest 3.x (calendar 273건 + ui 76건 + core 70건 = 419건), Playwright E2E 145건 (기능 137 + 시각 회귀 8) |
+| CI        | GitHub Actions **Node 24** — lint → typecheck → vitest → build → `test:e2e:ci`(137). 시각 회귀 8건은 [visual-regression.yml](../../.github/workflows/visual-regression.yml) 수동 실행 |
 | Git hooks | Husky `pre-push` → `pnpm verify:push` (lint + typecheck + vitest) |
 | 진입점    | `ScheduleCalendar.vue`                                                            |
 | 상태 모델 | **emit-only** — 뷰·날짜 변경은 소비 측 (`v-model` + 핸들러)에서 처리              |
@@ -74,22 +74,28 @@ packages/calendar/src/
 │   ├── CalendarToolbar.vue      # Month/Week/Day/List 탭 (@vuepkg/ui SegmentedControl 소비)
 │   ├── CalendarMonthNav.vue     # ‹ YYYY-MM › (Month/List 공통, @vuepkg/ui IconButton 소비)
 │   ├── CalendarPeriodNav.vue    # Today + ‹ › (Week/Day, @vuepkg/ui Button/IconButton 소비)
-│   ├── TimedGrid.vue            # Week/Day 공통 그리드 (공휴일 칩 포함)
+│   ├── TimedGrid.vue            # Week/Day 공통 그리드 (495줄, 시간축·이벤트 블록·DnD 오케스트레이션)
+│   ├── TimedGridHeader.vue      # Week/Day 요일·날짜 헤더 행 (SRV-P1-03 분리)
+│   ├── TimedGridAllDay.vue      # 공휴일 칩 + All Day spanning 바 (SRV-P1-03 분리)
+│   ├── MonthCell.vue            # 월간 날짜 셀 (키보드 a11y — role=gridcell, SRV-P1-01/P1-03 분리)
 │   ├── HolidayChip.vue          # 공휴일·기념일 붉은 칩 (@vuepkg/ui Chip 소비)
 │   ├── AllDayBar.vue            # 종일/멀티데이 spanning 바
 │   ├── ScheduleEventChip.vue    # 일정 칩 (클릭 emit, @vuepkg/ui Chip 소비)
+│   ├── ScheduleFormModal.vue    # 일정 생성/수정 모달 (611줄, 반복 규칙 UI 포함 — @vuepkg/ui Dialog 소비, F4-3/F4-5)
 │   ├── MonthOverflowPopover.vue # +N 팝오버 (@vuepkg/ui Popover 소비)
 │   ├── views/
-│   │   ├── MonthView.vue
-│   │   ├── WeekView.vue
-│   │   ├── DayView.vue
+│   │   ├── MonthView.vue        # weekdayLabels/monthWeekCount prop (IMP-02, F4-2)
+│   │   ├── WeekView.vue         # startHour/endHour prop 전달 (IMP-03)
+│   │   ├── DayView.vue          # startHour/endHour prop 전달 (IMP-03)
 │   │   └── ListView.vue         # async (defineAsyncComponent), @vuepkg/ui DataTable 소비
 │   └── index.ts                 # 컴포넌트·타입·유틸 barrel export
 ├── composables/
 │   ├── useCalendar.ts           # 파생 데이터·표시 상태 (내부)
-│   ├── usePublicHolidays.ts     # 공공데이터포털 공휴일 조회·연도 캐시
+│   ├── usePublicHolidays.ts     # 공공데이터포털 공휴일 조회·연도 캐시, TTL 재시도 (SRV-P2-02)
 │   ├── useScheduleCalendarHost.ts  # emit-only 부모 연동 composable
-│   └── useMonthMeasuredCellHeight.ts  # 월간 셀 동적 높이 측정
+│   ├── useMonthMeasuredCellHeight.ts  # 월간 셀 동적 높이 측정
+│   ├── useTimeSlotSelection.ts  # Week/Day 드래그 시간 슬롯 선택 (F4-1)
+│   └── useScheduleDrag.ts       # Week/Day 이벤트 이동·리사이즈 DnD (F4-4)
 ├── constants/
 │   └── calendarView.ts          # TIMED_VIEW_*, MONTH_CELL_*, SCHEDULE_TYPE_OPTIONS 통합
 ├── data/
@@ -107,9 +113,10 @@ packages/calendar/src/
 └── utils/
     ├── date.ts                  # @vuepkg/core re-export + resolveCalendarNavigateDate
     ├── holiday.ts               # @vuepkg/core re-export
-    ├── schedule/  filter · query · crud · layout
-    ├── month/     barLayout · cell · overflow
-    └── timed/     allDay · grid   # grid = currentTime + timeSlot 통합
+    ├── schedule.ts              # filter · query · crud · layout · TimeGridRange 계산
+    ├── month.ts                 # barLayout · cell · overflow
+    ├── timed.ts                 # allDay · currentTime · timeSlot 통합
+    └── recurrence.ts            # expandRecurringSchedules — RRULE 서브셋 회차 전개 (F4-5)
 ```
 
 ---
@@ -151,6 +158,10 @@ useCalendar → 뷰 리렌더
 | `public-holiday-service-key` | `string`  | —    | 공공데이터포털 인증키. proxy/BFF 사용 시 생략                                     |
 | `hide-toolbar`            | `boolean`    | —    | `true`이면 뷰 전환 툴바 숨김. 부모가 `v-model:view`로 뷰를 직접 제어할 때 사용   |
 | `schedule-type-options`   | `ScheduleTypeOption[]` | — | 일정 유형 목록 (색상·라벨). 기본값 `SCHEDULE_TYPE_OPTIONS` (3종). 커스텀 타입 추가 시 사용 |
+| `month-week-count`        | `2 \| 3 \| 6` | `6` | 월간 뷰 표시 주 수 — `2`\|`3`이면 선택 날짜 기준 축소 뷰 (F4-2) |
+| `weekday-labels`          | `string[]`   | `['SUN'...'SAT']` | 월간 뷰 요일 헤더 라벨, 일~토 순서 7개 (IMP-02) |
+| `start-hour`              | `number`     | `0`  | Week/Day 시간 그리드 시작 시각 0~23 (IMP-03) |
+| `end-hour`                | `number`     | `23` | Week/Day 시간 그리드 종료 시각 0~23 (IMP-03) |
 
 ### v-model
 
@@ -173,7 +184,9 @@ useCalendar → 뷰 리렌더
 | `navigate`          | `{ action, date }`                                   | Today·‹› (월/주/일)                 |
 | `list-filter-clear` | —                                                    | List 필터 바 Clear                  |
 | `query-change`      | `ScheduleQueryChangePayload`                         | init·navigate·view-change·필터 변경 |
-| `time-slot-select`  | `{ date, start, end, source }`                       | Week/Day 시간 그리드 빈 셀 클릭     |
+| `time-slot-select`  | `{ date, start, end, source }`                       | Week/Day 시간 그리드 빈 셀 클릭 (F4-1) |
+| `schedule-move`     | `CalendarScheduleMovePayload`                        | Week/Day 이벤트 드래그 이동 확정 (F4-4) |
+| `schedule-resize`   | `CalendarScheduleResizePayload`                      | Week/Day 이벤트 드래그 리사이즈(end 시각) 확정 (F4-4) |
 
 **`source` / `action` 값**
 
@@ -311,13 +324,14 @@ List 뷰는 `CalendarMonthNav` 사용 전 필터가 있으면 `list-filter-clear
 | `clampDateToRange`            | core | 그리드 표시 구간 경계로 자름       |
 | `resolveCalendarNavigateDate` | calendar | `navigate` action → 이동 후 `Date` (CalendarNavigateAction 의존) |
 
-### `schedule/layout.ts`
+### `schedule.ts` — layout
 
 - `layoutTimedSchedules` — 겹침 감지 후 `top`/`height`/`left`/`width` (%) 계산
 - `getSchedulesForDay` — 해당 날짜 교차 일정
+- `getTimedGridHeight(range)` — `TimeGridRange`(`startHour`/`endHour`/`hourHeightPx`) 기반 그리드 총 높이(px). 전 함수가 `TimeGridRange` 파라미터를 받아 기본값(0~23시)을 오버라이드할 수 있음 (IMP-03 `startHour`/`endHour` prop이 이 위에서 동작)
 - 최소 블록 높이: 15분
 
-### `schedule/filter.ts`
+### `schedule.ts` — filter/query/crud
 
 | 함수                          | 역할                   |
 | ----------------------------- | ---------------------- |
@@ -325,21 +339,29 @@ List 뷰는 `CalendarMonthNav` 사용 전 필터가 있으면 `list-filter-clear
 | `applyScheduleFilters`        | scope + type 복합 필터 |
 | `filterSchedulesForListDate`  | List 날짜 필터         |
 | `filterSchedulesForListMonth` | List 월 필터           |
+| `buildScheduleFromDraft` / `upsertSchedule` / `removeSchedule` | `ScheduleFormModal` CRUD 헬퍼 (F4-3) |
 
-### `month/barLayout.ts`
+### `month.ts` — barLayout/cell/overflow
 
 - 주 단위 spanning (`span > 1`만 오버레이)
 - `chipVisible`, `hiddenScheduleCount` per cell
 - 공휴일 수만큼 `maxChipSlots` 감소
+- `sliceMonthCellsForWeekCount` — `monthWeekCount`(2\|3\|6) 기준 표시 주 윈도우 계산 (F4-2)
 
-### `timed/grid.ts`
+### `timed.ts` — allDay/currentTime/timeSlot
 
 | 함수                        | 역할                                   |
 | --------------------------- | -------------------------------------- |
-| `getCurrentTimeIndicator`   | Week/Day 현재 시각 선 위치·라벨        |
+| `getCurrentTimeIndicator`   | Week/Day 현재 시각 선 위치·라벨 (startHour/endHour 파라미터화) |
 | `isToday`                   | 오늘 여부                              |
-| `resolveTimeSlotFromOffset` | 빈 셀 클릭 Y좌표 → 1시간 `start`/`end` |
+| `resolveTimeSlotFromOffset` | 빈 셀 클릭 Y좌표 → `TimeGridRange` 기준 `start`/`end` |
 | `getTimeSlotSelectionStyle` | 선택 슬롯 하이라이트 `%` 스타일        |
+| `layoutWeekAllDayBars` / `getAllDayRowCount` | Week All Day 바 겹침 배치 |
+
+### `recurrence.ts` (F4-5)
+
+- `expandRecurringSchedules(schedules, range)` — `RecurrenceRule`(daily/weekly/monthly/yearly, interval/count/until/exceptions 서브셋)을 표시 기간 내 개별 회차 `Schedule[]`로 전개
+- 전개된 가상 회차에는 `recurrenceId`(마스터 참조)가 붙음 — `@internal` 표시 필드
 
 ---
 
@@ -349,7 +371,7 @@ List 뷰는 `CalendarMonthNav` 사용 전 필터가 있으면 `list-filter-clear
 
 | 파일                | 주요 타입                                                            |
 | ------------------- | -------------------------------------------------------------------- |
-| `schedule.ts`       | `Schedule`, `Holiday`, `UseCalendarOptions`                          |
+| `schedule.ts`       | `Schedule`, `RecurrenceRule`, `Participant`, `Holiday`, `UseCalendarOptions`, `MonthWeekCount`, `ScheduleDraft` |
 | `composable.ts`     | `CalendarContext`, `UsePublicHolidaysOptions`                        |
 | `calendarEvents.ts` | emit payload (`CalendarTimeSlotSelectPayload` 등)                    |
 | `query.ts`          | `ScheduleQueryChangePayload`, `BuildScheduleQueryChangePayloadInput` |
@@ -369,10 +391,23 @@ interface Schedule {
   end: Date
   remarks?: string // 부가 설명
   allDay?: boolean // true면 All Day 행·월간 바 레이아웃
+  recurrence?: RecurrenceRule // 반복 규칙 — expandRecurringSchedules가 표시 기간 내 회차 생성 (F4-5)
+  recurrenceId?: string // @internal — 전개된 가상 회차의 마스터 id (시리즈 전체 수정/삭제 시 사용)
+  isRecurrenceInstance?: boolean // @internal — 전개된 가상 회차 여부
 }
 
 // 기본 제공 일정 유형 리터럴 (편의용 — string이므로 확장 가능)
 type ScheduleType = 'my_schedule' | 'team_schedule' | 'company_schedule'
+
+// 반복 규칙 (F4-5) — daily/weekly/monthly/yearly 서브셋 RRULE
+interface RecurrenceRule {
+  freq: 'daily' | 'weekly' | 'monthly' | 'yearly'
+  interval?: number
+  byWeekday?: number[] // weekly에서 사용, 0=일요일
+  count?: number
+  until?: Date
+  exceptions?: string[] // 삭제된 단일 회차 날짜 (`YYYY-MM-DD`) — 해당 회차만 건너뜀
+}
 
 // 소비자 커스텀 타입 등록
 interface ScheduleTypeOption {
@@ -406,7 +441,7 @@ type ViewScope = 'my' | 'company'
 | `HOLIDAY_CHIP_BACKGROUND`   | `#ffebee` | 공휴일 칩 배경           |
 | `HOLIDAY_CHIP_COLOR`        | `#c62828` | 공휴일 칩 텍스트         |
 
-`CALENDAR_START_HOUR`, `CALENDAR_END_HOUR`, `HOUR_HEIGHT_PX`는 `calendarView.ts` re-export 별칭입니다.
+`CALENDAR_START_HOUR`, `CALENDAR_END_HOUR`, `HOUR_HEIGHT_PX`는 `calendarView.ts` re-export 별칭입니다. `TimedGrid`/`WeekView`/`DayView`의 `startHour`/`endHour` prop 기본값으로 쓰이며, 소비자가 prop으로 오버라이드하면 이 상수는 무시됩니다 (IMP-03).
 
 ---
 
@@ -425,28 +460,30 @@ type ViewScope = 'my' | 'company'
 
 ## 10. 테스트 구조
 
-### 단위·컴포넌트 (Vitest — calendar 200건 + ui 65건 + core 70건)
+### 단위·컴포넌트 (Vitest — calendar 273건 + ui 76건 + core 70건 = 419건)
 
 | 스펙                              | 검증                                                |
 | --------------------------------- | --------------------------------------------------- |
 | `CalendarMonthNav.spec.ts`        | Month/List 공통 월 네비 label·prev/next emit        |
-| `ScheduleCalendar.spec.ts`        | emit-only, `time-slot-select`, API+`:holidays` 병합 |
-| `MonthView.spec.ts`               | 칩·spanning bar·공휴일·`+N` 팝오버                  |
+| `ScheduleCalendar.spec.ts`        | emit-only, `time-slot-select`, API+`:holidays` 병합, `monthWeekCount`/`weekdayLabels`/`startHour`/`endHour` 전달 (37건) |
+| `MonthView.spec.ts`               | 칩·spanning bar·공휴일·`+N` 팝오버, `monthWeekCount`, `weekdayLabels` (IMP-02) |
 | `MonthOverflowPopover.spec.ts`    | 임베디드 bounds 기반 max 크기                       |
-| `TimedGrid.spec.ts`               | 공휴일 칩, `time-slot-select`                       |
+| `TimedGrid.spec.ts`               | 공휴일 칩, `time-slot-select`, DnD 이동/리사이즈(F4-4), `startHour`/`endHour` 범위 (IMP-03) |
+| `ScheduleFormModal.spec.ts`       | create/edit/delete, 반복 규칙 UI (F4-3, 16건)       |
 | `ListView.spec.ts`                | 월 네비, Clear                                      |
 | `useCalendar.spec.ts`             | 파생 데이터, `formatPeriod` Period 컬럼             |
-| `usePublicHolidays.spec.ts`       | 연도 캐시, `fetchPublicHolidays: false`             |
-| `useScheduleCalendarHost.spec.ts` | 핸들러·`time-slot-select`                           |
-| `schedule/layout.spec.ts`         | 겹침 컬럼 분할                                      |
-| `month/barLayout.spec.ts`         | spanning·공휴일 슬롯                                |
-| `timed/grid.spec.ts`              | 현재 시각·time-slot offset·하이라이트 스타일 (7건)  |
+| `usePublicHolidays.spec.ts`       | 연도 캐시 TTL 재시도, `loading` computed (SRV-P2-02) |
+| `useScheduleCalendarHost.spec.ts` | 핸들러·`time-slot-select`·`onScheduleMove`/`onScheduleResize` |
+| `schedule.spec.ts`                | 겹침 컬럼 분할·필터·CRUD 헬퍼 (26건)                |
+| `month.spec.ts`                   | spanning·공휴일 슬롯·week-count 윈도우 (25건)       |
+| `timed.spec.ts`                   | 현재 시각·time-slot offset·하이라이트 스타일 (14건) |
+| `recurrence.spec.ts`              | `expandRecurringSchedules` RRULE 서브셋 (F4-5, 13건) |
 | `constants/timedView.spec.ts`     | `calendarView.ts` 상수 (파일명 레거시)              |
 
-`resolveCalendarNavigateDate`는 `ScheduleCalendar.spec`·`schedule/query.spec`에서 간접 검증합니다.
+`resolveCalendarNavigateDate`는 `utils/date.spec.ts`에 today/day/week/month 4건 전용 spec으로 검증합니다 (GAP-REF-01).
 팝오버 bounds·flip 계산 테스트는 F2-4에서 `@vuepkg/core`의 `popover.spec.ts`로 이관됐습니다.
 
-**`@vuepkg/ui` (Phase 2 primitive, 65건)**
+**`@vuepkg/ui` (Phase 2 primitive, 76건)**
 
 | 스펙                       | 검증                                                              |
 | -------------------------- | ----------------------------------------------------------------- |
@@ -456,24 +493,25 @@ type ViewScope = 'my' | 'company'
 | `Chip.spec.ts`             | clickable role/keyboard, color/backgroundColor 인라인 오버라이드  |
 | `Popover.spec.ts`          | role=dialog, backdrop/Esc close, Tab/Shift+Tab focus trap, 닫힘 시 focus 복원, 위치 스타일 적용 |
 | `DataTable.spec.ts`        | 헤더·셀 슬롯 렌더링, hideBelow 클래스, empty 메시지, row-click(클릭/Enter/Space), 페이지네이션(controlled/uncontrolled), ariaLabel |
+| `Dialog.spec.ts`           | focus trap·Esc·Tab cycle·backdrop (F2-7, `ScheduleFormModal` 기반) |
 
 **`@vuepkg/core` (70건)** — `utils/date.spec.ts`(41) · `utils/holiday.spec.ts`(14) · `composables/useControllableState.spec.ts`(10) · `utils/popover.spec.ts`(5, F2-4 이관)
 
-### E2E (Playwright)
+### E2E (Playwright — 145건 = 기능 137 + 시각 회귀 8)
 
-| 스펙                                | 건수 | CI (`test:e2e:ci`) |
-| ----------------------------------- | ---- | -------------------- |
-| `calendar.spec.ts`                  | 23   | ✅                    |
-| `calendar-responsive.spec.ts`       | 42   | ✅                    |
-| `calendar-host-integration.spec.ts` | 69   | ✅                    |
-| `visual-regression.spec.ts`         | 8    | ❌ (수동·별도 workflow) |
+| 스펙                                | CI (`test:e2e:ci`) |
+| ----------------------------------- | -------------------- |
+| `calendar.spec.ts`                  | ✅ (GAP-01, GAP-TS-01 포함) |
+| `calendar-responsive.spec.ts`       | ✅                    |
+| `calendar-host-integration.spec.ts` | ✅                    |
+| `visual-regression.spec.ts`         | ❌ (수동·별도 workflow) |
 
 **테스트 계층 정책**
 
 | 계층 | 명령 | 언제 |
 | ---- | ---- | ---- |
-| 단위·컴포넌트 | `pnpm test` (Vitest 335건) | **CI** + Husky `pre-push` (`verify:push`) |
-| 기능 E2E | `pnpm test:e2e:ci` (134건) | **CI** — push/PR마다 |
+| 단위·컴포넌트 | `pnpm test` (Vitest 419건) | **CI** + Husky `pre-push` (`verify:push`) |
+| 기능 E2E | `pnpm test:e2e:ci` (137건) | **CI** — push/PR마다 |
 | 시각 회귀 E2E | `pnpm test:e2e:visual` (8건) | **CI 제외** — UI/CSS 변경 시 로컬 또는 GitHub Actions `Visual Regression` workflow 수동 실행 |
 
 시각 회귀를 push마다 CI에 넣지 않는 이유: (1) Chromium·폰트 렌더링이 runner마다 달라 픽셀 단위 flaky, (2) 전체 E2E 대비 시간 대비 신호가 낮음, (3) Windows 개발자는 `*-win32` / CI는 `*-linux` baseline이 분리됨.
@@ -493,7 +531,7 @@ GitHub: Actions → **Visual Regression** → Run workflow.
 pnpm test              # Vitest
 pnpm test:e2e:ci       # 기능 E2E (CI와 동일)
 pnpm test:e2e:visual   # 시각 회귀만
-pnpm test:e2e          # E2E 전체 (134 + 8)
+pnpm test:e2e          # E2E 전체 (137 + 8)
 ```
 
 ---
@@ -515,11 +553,11 @@ pnpm dev           # packages/calendar dev 서버 — http://localhost:6565
 | ---- | ---- |
 | `pnpm verify:push` | push 전 로컬 검증 (lint + typecheck + vitest) — Husky `pre-push`와 동일 |
 | `pnpm turbo run typecheck` | 전체 타입 검사 |
-| `pnpm turbo run test` | Vitest 단위 테스트 — calendar 201건 + ui 65건 + core 70건 |
+| `pnpm turbo run test` | Vitest 단위 테스트 — calendar 273건 + ui 76건 + core 70건 |
 | `pnpm turbo run build:lib` | core + ui + calendar 라이브러리 빌드 |
-| `pnpm test:e2e:ci` | Playwright 기능 E2E 134건 (CI와 동일) |
+| `pnpm test:e2e:ci` | Playwright 기능 E2E 137건 (CI와 동일) |
 | `pnpm test:e2e:visual` | Playwright 시각 회귀 8건 (UI/CSS 변경 시) |
-| `pnpm test:e2e` | E2E 전체 142건 |
+| `pnpm test:e2e` | E2E 전체 145건 |
 
 #### 단일 패키지 작업 시 (빠른 반복)
 
@@ -556,7 +594,7 @@ pnpm --filter @vuepkg/core run build:lib
 
 | 영역   | 핵심 항목                                                               |
 | ------ | ----------------------------------------------------------------------- |
-| API    | `weekdayLabels` i18n prop (IMP-02), 시간 그리드 `startHour`/`endHour` (IMP-03) |
-| UX     | 드래그 시간 슬롯 범위 선택 (IMP-04)                                     |
-| 테스트 | List·time-slot E2E, `resolveCalendarNavigateDate` 단위 spec             |
-| 운영   | 공휴일 API 실패 UX, 배포 시 인증키·프록시 가이드                         |
+| API    | `locale` 자동 현지화 (F3-3) — `weekdayLabels`(IMP-02)/`startHour`·`endHour`(IMP-03)는 완료 |
+| UX     | 번들 budget 정리 후 Timeline/리소스 뷰 (F4-6)                            |
+| 테스트 | a11y 자동 점검(F3-5), Month cell roving tabindex(SRV-P2-09) — List·time-slot E2E는 완료 |
+| 운영   | 공휴일 API 실패 시 사용자 노출 UI(EXT-01) — 프록시/BFF 키 가이드는 완료  |

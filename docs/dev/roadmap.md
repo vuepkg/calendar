@@ -118,23 +118,22 @@
 
 > CMP-01 `CalendarMonthNav` ✅ 완료 (2026-06-10)
 
+> CMP-02 `MonthCell` ✅ 완료 (2026-07-01, SRV-P1-03) · CMP-04 `TimedGridAllDay` ✅ 완료 (2026-07-01, SRV-P1-03) · CMP-07 `TimedGridHeader` ✅ 완료 (2026-07-01, SRV-P1-03)
+
 ### 높은 우선순위 (필요 시 재개)
 
 | ID | 후보 컴포넌트 | 대상 파일 | 예상 효과 |
 | -- | ------------ | --------- | --------- |
-| CMP-02 | `MonthDayCell` | `MonthView.vue` (~480줄) | 셀 UI·이벤트·`+N` 분리, 셀 단위 spec |
 | CMP-03 | `MonthWeekSpanningBars` | `MonthView.vue` | 멀티데이 All Day 오버레이 분리 |
-| CMP-04 | `TimedGridAllDaySection` | `TimedGrid.vue` (~612줄) | 공휴일 칩 + All Day spanning 분리 |
-| CMP-05 | `TimedGridTimeBody` | `TimedGrid.vue` | 시간축 + 일정 블록 영역 분리 |
+| CMP-05 | `TimedGridTimeBody` | `TimedGrid.vue` (495줄) | 시간축 + 일정 블록 영역 분리 |
 
 ### 중간 우선순위
 
 | ID | 후보 | 대상 | 비고 |
 | -- | ---- | ---- | ---- |
 | CMP-06 | `TimedEventBlock` | `TimedGrid.vue` | `%` 위치 스타일 + 칩 + 시간 라벨 |
-| CMP-07 | `TimedGridHeader` | `TimedGrid.vue` | 요일·날짜 헤더 행 |
 | CMP-08 | `CurrentTimeIndicator` | `TimedGrid.vue` | 현재 시각 선·badge |
-| CMP-09 | `MonthWeekdayHeader` | `MonthView.vue` | P3-B `weekdayLabels` prop 수정 지점 단일화 |
+| CMP-09 | `MonthWeekdayHeader` | `MonthView.vue` | IMP-02 완료로 `weekdayLabels` prop 자체는 해소됨 — 남은 건 순수 마크업 분리 |
 | CMP-10 | `ListFilterBar` | `ListView.vue` | 날짜 필터 바 UI |
 | CMP-11 | `useMonthOverflowPopover` | `MonthView.vue` | 팝오버 state·앵커 계산 composable |
 
@@ -150,11 +149,11 @@
 
 ## 테스트 커버리지 갭
 
-| ID | 영역 | 우선순위 |
-| -- | ---- | -------- |
-| GAP-TS-01 | Week/Day `time-slot-select` Playwright E2E | 중 |
-| GAP-01 | List 행 `schedule-click` E2E | 중 |
-| GAP-REF-01 | `resolveCalendarNavigateDate` 단위 spec 보강 | 낮 |
+| ID | 영역 | 우선순위 | 상태 |
+| -- | ---- | -------- | ---- |
+| GAP-TS-01 | Week/Day `time-slot-select` Playwright E2E | 중 | ✅ 완료 — `e2e/calendar.spec.ts` `describe('GAP-TS-01: ...')` |
+| GAP-01 | List 행 `schedule-click` E2E | 중 | ✅ 완료 — `e2e/calendar.spec.ts` `'opens schedule form when a list row is clicked (GAP-01)'` |
+| GAP-REF-01 | `resolveCalendarNavigateDate` 단위 spec 보강 | 낮 | ✅ 완료 — `utils/date.spec.ts` today/day/week/month 4건 |
 
 ---
 
@@ -162,8 +161,8 @@
 
 | ID | 내용 | 상태 |
 | -- | ---- | ---- |
-| EXT-01 | 공휴일 API 실패 시 graceful degrade UI | 미착수 |
-| EXT-02 | `fetch-public-holidays` + SSR/프록시 키 관리 가이드 | 미착수 |
+| EXT-01 | 공휴일 API 실패 시 graceful degrade UI | 미착수 (DEV `console.warn`만 존재, 사용자 노출 UI 없음) |
+| EXT-02 | `fetch-public-holidays` + SSR/프록시 키 관리 가이드 | ✅ 완료 — `apps/docs/guide/public-holidays.md`(BFF 프록시 패턴), `docs/guide/integration.md`(dev/preview proxy + 프로덕션 BFF 가이드) |
 | ~~NPM-01~~ | ~~LICENSE 파일 추가~~ | ✅ 완료 |
 | ~~NPM-02~~ | ~~`fetchPublicHolidays` 기본값 `false`~~ | ✅ 완료 |
 | ~~NPM-03~~ | ~~Changesets 자동 릴리즈 + npm publish CI~~ | ✅ 완료 (2026-07-01) |

@@ -13,6 +13,9 @@
 | `hideToolbar` | `boolean` | `false` | 뷰 전환 툴바 숨김 |
 | `scheduleTypeOptions` | `ScheduleTypeOption[]` | 기본 3종 | 일정 유형별 라벨·색상 (`type`/`label`/`color`/`backgroundColor`) |
 | `monthWeekCount` | `2 \| 3 \| 6` | `6` | 월간 뷰 표시 주 수 |
+| `weekdayLabels` | `string[]` | `['SUN', ..., 'SAT']` | 월간 뷰 요일 헤더 라벨 (일~토 순서 7개) |
+| `startHour` | `number` | `0` | Week/Day 시간 그리드 시작 시각 (0~23) |
+| `endHour` | `number` | `23` | Week/Day 시간 그리드 종료 시각 (0~23) |
 
 ## v-model
 

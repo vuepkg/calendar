@@ -257,6 +257,9 @@ const schedule: Schedule = {
 | `scheduleTypeOptions` | `ScheduleTypeOption[]` | 기본 3종 | 커스텀 일정 타입 정의 |
 | `fetchPublicHolidays` | `boolean` | `false` | 한국 공공 API 공휴일 opt-in |
 | `hideToolbar` | `boolean` | `false` | 툴바 숨김 (뷰 고정 임베딩용) |
+| `weekdayLabels` | `string[]` | `['SUN', ..., 'SAT']` | 월간 뷰 요일 헤더 라벨 (일~토 순서 7개) |
+| `startHour` | `number` | `0` | Week/Day 시간 그리드 시작 시각 (0~23) |
+| `endHour` | `number` | `23` | Week/Day 시간 그리드 종료 시각 (0~23) |
 
 ## Emits
 

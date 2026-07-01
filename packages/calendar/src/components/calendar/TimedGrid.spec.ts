@@ -305,3 +305,59 @@ describe('TimedGrid — drag-and-drop (useScheduleDrag)', () => {
     expect((emitted![0]![0] as { schedule: Schedule }).schedule.id).toBe(schedule.id)
   })
 })
+
+describe('TimedGrid — startHour/endHour (IMP-03)', () => {
+  it('renders 24 hour labels (00:00~23:00) by default', () => {
+    const wrapper = mount(TimedGrid, {
+      props: { days: [startOfDay(new Date(2026, 3, 22))], schedules: [], getTypeStyle },
+    })
+
+    const labels = wrapper.findAll('.time-slot-label').map((el) => el.text())
+    expect(labels).toHaveLength(24)
+    expect(labels[0]).toBe('00:00')
+    expect(labels.at(-1)).toBe('23:00')
+  })
+
+  it('renders only the configured hour range when startHour/endHour are narrowed', () => {
+    const wrapper = mount(TimedGrid, {
+      props: {
+        days: [startOfDay(new Date(2026, 3, 22))],
+        schedules: [],
+        getTypeStyle,
+        startHour: 9,
+        endHour: 18,
+      },
+    })
+
+    const labels = wrapper.findAll('.time-slot-label').map((el) => el.text())
+    expect(labels).toHaveLength(10)
+    expect(labels[0]).toBe('09:00')
+    expect(labels.at(-1)).toBe('18:00')
+  })
+
+  it('places a timed schedule at the top when it starts at the narrowed startHour', () => {
+    const day = startOfDay(new Date(2026, 3, 22))
+    const schedule: Schedule = {
+      id: 's-hour-range',
+      title: '아침 회의',
+      type: 'my_schedule',
+      participantId: 'user-test',
+      participantName: 'Test User',
+      start: new Date(2026, 3, 22, 9, 0),
+      end: new Date(2026, 3, 22, 10, 0),
+    }
+
+    const wrapper = mount(TimedGrid, {
+      props: {
+        days: [day],
+        schedules: [schedule],
+        getTypeStyle,
+        startHour: 9,
+        endHour: 18,
+      },
+    })
+
+    const timedEvent = wrapper.get('.timed-event')
+    expect((timedEvent.element as HTMLElement).style.top).toBe('0%')
+  })
+})

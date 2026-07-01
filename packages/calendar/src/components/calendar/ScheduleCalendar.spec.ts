@@ -500,6 +500,53 @@ describe('ScheduleCalendar emit-only contract', () => {
     expect(wrapper.findAll('.month-week')).toHaveLength(2)
   })
 
+  // IMP-02 — weekdayLabels prop 전달 검증
+  it('forwards weekdayLabels down to the month view weekday header', () => {
+    const wrapper = mount(ScheduleCalendar, {
+      props: {
+        schedules: [],
+        view: 'month',
+        date: startOfDay(new Date(2026, 4, 1)),
+        fetchPublicHolidays: false,
+        weekdayLabels: ['일', '월', '화', '수', '목', '금', '토'],
+      },
+    })
+
+    const labels = wrapper.findAll('.weekday-header').map((el) => el.text())
+    expect(labels).toEqual(['일', '월', '화', '수', '목', '금', '토'])
+  })
+
+  // IMP-03 — startHour/endHour prop 전달 검증
+  it('forwards startHour/endHour down to the week view time grid', () => {
+    const wrapper = mount(ScheduleCalendar, {
+      props: {
+        schedules: [],
+        view: 'week',
+        date: startOfDay(new Date(2026, 3, 22)),
+        fetchPublicHolidays: false,
+        startHour: 9,
+        endHour: 18,
+      },
+    })
+
+    expect(wrapper.findAll('.time-slot-label')).toHaveLength(10)
+  })
+
+  it('forwards startHour/endHour down to the day view time grid', () => {
+    const wrapper = mount(ScheduleCalendar, {
+      props: {
+        schedules: [],
+        view: 'day',
+        date: startOfDay(new Date(2026, 3, 22)),
+        fetchPublicHolidays: false,
+        startHour: 9,
+        endHour: 18,
+      },
+    })
+
+    expect(wrapper.findAll('.time-slot-label')).toHaveLength(10)
+  })
+
   it('emits list-filter-clear from list view', async () => {
     const wrapper = mount(ScheduleCalendar, {
       props: {

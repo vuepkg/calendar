@@ -30,9 +30,12 @@ const props = withDefaults(
     calendar: CalendarContext
     /** 표시할 주(week) 수 — 기본 6(전체 월), 2\|3이면 선택 날짜 기준 축소 뷰 */
     monthWeekCount?: MonthWeekCount
+    /** 요일 헤더 라벨 (일~토 순서 7개) — 기본 영문 축약형 */
+    weekdayLabels?: string[]
   }>(),
   {
     monthWeekCount: 6,
+    weekdayLabels: () => ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'],
   },
 )
 
@@ -103,8 +106,6 @@ const visibleMonthCells = computed(() =>
   sliceMonthCellsForWeekCount(props.calendar.monthCells.value, props.monthWeekCount),
 )
 const monthWeeks = computed(() => layoutMonthWeeks(visibleMonthCells.value, cellHeightPx.value))
-
-const weekdayLabels = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 </script>
 
 <template>

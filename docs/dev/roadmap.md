@@ -1,34 +1,16 @@
 # Roadmap — @vuepkg/calendar
 
-> 최종 갱신: 2026-07-01 (F3-1, F4-11 완료 반영)
+> 최종 갱신: 2026-07-01 (F3-1, F4-11, IMP-02, IMP-03 완료 반영)
 
 ---
 
 ## 다음 개발 추천 (2026-07-01 기준)
 
-> **현재 상태**: `@vuepkg/calendar@0.2.2` 배포 완료. F4-1~5 주요 기능, F3-1 문서 사이트, F4-11 자동 릴리즈까지 완료.
+> **현재 상태**: `@vuepkg/calendar@0.2.2` 배포 완료. F4-1~5 주요 기능, F3-1 문서 사이트, F4-11 자동 릴리즈, IMP-02/03 소형 prop까지 완료.
 
-### 🥇 1순위 — IMP-02/03 소형 prop 추가 (난이도 🟢, 예상 1~2일)
+### 🥇 1순위 — F3-3 i18n/locale 시스템 (난이도 🟡, 예상 2~3일)
 
-**바로 착수 가능. 영향 작고 실용성 높음.**
-
-#### IMP-02 `weekdayLabels` prop
-
-- **현황**: `['SUN','MON','TUE','WED','THU','FRI','SAT']`가 `MonthView.vue`에 하드코딩
-- **작업**: `ScheduleCalendar`에 `weekdayLabels?: string[]` prop 추가, 미전달 시 영문 기본값 유지
-- **영향 파일**: `ScheduleCalendar.vue`, `MonthView.vue`, `TimedGrid.vue`
-
-#### IMP-03 `startHour` / `endHour` prop
-
-- **현황**: `TIMED_VIEW_START_HOUR = 0`, `TIMED_VIEW_END_HOUR = 23` 상수로 고정
-- **작업**: `startHour?: number`, `endHour?: number` prop 추가 (기본 0~23), `TimedGrid.vue` 그리드 높이·레이블 계산에 반영
-- **영향 파일**: `ScheduleCalendar.vue`, `TimedGrid.vue`, `constants/calendarView.ts`, `utils/timed.ts`
-
----
-
-### 🥈 2순위 — F3-3 i18n/locale 시스템 (난이도 🟡, 예상 2~3일)
-
-**IMP-02와 자연스럽게 연결. 글로벌 npm 소비자 대응.**
+**IMP-02(`weekdayLabels`)와 자연스럽게 연결. 글로벌 npm 소비자 대응.**
 
 - **작업**: `locale?: string` prop 추가, `Intl.DateTimeFormat` 기반으로 요일·월 이름 자동 현지화 (브라우저 API라 zero-dep 유지)
 - IMP-02의 `weekdayLabels`를 locale 자동화로 일반화 — 수동 override도 병행 지원
@@ -37,11 +19,11 @@
 
 ---
 
-### 🥉 3순위 — 번들 정리 후 F4-6 Timeline 뷰 (난이도 🔴, 예상 1주+)
+### 🥈 2순위 — 번들 정리 후 F4-6 Timeline 뷰 (난이도 🔴, 예상 1주+)
 
 **가장 큰 차별화 기능. 단, 착수 전 사전 작업 필수.**
 
-- **착수 전 필수**: 현재 번들이 budget의 **96%**(15.35KB / 16KB limit). F4-6 추가 시 초과 확실 → `size-limit` budget 상향(예: 20KB) 또는 동적 import 코드 분할 먼저 결정
+- **착수 전 필수**: 현재 번들이 budget의 **97%**(15.47KB / 16KB limit, IMP-02/03 반영 후). F4-6 추가 시 초과 확실 → `size-limit` budget 상향(예: 20KB) 또는 동적 import 코드 분할 먼저 결정
 - **작업**: 다중 리소스(인원/장소) × 시간 타임라인 뷰. FullCalendar Premium 영역과 직접 겹침(§4.1 수익화 시사점 참고)
 - `useTimeSlotSelection`(F4-1)·`useScheduleDrag`(F4-4)·`expandRecurringSchedules`(F4-5) 인프라 재사용 가능
 - **영향 파일**: 신규 `TimelineView.vue`, `ScheduleCalendar.vue` 뷰 라우팅, `calendarView.ts` 상수
@@ -58,7 +40,7 @@
 
 ---
 
-**추천 착수 순서**: `IMP-02/03` → `F3-3 i18n` → 번들 분할 검토 → `F4-6 Timeline`
+**추천 착수 순서**: ~~`IMP-02/03`~~ (완료) → `F3-3 i18n` → 번들 분할 검토 → `F4-6 Timeline`
 
 ---
 
@@ -81,6 +63,8 @@
 | [IMP-05 / F4-2] 2/3주 월간 뷰 변형 | `monthWeekCount?: 2\|3\|6` prop, 선택 날짜 기준 window + clamp | 2026-07-01 |
 | [F3-1] VitePress 문서 사이트 + GitHub Pages 배포 | `apps/docs`, `docs.yml` GitHub Actions, Getting Started·API·Theming·CHANGELOG·릴리즈 가이드 | 2026-07-01 |
 | [F4-11] Changesets 자동 릴리즈 | `release.yml` GitHub Actions, `@vuepkg/calendar@0.2.1` npm 자동 배포 | 2026-07-01 |
+| [IMP-02] `weekdayLabels` prop | `MonthView` 요일 헤더 커스터마이즈, 미전달 시 영문 기본값(`SUN`~`SAT`) 유지 | 2026-07-01 |
+| [IMP-03] `startHour`/`endHour` prop | Week/Day 시간 그리드 표시 범위 커스터마이즈, 기본 0~23 | 2026-07-01 |
 
 ---
 
@@ -88,30 +72,19 @@
 
 ### 🟢 난이도 낮음
 
-#### [IMP-02] `weekdayLabels` prop — 요일 헤더 i18n
+#### [IMP-02] `weekdayLabels` prop — 요일 헤더 i18n — ✅ 완료 (2026-07-01)
 
-**현황**  
-`MonthView.vue`에 `['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']`가 하드코딩.
+`ScheduleCalendar`/`MonthView`에 `weekdayLabels?: string[]` prop 추가. 미전달 시 영문 기본값(`SUN`~`SAT`) 유지. `TimedGridHeader`는 이미 `Intl.DateTimeFormat` 기반 요일명을 사용 중이라 별도 변경 불필요.
 
-**개선 방향**
-- `ScheduleCalendar`에 `weekdayLabels?: string[]` prop 추가
-- 미전달 시 영문 기본값 유지 (하위 호환)
-- `WeekView`, `DayView` 헤더도 동일하게 적용 검토
-
-**영향 파일**: `views/MonthView.vue`, `TimedGrid.vue`, `ScheduleCalendar.vue`
+**영향 파일**: `views/MonthView.vue`, `ScheduleCalendar.vue` · 테스트: `MonthView.spec.ts`, `ScheduleCalendar.spec.ts`
 
 ---
 
-#### [IMP-03] 시간 그리드 시작/종료 시간 prop
+#### [IMP-03] 시간 그리드 시작/종료 시간 prop — ✅ 완료 (2026-07-01)
 
-**현황**  
-`TIMED_VIEW_START_HOUR = 0`, `TIMED_VIEW_END_HOUR = 23` 상수로 고정.
+`ScheduleCalendar`/`WeekView`/`DayView`/`TimedGrid`에 `startHour?: number`, `endHour?: number` prop 추가 (기본 0~23). `utils/timed.ts`·`utils/schedule.ts`·`useTimeSlotSelection`·`useScheduleDrag`는 이미 `TimeGridRange` 파라미터를 받도록 설계되어 있어 `TimedGrid.vue`의 `timeRange` 객체 구성만 상수 → prop으로 교체.
 
-**개선 방향**
-- `startHour?: number`, `endHour?: number` prop 추가 (기본 0~23)
-- `TimedGrid.vue`로 전달 후 그리드 높이·레이블 계산에 반영
-
-**영향 파일**: `ScheduleCalendar.vue`, `TimedGrid.vue`, `constants/calendarView.ts`, `utils/timed.ts`
+**영향 파일**: `ScheduleCalendar.vue`, `views/WeekView.vue`, `views/DayView.vue`, `TimedGrid.vue` · 테스트: `TimedGrid.spec.ts`, `ScheduleCalendar.spec.ts`
 
 ---
 

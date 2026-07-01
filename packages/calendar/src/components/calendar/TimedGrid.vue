@@ -37,6 +37,10 @@ const props = withDefaults(
     allDayScheduleSource?: ScheduleClickSource
     dayHeaderSource?: DateSelectSource
     timeSlotSource?: TimeSlotSelectSource
+    /** 시간 그리드 시작 시각 (0~23) — 기본 `0` */
+    startHour?: number
+    /** 시간 그리드 종료 시각 (0~23) — 기본 `23` */
+    endHour?: number
   }>(),
   {
     showParticipant: false,
@@ -46,6 +50,8 @@ const props = withDefaults(
     allDayScheduleSource: 'week-all-day-bar',
     dayHeaderSource: 'week-day-header',
     timeSlotSource: undefined,
+    startHour: CALENDAR_START_HOUR,
+    endHour: CALENDAR_END_HOUR,
   },
 )
 
@@ -62,8 +68,8 @@ const resolvedTimeSlotSource = computed<TimeSlotSelectSource>(
 )
 
 const timeRange = {
-  startHour: CALENDAR_START_HOUR,
-  endHour: CALENDAR_END_HOUR,
+  startHour: props.startHour,
+  endHour: props.endHour,
   hourHeightPx: HOUR_HEIGHT_PX,
 }
 
@@ -131,8 +137,8 @@ const now = ref(new Date())
 let timer: ReturnType<typeof setInterval> | undefined
 
 const hourLabels = computed(() =>
-  Array.from({ length: CALENDAR_END_HOUR - CALENDAR_START_HOUR + 1 }, (_, index) =>
-    formatHourLabel(CALENDAR_START_HOUR + index),
+  Array.from({ length: props.endHour - props.startHour + 1 }, (_, index) =>
+    formatHourLabel(props.startHour + index),
   ),
 )
 const gridHeight = getTimedGridHeight(timeRange)
@@ -146,7 +152,7 @@ const dayColumns = computed(() =>
     const timed = getTimedSchedules(props.schedules, day)
     const layout = layoutTimedSchedules(timed, day, timeRange)
     const currentTime = props.showCurrentTime
-      ? getCurrentTimeIndicator(day, CALENDAR_START_HOUR, CALENDAR_END_HOUR, now.value)
+      ? getCurrentTimeIndicator(day, props.startHour, props.endHour, now.value)
       : { visible: false, topPercent: 0, label: '' }
 
     return { day, layout, currentTime }

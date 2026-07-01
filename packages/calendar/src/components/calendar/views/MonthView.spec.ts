@@ -13,6 +13,7 @@ describe('MonthView', () => {
     date = startOfDay(new Date(2026, 4, 1)),
     holidays: Holiday[] = [],
     monthWeekCount?: 2 | 3 | 6,
+    weekdayLabels?: string[],
   ) {
     const calendar = useCalendar({
       schedules: mockSchedules,
@@ -22,7 +23,7 @@ describe('MonthView', () => {
     })
 
     return mount(MonthView, {
-      props: { calendar, monthWeekCount },
+      props: { calendar, monthWeekCount, weekdayLabels },
     })
   }
 
@@ -187,6 +188,21 @@ describe('MonthView', () => {
       const wrapper = mountMonthView(startOfDay(new Date(2026, 4, 31)), [], 3)
       expect(wrapper.findAll('.month-week')).toHaveLength(3)
       expect(wrapper.find('.month-cell.selected').exists()).toBe(true)
+    })
+  })
+
+  describe('weekdayLabels (IMP-02)', () => {
+    it('renders default English weekday abbreviations when omitted', () => {
+      const wrapper = mountMonthView()
+      const labels = wrapper.findAll('.weekday-header').map((el) => el.text())
+      expect(labels).toEqual(['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'])
+    })
+
+    it('renders custom weekday labels when provided', () => {
+      const custom = ['일', '월', '화', '수', '목', '금', '토']
+      const wrapper = mountMonthView(startOfDay(new Date(2026, 4, 1)), [], 6, custom)
+      const labels = wrapper.findAll('.weekday-header').map((el) => el.text())
+      expect(labels).toEqual(custom)
     })
   })
 })

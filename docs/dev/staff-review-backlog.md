@@ -58,7 +58,7 @@
 | [SRV-P1-01](#srv-p1-01-month-cell-키보드-a11y) | MAJOR | 접근성 | `MonthView` 날짜 셀이 `<div @click>`만 — 키보드 불가 | **완료** | `MonthCell.vue` 분리 + `role="gridcell"` + `tabindex="0"` + Enter/Space (2026-07-01). roving tabindex는 [SRV-P2-09](#srv-p2-09-month-cell-roving-tabindex)로 분리 |
 | [SRV-P1-02](#srv-p1-02-dtscss-alias-분리) | MAJOR | 타입/빌드 | `vite-plugin-dts` 깨진 상대경로 — CSS alias와 결합 | **미착수** | [framework-roadmap.md §1.5](./framework-roadmap.md) BLOCKED — F3-2 전 설계 필요 |
 | [SRV-P1-03](#srv-p1-03-대형-뷰-컴포넌트-분리) | MAJOR | 아키텍처 | `TimedGrid`(614줄)·`MonthView`(482줄) — Phase 4 DnD 병목 | **완료** | Header/AllDay/`useTimeSlotSelection`/`MonthCell` 분리 (2026-07-01). F4-4 이후 TimedGrid 재팽창 → [SRV-P1-05](#srv-p1-05-timedgrid-dnd-후-재팽창) |
-| [SRV-P1-04](#srv-p1-04-번들-budget-포화) | MAJOR | 아키텍처/성능 | `index.js` 15.47KB / 16KB limit (**97%**, IMP-02/03 반영 후) — F4-6 추가 시 초과 확실 | **미착수** | F4-6 착수 전 budget 상향(예: 20KB) 또는 동적 import 분할 결정 필요 |
+| [SRV-P1-04](#srv-p1-04-번들-budget-포화) | MAJOR | 아키텍처/성능 | `index.js` 15.57KB / 16KB limit (**97%**, IMP-02/03/F3-3 반영 후) — F4-6 추가 시 초과 확실 | **미착수** | F4-6 착수 전 budget 상향(예: 20KB) 또는 동적 import 분할 결정 필요 |
 | [SRV-P1-05](#srv-p1-05-timedgrid-dnd-후-재팽창) | MAJOR | 아키텍처 | F4-4 DnD 통합 후 `TimedGrid.vue` 303→**495줄**(IMP-03 prop 반영 후) 재팽창 | **미착수** | `useScheduleDrag`를 TimedGrid 본문에서 추가 오케스트레이션 레이어로 분리 검토 |
 
 ### P2 — 1.0.0 전
@@ -107,7 +107,7 @@
 
 **수정 방향:** 기능 E2E 134건은 `test:e2e:ci`로 CI 편입. 시각 회귀 8건은 OS·Chromium 렌더링 flaky로 CI 제외 — `test:e2e:visual` + `visual-regression.yml` (workflow_dispatch). 로컬 push 전 `pnpm verify:push` (lint + typecheck + vitest).
 
-**검증:** ✅ CI: lint → typecheck → test(419) → build → size-limit → `test:e2e:ci`(137). Node 24.
+**검증:** ✅ CI: lint → typecheck → test(429) → build → size-limit → `test:e2e:ci`(137). Node 24.
 
 ---
 
@@ -151,7 +151,7 @@
 
 **위치:** `packages/calendar/package.json` `size-limit`, CI `Bundle size budget` 스텝
 
-**문제:** F4-5 반복 일정 반영 후 `index.js` brotli 15.35KB / 16KB (96%), IMP-02/03 prop 추가 후 **15.47KB / 16KB (97%)**. F4-6 Timeline·F4-7 리소스 뷰 추가 시 budget 초과가 구조적으로 확실.
+**문제:** F4-5 반복 일정 반영 후 `index.js` brotli 15.35KB / 16KB (96%), IMP-02/03 prop 추가 후 15.47KB / 16KB (97%), F3-3 locale prop 추가 후 **15.57KB / 16KB (97%)**. F4-6 Timeline·F4-7 리소스 뷰 추가 시 budget 초과가 구조적으로 확실.
 
 **수정 방향:** (1) budget 상향 + CHANGELOG 명시, 또는 (2) recurrence/DnD/모달을 동적 `import()` 서브청크로 분리. F4-9 게이트가 있으므로 착수 전에 결정해야 CI가 막히지 않음.
 
@@ -319,11 +319,11 @@
 
 | 계층 | 규모 |
 | ---- | ---- |
-| Vitest (monorepo) | **419** (core 70 + ui 76 + calendar 273, IMP-02/03 +8 반영) |
+| Vitest (monorepo) | **429** (core 74 + ui 76 + calendar 279, F3-3 +10 반영) |
 | Playwright 기능 E2E (CI) | **137** (`test:e2e:ci`) |
 | Playwright 시각 회귀 | **8** (`test:e2e:visual`, 수동 workflow) |
 | Node | **24** (CI·engines) |
-| 번들 (calendar, brotli) | index.js 15.47KB / 16KB (97%), style.css 5.04KB / 6.5KB |
+| 번들 (calendar, brotli) | index.js 15.57KB / 16KB (97%), style.css 5.05KB / 6.5KB |
 
 ---
 

@@ -202,7 +202,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | -- | ---- | ------ | ---- |
 | F3-1 | VitePress 문서 사이트 (`apps/docs`) + 라이브 플레이그라운드 | 🟡 | ✅ **완료 (2026-07-01)** — `https://vuepkg.github.io/calendar/` 배포, GitHub Actions `docs.yml`, Getting Started·API·Theming·CHANGELOG·릴리즈 가이드 포함 |
 | F3-2 | `vue-component-meta`로 props/emits/slots API 표 자동 생성 | 🟡 | 수동 문서 drift 방지 |
-| F3-3 | **i18n/locale 시스템** — 백로그 `weekdayLabels`(IMP-02)를 범용 locale로 일반화 | 🟡 | `core/locale`, calendar·DataTable 공용 |
+| F3-3 | **i18n/locale 시스템** — 백로그 `weekdayLabels`(IMP-02)를 범용 locale로 일반화 | 🟡 | ✅ **완료 (2026-07-01)** — `locale?: string` prop, `@vuepkg/core`의 `formatWeekdayLabels`/`formatTimedGridDayLabel(date, locale)` |
 | F3-4 | SSR / Nuxt 호환 검증 + `@vuepkg/nuxt` 모듈 (auto-import) | 🔴 | hydration·CSS 주입 |
 | F3-5 | 접근성 감사 — 전 컴포넌트 키보드·스크린리더 점검 (axe) | 🟡 | a11y 배지 |
 | F3-6 | 마이그레이션 가이드 (`@vuepkg/calendar` 0.0.x → 신 버전) | 🟢 | ✅ **완료 (2026-07-01)** — `apps/docs/guide/migration.md` 작성 완료 |
@@ -371,7 +371,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | ~~F4-11~~ | ~~시맨틱 버저닝 자동 릴리즈~~ | ~~🟢~~ | ✅ 완료 (2026-07-01) — `@vuepkg/calendar@0.2.1` npm 배포 확인 |
 | F4-6 | Timeline / Resource Scheduler 뷰 | 🔴 | **다음 작업 후보** — FullCalendar Premium 영역과 겹침(§4.1 수익화 시사점 참고). 착수 전 번들 budget 상향 또는 코드 분할 먼저 검토 필요 |
 | F3-2 | `vue-component-meta` API 표 자동 생성 | 🟡 | 수동 문서 drift 방지 |
-| F3-3 | i18n/locale 시스템 | 🟡 | `weekdayLabels` 하드코딩 해소 |
+| ~~F3-3~~ | ~~i18n/locale 시스템~~ | ~~🟡~~ | ✅ 완료 (2026-07-01) — `locale` prop, `weekdayLabels` 하드코딩 해소 |
 | F3-5 | 접근성 감사 (axe) | 🟡 | a11y 배지 |
 | — | §1.5 잔여 항목 (`vite-plugin-dts` 상대경로 누수) 설계 검토 | 🟡 | 영향도 낮음 — Phase 4 작업과 별개로 여유 있을 때 처리 |
 | ~~—~~ | ~~[staff-review-backlog.md](./staff-review-backlog.md) P2~~ | ~~🟡~🔴~~ | ~~SRV-P2-01~P2-07 — 1.0.0 전 처리 필요~~ → ✅ 완료 (2026-07-01) |

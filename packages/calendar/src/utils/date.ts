@@ -13,6 +13,7 @@ export {
   formatMonthLabel,
   formatDayHeader,
   formatTimedGridDayLabel,
+  formatWeekdayLabels,
   formatDayViewDate,
   formatHourLabel,
   formatTime,

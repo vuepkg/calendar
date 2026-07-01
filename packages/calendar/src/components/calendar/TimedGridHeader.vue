@@ -7,6 +7,8 @@ const props = withDefaults(
     days: Date[]
     singleDay?: boolean
     dayHeaderSource?: DateSelectSource
+    /** `Intl.DateTimeFormat` locale — 요일 라벨(`day-label`) 현지화. 기본 `en-US` */
+    locale?: string
   }>(),
   {
     singleDay: false,
@@ -49,7 +51,7 @@ function onDayHeaderActivate(day: Date) {
           @keydown.space.prevent="onDayHeaderActivate(day)"
         >
           <span class="day-number">{{ day.getDate() }}</span>
-          <span class="day-label">{{ formatTimedGridDayLabel(day) }}</span>
+          <span class="day-label">{{ formatTimedGridDayLabel(day, locale) }}</span>
         </div>
       </div>
     </div>

@@ -361,3 +361,26 @@ describe('TimedGrid — startHour/endHour (IMP-03)', () => {
     expect((timedEvent.element as HTMLElement).style.top).toBe('0%')
   })
 })
+
+describe('TimedGrid — locale (F3-3)', () => {
+  it('renders the day header weekday label in en-US by default', () => {
+    const wrapper = mount(TimedGrid, {
+      props: { days: [startOfDay(new Date(2026, 3, 22))], schedules: [], getTypeStyle },
+    })
+
+    expect(wrapper.get('.day-label').text()).toBe('Wednesday')
+  })
+
+  it('localizes the day header weekday label when locale is provided', () => {
+    const wrapper = mount(TimedGrid, {
+      props: {
+        days: [startOfDay(new Date(2026, 3, 22))],
+        schedules: [],
+        getTypeStyle,
+        locale: 'ko-KR',
+      },
+    })
+
+    expect(wrapper.get('.day-label').text()).toBe('수요일')
+  })
+})

@@ -14,6 +14,7 @@ import {
   formatPeriod,
   formatTime,
   formatTimedGridDayLabel,
+  formatWeekdayLabels,
   getHourLabels,
   getMonthGridDays,
   getWeekDays,
@@ -179,6 +180,24 @@ describe('formatTimedGridDayLabel', () => {
   it('formats only the weekday name', () => {
     expect(formatTimedGridDayLabel(new Date(2026, 3, 19))).toBe('Sunday')
     expect(formatTimedGridDayLabel(new Date(2026, 3, 22))).toBe('Wednesday')
+  })
+
+  it('defaults to en-US when no locale is given (F3-3)', () => {
+    expect(formatTimedGridDayLabel(new Date(2026, 3, 22), undefined)).toBe('Wednesday')
+  })
+
+  it('localizes the weekday name when a locale is given (F3-3)', () => {
+    expect(formatTimedGridDayLabel(new Date(2026, 3, 22), 'ko-KR')).toBe('수요일')
+  })
+})
+
+describe('formatWeekdayLabels (F3-3)', () => {
+  it('returns 7 abbreviated weekday labels starting from Sunday for en-US', () => {
+    expect(formatWeekdayLabels('en-US')).toEqual(['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])
+  })
+
+  it('localizes weekday labels for ko-KR', () => {
+    expect(formatWeekdayLabels('ko-KR')).toEqual(['일', '월', '화', '수', '목', '금', '토'])
   })
 })
 

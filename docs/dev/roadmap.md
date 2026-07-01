@@ -1,29 +1,18 @@
 # Roadmap — @vuepkg/calendar
 
-> 최종 갱신: 2026-07-01 (F3-1, F4-11, IMP-02, IMP-03 완료 반영)
+> 최종 갱신: 2026-07-01 (F3-1, F4-11, IMP-02, IMP-03, F3-3 완료 반영)
 
 ---
 
 ## 다음 개발 추천 (2026-07-01 기준)
 
-> **현재 상태**: `@vuepkg/calendar@0.2.2` 배포 완료. F4-1~5 주요 기능, F3-1 문서 사이트, F4-11 자동 릴리즈, IMP-02/03 소형 prop까지 완료.
+> **현재 상태**: `@vuepkg/calendar@0.2.2` 배포 완료. F4-1~5 주요 기능, F3-1 문서 사이트, F4-11 자동 릴리즈, IMP-02/03/F3-3 소형 API까지 완료.
 
-### 🥇 1순위 — F3-3 i18n/locale 시스템 (난이도 🟡, 예상 2~3일)
-
-**IMP-02(`weekdayLabels`)와 자연스럽게 연결. 글로벌 npm 소비자 대응.**
-
-- **작업**: `locale?: string` prop 추가, `Intl.DateTimeFormat` 기반으로 요일·월 이름 자동 현지화 (브라우저 API라 zero-dep 유지)
-- IMP-02의 `weekdayLabels`를 locale 자동화로 일반화 — 수동 override도 병행 지원
-- **영향 파일**: `ScheduleCalendar.vue`, `MonthView.vue`, `TimedGrid.vue`, `@vuepkg/core/locale`
-- README 영문 섹션 추가 이후 타이밍 좋음
-
----
-
-### 🥈 2순위 — 번들 정리 후 F4-6 Timeline 뷰 (난이도 🔴, 예상 1주+)
+### 🥇 1순위 — 번들 정리 후 F4-6 Timeline 뷰 (난이도 🔴, 예상 1주+)
 
 **가장 큰 차별화 기능. 단, 착수 전 사전 작업 필수.**
 
-- **착수 전 필수**: 현재 번들이 budget의 **97%**(15.47KB / 16KB limit, IMP-02/03 반영 후). F4-6 추가 시 초과 확실 → `size-limit` budget 상향(예: 20KB) 또는 동적 import 코드 분할 먼저 결정
+- **착수 전 필수**: 현재 번들이 budget의 **97%**(15.57KB / 16KB limit, F3-3 반영 후). F4-6 추가 시 초과 확실 → `size-limit` budget 상향(예: 20KB) 또는 동적 import 코드 분할 먼저 결정
 - **작업**: 다중 리소스(인원/장소) × 시간 타임라인 뷰. FullCalendar Premium 영역과 직접 겹침(§4.1 수익화 시사점 참고)
 - `useTimeSlotSelection`(F4-1)·`useScheduleDrag`(F4-4)·`expandRecurringSchedules`(F4-5) 인프라 재사용 가능
 - **영향 파일**: 신규 `TimelineView.vue`, `ScheduleCalendar.vue` 뷰 라우팅, `calendarView.ts` 상수
@@ -40,7 +29,7 @@
 
 ---
 
-**추천 착수 순서**: ~~`IMP-02/03`~~ (완료) → `F3-3 i18n` → 번들 분할 검토 → `F4-6 Timeline`
+**추천 착수 순서**: ~~`IMP-02/03`~~ (완료) → ~~`F3-3 i18n`~~ (완료) → 번들 분할 검토 → `F4-6 Timeline`
 
 ---
 
@@ -65,6 +54,7 @@
 | [F4-11] Changesets 자동 릴리즈 | `release.yml` GitHub Actions, `@vuepkg/calendar@0.2.1` npm 자동 배포 | 2026-07-01 |
 | [IMP-02] `weekdayLabels` prop | `MonthView` 요일 헤더 커스터마이즈, 미전달 시 영문 기본값(`SUN`~`SAT`) 유지 | 2026-07-01 |
 | [IMP-03] `startHour`/`endHour` prop | Week/Day 시간 그리드 표시 범위 커스터마이즈, 기본 0~23 | 2026-07-01 |
+| [F3-3] `locale` prop — i18n 자동 현지화 | `Intl.DateTimeFormat` 기반 요일 자동 현지화 (`formatWeekdayLabels`), `weekdayLabels` 수동 override 병행 지원 | 2026-07-01 |
 
 ---
 

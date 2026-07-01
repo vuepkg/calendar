@@ -14,6 +14,7 @@ describe('MonthView', () => {
     holidays: Holiday[] = [],
     monthWeekCount?: 2 | 3 | 6,
     weekdayLabels?: string[],
+    locale?: string,
   ) {
     const calendar = useCalendar({
       schedules: mockSchedules,
@@ -23,7 +24,7 @@ describe('MonthView', () => {
     })
 
     return mount(MonthView, {
-      props: { calendar, monthWeekCount, weekdayLabels },
+      props: { calendar, monthWeekCount, weekdayLabels, locale },
     })
   }
 
@@ -203,6 +204,26 @@ describe('MonthView', () => {
       const wrapper = mountMonthView(startOfDay(new Date(2026, 4, 1)), [], 6, custom)
       const labels = wrapper.findAll('.weekday-header').map((el) => el.text())
       expect(labels).toEqual(custom)
+    })
+  })
+
+  describe('locale (F3-3)', () => {
+    it('auto-localizes weekday labels via Intl when locale is provided without weekdayLabels', () => {
+      const wrapper = mountMonthView(startOfDay(new Date(2026, 4, 1)), [], 6, undefined, 'ko-KR')
+      const labels = wrapper.findAll('.weekday-header').map((el) => el.text())
+      expect(labels).toEqual(['일', '월', '화', '수', '목', '금', '토'])
+    })
+
+    it('prefers explicit weekdayLabels over locale auto-formatting', () => {
+      const wrapper = mountMonthView(
+        startOfDay(new Date(2026, 4, 1)),
+        [],
+        6,
+        ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+        'ko-KR',
+      )
+      const labels = wrapper.findAll('.weekday-header').map((el) => el.text())
+      expect(labels).toEqual(['S', 'M', 'T', 'W', 'T', 'F', 'S'])
     })
   })
 })

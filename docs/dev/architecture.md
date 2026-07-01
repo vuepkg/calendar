@@ -7,7 +7,7 @@
 | 스택      | Vue 3 (Composition API) + TypeScript + Vite 8                                     |
 | 빌드      | pnpm workspace + Turborepo (모노레포)                                             |
 | UI        | 커스텀 HTML/CSS — PrimeVue 의존성 없음 (List 뷰 포함 전체 네이티브 구현)          |
-| 테스트    | Vitest 3.x (calendar 273건 + ui 76건 + core 70건 = 419건), Playwright E2E 145건 (기능 137 + 시각 회귀 8) |
+| 테스트    | Vitest 3.x (calendar 279건 + ui 76건 + core 74건 = 429건), Playwright E2E 145건 (기능 137 + 시각 회귀 8) |
 | CI        | GitHub Actions **Node 24** — lint → typecheck → vitest → build → `test:e2e:ci`(137). 시각 회귀 8건은 [visual-regression.yml](../../.github/workflows/visual-regression.yml) 수동 실행 |
 | Git hooks | Husky `pre-push` → `pnpm verify:push` (lint + typecheck + vitest) |
 | 진입점    | `ScheduleCalendar.vue`                                                            |
@@ -162,6 +162,7 @@ useCalendar → 뷰 리렌더
 | `weekday-labels`          | `string[]`   | `['SUN'...'SAT']` | 월간 뷰 요일 헤더 라벨, 일~토 순서 7개 (IMP-02) |
 | `start-hour`              | `number`     | `0`  | Week/Day 시간 그리드 시작 시각 0~23 (IMP-03) |
 | `end-hour`                | `number`     | `23` | Week/Day 시간 그리드 종료 시각 0~23 (IMP-03) |
+| `locale`                  | `string`     | —    | `Intl.DateTimeFormat` locale — 월간 요일 헤더·Week/Day 요일 라벨 자동 현지화. `weekdayLabels` 명시 시 그 값이 우선 (F3-3) |
 
 ### v-model
 
@@ -460,7 +461,7 @@ type ViewScope = 'my' | 'company'
 
 ## 10. 테스트 구조
 
-### 단위·컴포넌트 (Vitest — calendar 273건 + ui 76건 + core 70건 = 419건)
+### 단위·컴포넌트 (Vitest — calendar 279건 + ui 76건 + core 74건 = 429건)
 
 | 스펙                              | 검증                                                |
 | --------------------------------- | --------------------------------------------------- |
@@ -495,7 +496,7 @@ type ViewScope = 'my' | 'company'
 | `DataTable.spec.ts`        | 헤더·셀 슬롯 렌더링, hideBelow 클래스, empty 메시지, row-click(클릭/Enter/Space), 페이지네이션(controlled/uncontrolled), ariaLabel |
 | `Dialog.spec.ts`           | focus trap·Esc·Tab cycle·backdrop (F2-7, `ScheduleFormModal` 기반) |
 
-**`@vuepkg/core` (70건)** — `utils/date.spec.ts`(41) · `utils/holiday.spec.ts`(14) · `composables/useControllableState.spec.ts`(10) · `utils/popover.spec.ts`(5, F2-4 이관)
+**`@vuepkg/core` (74건)** — `utils/date.spec.ts`(45, F3-3 locale 4건 포함) · `utils/holiday.spec.ts`(14) · `composables/useControllableState.spec.ts`(10) · `utils/popover.spec.ts`(5, F2-4 이관)
 
 ### E2E (Playwright — 145건 = 기능 137 + 시각 회귀 8)
 
@@ -510,7 +511,7 @@ type ViewScope = 'my' | 'company'
 
 | 계층 | 명령 | 언제 |
 | ---- | ---- | ---- |
-| 단위·컴포넌트 | `pnpm test` (Vitest 419건) | **CI** + Husky `pre-push` (`verify:push`) |
+| 단위·컴포넌트 | `pnpm test` (Vitest 429건) | **CI** + Husky `pre-push` (`verify:push`) |
 | 기능 E2E | `pnpm test:e2e:ci` (137건) | **CI** — push/PR마다 |
 | 시각 회귀 E2E | `pnpm test:e2e:visual` (8건) | **CI 제외** — UI/CSS 변경 시 로컬 또는 GitHub Actions `Visual Regression` workflow 수동 실행 |
 
@@ -553,7 +554,7 @@ pnpm dev           # packages/calendar dev 서버 — http://localhost:6565
 | ---- | ---- |
 | `pnpm verify:push` | push 전 로컬 검증 (lint + typecheck + vitest) — Husky `pre-push`와 동일 |
 | `pnpm turbo run typecheck` | 전체 타입 검사 |
-| `pnpm turbo run test` | Vitest 단위 테스트 — calendar 273건 + ui 76건 + core 70건 |
+| `pnpm turbo run test` | Vitest 단위 테스트 — calendar 279건 + ui 76건 + core 74건 |
 | `pnpm turbo run build:lib` | core + ui + calendar 라이브러리 빌드 |
 | `pnpm test:e2e:ci` | Playwright 기능 E2E 137건 (CI와 동일) |
 | `pnpm test:e2e:visual` | Playwright 시각 회귀 8건 (UI/CSS 변경 시) |

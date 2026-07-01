@@ -547,6 +547,38 @@ describe('ScheduleCalendar emit-only contract', () => {
     expect(wrapper.findAll('.time-slot-label')).toHaveLength(10)
   })
 
+  // F3-3 — locale prop 전달 검증
+  it('forwards locale down to the month view weekday header (auto-formats when weekdayLabels omitted)', () => {
+    const wrapper = mount(ScheduleCalendar, {
+      props: {
+        schedules: [],
+        view: 'month',
+        date: startOfDay(new Date(2026, 4, 1)),
+        fetchPublicHolidays: false,
+        locale: 'ko-KR',
+      },
+    })
+
+    const labels = wrapper.findAll('.weekday-header').map((el) => el.text())
+    expect(labels).toEqual(['일', '월', '화', '수', '목', '금', '토'])
+  })
+
+  it('forwards locale down to the week view day header', () => {
+    const wrapper = mount(ScheduleCalendar, {
+      props: {
+        schedules: [],
+        view: 'week',
+        date: startOfDay(new Date(2026, 3, 22)),
+        fetchPublicHolidays: false,
+        locale: 'ko-KR',
+      },
+    })
+
+    const labels = wrapper.findAll('.day-label').map((el) => el.text())
+    expect(labels.length).toBeGreaterThan(0)
+    expect(labels.every((label) => /[가-힣]/.test(label))).toBe(true)
+  })
+
   it('emits list-filter-clear from list view', async () => {
     const wrapper = mount(ScheduleCalendar, {
       props: {

@@ -71,8 +71,16 @@ export function formatDayHeader(date: Date): string {
   return `${day} ${month}, ${weekday}`
 }
 
-export function formatTimedGridDayLabel(date: Date): string {
-  return new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(date)
+export function formatTimedGridDayLabel(date: Date, locale?: string): string {
+  return new Intl.DateTimeFormat(locale ?? 'en-US', { weekday: 'long' }).format(date)
+}
+
+/** 일~토 순서 축약 요일명 7개를 지정 locale로 생성합니다 (`Intl.DateTimeFormat` 기반, zero-dep). */
+export function formatWeekdayLabels(locale: string): string[] {
+  const formatter = new Intl.DateTimeFormat(locale, { weekday: 'short' })
+  // 2023-01-01은 일요일 — 요일 순서 계산용 고정 기준일
+  const referenceSunday = new Date(2023, 0, 1)
+  return Array.from({ length: 7 }, (_, index) => formatter.format(addDays(referenceSunday, index)))
 }
 
 export function formatDayViewDate(date: Date): string {

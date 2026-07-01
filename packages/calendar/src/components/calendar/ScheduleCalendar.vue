@@ -69,12 +69,20 @@ const props = withDefaults(
      * `2`\|`3`이면 `date` v-model 기준 선택 날짜가 포함된 주부터 축소 표시합니다.
      */
     monthWeekCount?: MonthWeekCount
-    /** 월간 뷰 요일 헤더 라벨 (일~토 순서 7개) — 기본 영문 축약형 (`SUN`~`SAT`) */
+    /**
+     * 월간 뷰 요일 헤더 라벨 (일~토 순서 7개).
+     * 명시하면 `locale` 자동 현지화보다 우선 적용됩니다. 기본 영문 축약형 (`SUN`~`SAT`).
+     */
     weekdayLabels?: string[]
     /** Week/Day 시간 그리드 시작 시각 (0~23) — 기본 `0` */
     startHour?: number
     /** Week/Day 시간 그리드 종료 시각 (0~23) — 기본 `23` */
     endHour?: number
+    /**
+     * `Intl.DateTimeFormat` locale (예: `'ko-KR'`) — 월간 뷰 요일 헤더, Week/Day 요일 라벨을 자동 현지화합니다.
+     * `weekdayLabels`를 명시하면 월간 뷰는 그 값이 우선합니다. 브라우저 `Intl` API 기반이라 zero-dep 유지.
+     */
+    locale?: string
   }>(),
   {
     fetchPublicHolidays: false,
@@ -251,6 +259,7 @@ function handleScheduleResize(payload: CalendarScheduleResizePayload) {
         :calendar="calendar"
         :month-week-count="monthWeekCount"
         :weekday-labels="weekdayLabels"
+        :locale="locale"
         @date-select="handleDateSelect"
         @overflow-click="handleOverflowClick"
         @schedule-click="handleScheduleClick"
@@ -261,6 +270,7 @@ function handleScheduleResize(payload: CalendarScheduleResizePayload) {
         :calendar="calendar"
         :start-hour="startHour"
         :end-hour="endHour"
+        :locale="locale"
         @date-select="handleDateSelect"
         @schedule-click="handleScheduleClick"
         @time-slot-select="handleTimeSlotSelect"
@@ -273,6 +283,7 @@ function handleScheduleResize(payload: CalendarScheduleResizePayload) {
         :calendar="calendar"
         :start-hour="startHour"
         :end-hour="endHour"
+        :locale="locale"
         @schedule-click="handleScheduleClick"
         @time-slot-select="handleTimeSlotSelect"
         @schedule-move="handleScheduleMove"

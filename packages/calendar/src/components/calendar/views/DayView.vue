@@ -18,6 +18,8 @@ const props = defineProps<{
   startHour?: number
   /** 시간 그리드 종료 시각 (0~23) — 기본 `23` */
   endHour?: number
+  /** `Intl.DateTimeFormat` locale — 요일 헤더 라벨 현지화. 기본 `en-US` */
+  locale?: string
 }>()
 
 const emit = defineEmits<{
@@ -54,6 +56,7 @@ const periodLabel = computed(() => formatDayViewDate(selectedDate.value))
         :get-type-style="calendar.getTypeStyle"
         :start-hour="startHour"
         :end-hour="endHour"
+        :locale="locale"
         show-participant
         show-current-time
         single-day

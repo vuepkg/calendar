@@ -20,23 +20,33 @@ import {
   sliceMonthCellsForWeekCount,
   sortSchedulesForOverflowPopover,
 } from '@/utils/month'
+import { formatWeekdayLabels } from '@/utils/date'
 import CalendarMonthNav from '../CalendarMonthNav.vue'
 import MonthCell from '../MonthCell.vue'
 import AllDayBar from '../AllDayBar.vue'
 import MonthOverflowPopover from '../MonthOverflowPopover.vue'
+
+const DEFAULT_WEEKDAY_LABELS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 
 const props = withDefaults(
   defineProps<{
     calendar: CalendarContext
     /** 표시할 주(week) 수 — 기본 6(전체 월), 2\|3이면 선택 날짜 기준 축소 뷰 */
     monthWeekCount?: MonthWeekCount
-    /** 요일 헤더 라벨 (일~토 순서 7개) — 기본 영문 축약형 */
+    /** 요일 헤더 라벨 (일~토 순서 7개) — 명시하면 `locale` 자동 현지화보다 우선 */
     weekdayLabels?: string[]
+    /** `Intl.DateTimeFormat` locale — 요일 헤더 자동 현지화 (`weekdayLabels` 미전달 시) */
+    locale?: string
   }>(),
   {
     monthWeekCount: 6,
-    weekdayLabels: () => ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'],
   },
+)
+
+const resolvedWeekdayLabels = computed(
+  () =>
+    props.weekdayLabels ??
+    (props.locale ? formatWeekdayLabels(props.locale) : DEFAULT_WEEKDAY_LABELS),
 )
 
 const emit = defineEmits<{
@@ -127,7 +137,7 @@ const monthWeeks = computed(() => layoutMonthWeeks(visibleMonthCells.value, cell
     <div class="month-calendar">
       <div class="month-weekday-row">
         <div
-          v-for="(label, index) in weekdayLabels"
+          v-for="(label, index) in resolvedWeekdayLabels"
           :key="label"
           class="weekday-header"
           :class="{ sunday: index === 0, saturday: index === 6 }"

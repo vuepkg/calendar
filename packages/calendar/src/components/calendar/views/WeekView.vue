@@ -5,6 +5,8 @@ import type {
   CalendarDateSelectPayload,
   CalendarNavigateAction,
   CalendarScheduleClickPayload,
+  CalendarScheduleMovePayload,
+  CalendarScheduleResizePayload,
   CalendarTimeSlotSelectPayload,
 } from '@/types'
 import CalendarPeriodNav from '../CalendarPeriodNav.vue'
@@ -18,6 +20,8 @@ const emit = defineEmits<{
   'date-select': [payload: CalendarDateSelectPayload]
   'schedule-click': [payload: CalendarScheduleClickPayload]
   'time-slot-select': [payload: CalendarTimeSlotSelectPayload]
+  'schedule-move': [payload: CalendarScheduleMovePayload]
+  'schedule-resize': [payload: CalendarScheduleResizePayload]
   navigate: [action: CalendarNavigateAction]
 }>()
 
@@ -51,6 +55,8 @@ const periodLabel = computed(() => props.calendar.monthLabel.value)
         @date-select="emit('date-select', $event)"
         @schedule-click="emit('schedule-click', $event)"
         @time-slot-select="emit('time-slot-select', $event)"
+        @schedule-move="emit('schedule-move', $event)"
+        @schedule-resize="emit('schedule-resize', $event)"
       />
     </div>
   </div>

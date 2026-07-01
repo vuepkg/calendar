@@ -7,6 +7,8 @@ import type {
   CalendarNavigateAction,
   CalendarOverflowClickPayload,
   CalendarScheduleClickPayload,
+  CalendarScheduleMovePayload,
+  CalendarScheduleResizePayload,
   CalendarTimeSlotSelectPayload,
   ScheduleCalendarEmits,
 } from '@/types/calendarEvents'
@@ -205,6 +207,14 @@ function handleListFilterClear() {
 function handleTimeSlotSelect(payload: CalendarTimeSlotSelectPayload) {
   emit('time-slot-select', payload)
 }
+
+function handleScheduleMove(payload: CalendarScheduleMovePayload) {
+  emit('schedule-move', payload)
+}
+
+function handleScheduleResize(payload: CalendarScheduleResizePayload) {
+  emit('schedule-resize', payload)
+}
 </script>
 
 <template>
@@ -229,6 +239,8 @@ function handleTimeSlotSelect(payload: CalendarTimeSlotSelectPayload) {
         @date-select="handleDateSelect"
         @schedule-click="handleScheduleClick"
         @time-slot-select="handleTimeSlotSelect"
+        @schedule-move="handleScheduleMove"
+        @schedule-resize="handleScheduleResize"
         @navigate="handleNavigate"
       />
       <DayView
@@ -236,6 +248,8 @@ function handleTimeSlotSelect(payload: CalendarTimeSlotSelectPayload) {
         :calendar="calendar"
         @schedule-click="handleScheduleClick"
         @time-slot-select="handleTimeSlotSelect"
+        @schedule-move="handleScheduleMove"
+        @schedule-resize="handleScheduleResize"
         @navigate="handleNavigate"
       />
       <ListView

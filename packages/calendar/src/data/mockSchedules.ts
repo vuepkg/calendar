@@ -30,7 +30,7 @@ function allDayRange(startDate: string, endDate: string): { start: Date; end: Da
 export const mockSchedules: Schedule[] = [
   {
     id: 's-001',
-    title: 'ROOM A 안전품질팀 회의',
+    title: 'A회의실 팀 회의',
     type: 'team_schedule',
     participantId: 'user-kim',
     participantName: 'KIM MINSU',
@@ -50,7 +50,7 @@ export const mockSchedules: Schedule[] = [
   },
   {
     id: 's-003',
-    title: 'ROOM A 안전품질팀 회의',
+    title: 'A회의실 팀 회의',
     type: 'team_schedule',
     participantId: 'user-lee',
     participantName: 'LEE JIYEON',
@@ -60,7 +60,7 @@ export const mockSchedules: Schedule[] = [
   },
   {
     id: 's-004',
-    title: '김민수 감독 방선',
+    title: '김민수와 프로젝트 미팅',
     type: 'my_schedule',
     participantId: 'user-kim',
     participantName: 'KIM MINSU',
@@ -70,7 +70,7 @@ export const mockSchedules: Schedule[] = [
   },
   {
     id: 's-005',
-    title: 'VVNST A 방선',
+    title: '고객사 A 미팅',
     type: 'my_schedule',
     participantId: CURRENT_USER_ID,
     participantName: 'HONG GILDONG',
@@ -100,7 +100,7 @@ export const mockSchedules: Schedule[] = [
   },
   {
     id: 's-008',
-    title: 'VVN MSTIC 방선',
+    title: '고객사 B 미팅',
     type: 'my_schedule',
     participantId: CURRENT_USER_ID,
     participantName: 'HONG GILDONG',
@@ -130,7 +130,7 @@ export const mockSchedules: Schedule[] = [
   },
   {
     id: 's-011',
-    title: 'ROOM B 품질회의',
+    title: 'B회의실 팀 회의',
     type: 'team_schedule',
     participantId: 'user-lee',
     participantName: 'LEE JIYEON',
@@ -140,7 +140,7 @@ export const mockSchedules: Schedule[] = [
   },
   {
     id: 's-012',
-    title: '감독 방선',
+    title: '고객 미팅',
     type: 'my_schedule',
     participantId: 'user-park',
     participantName: 'PARK SOYOUNG',
@@ -150,7 +150,7 @@ export const mockSchedules: Schedule[] = [
   },
   {
     id: 's-013',
-    title: 'VVNST A 방선',
+    title: '고객사 A 미팅',
     type: 'my_schedule',
     participantId: CURRENT_USER_ID,
     participantName: 'HONG GILDONG',
@@ -160,7 +160,7 @@ export const mockSchedules: Schedule[] = [
   },
   {
     id: 's-014',
-    title: '감독 방선',
+    title: '고객 미팅',
     type: 'my_schedule',
     participantId: 'user-kim',
     participantName: 'KIM MINSU',
@@ -220,7 +220,7 @@ export const mockSchedules: Schedule[] = [
   },
   {
     id: 's-020',
-    title: '거점 점검',
+    title: '지점 방문',
     type: 'my_schedule',
     participantId: 'user-park',
     participantName: 'PARK SOYOUNG',
@@ -280,7 +280,7 @@ export const mockSchedules: Schedule[] = [
   },
   {
     id: 's-026',
-    title: '설비 점검',
+    title: '비품 점검',
     type: 'my_schedule',
     participantId: 'user-lee',
     participantName: 'LEE JIYEON',
@@ -340,7 +340,7 @@ export const mockSchedules: Schedule[] = [
   },
   {
     id: 's-032',
-    title: '현장 점검',
+    title: '매장 점검',
     type: 'my_schedule',
     participantId: CURRENT_USER_ID,
     participantName: 'HONG GILDONG',

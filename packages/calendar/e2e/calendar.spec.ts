@@ -126,7 +126,7 @@ test.describe('ScheduleCalendar E2E', () => {
 
     await expect(page.getByText('오전 스탠드업')).toBeVisible()
     await expect(page.getByText('일정 조율')).toBeVisible()
-    await expect(page.getByText('현장 점검')).toBeVisible()
+    await expect(page.getByText('매장 점검')).toBeVisible()
   })
 
   test('shows multi-day spanning bar in week view for jeju training', async ({ page }) => {
@@ -167,7 +167,7 @@ test.describe('ScheduleCalendar E2E', () => {
     await expect(page.locator('.list-view')).toBeVisible()
     await expect(page.locator('.calendar-month-nav-title')).toContainText('2026-04')
     await expect(page.locator('.vp-data-table')).toBeVisible({ timeout: 10_000 })
-    await expect(page.getByText('VVNST A 방선')).toBeVisible()
+    await expect(page.getByText('고객사 A 미팅')).toBeVisible()
   })
 
   test('navigates months in list view', async ({ page }) => {

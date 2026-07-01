@@ -275,13 +275,13 @@ describe('ScheduleCalendar emit-only contract', () => {
 
     const timedEvent = wrapper
       .findAll('.timed-event')
-      .find((el) => el.text().includes('VVNST A 방선'))
+      .find((el) => el.text().includes('고객사 A 미팅'))
     expect(timedEvent).toBeDefined()
     await timedEvent!.trigger('click')
 
     const emitted = wrapper.emitted('schedule-click')?.[0]?.[0] as CalendarScheduleClickPayload
     expect(emitted.source).toBe('week-timed')
-    expect(emitted.schedule.title).toBe('VVNST A 방선')
+    expect(emitted.schedule.title).toBe('고객사 A 미팅')
   })
 
   it('shows year-month period label in week view nav', async () => {

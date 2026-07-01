@@ -5,6 +5,8 @@ import { CALENDAR_END_HOUR, CALENDAR_START_HOUR, HOUR_HEIGHT_PX } from '@/consta
 import type {
   CalendarDateSelectPayload,
   CalendarScheduleClickPayload,
+  CalendarScheduleMovePayload,
+  CalendarScheduleResizePayload,
   CalendarTimeSlotSelectPayload,
   DateSelectSource,
   ScheduleClickSource,
@@ -21,6 +23,7 @@ import {
 } from '@/utils/schedule'
 import { formatHourLabel, formatTime } from '@/utils/date'
 import { useTimeSlotSelection } from '@/composables/useTimeSlotSelection'
+import { useScheduleDrag } from '@/composables/useScheduleDrag'
 import TimedGridAllDay from './TimedGridAllDay.vue'
 import TimedGridHeader from './TimedGridHeader.vue'
 import ScheduleEventChip from './ScheduleEventChip.vue'
@@ -54,6 +57,8 @@ const emit = defineEmits<{
   'date-select': [payload: CalendarDateSelectPayload]
   'schedule-click': [payload: CalendarScheduleClickPayload]
   'time-slot-select': [payload: CalendarTimeSlotSelectPayload]
+  'schedule-move': [payload: CalendarScheduleMovePayload]
+  'schedule-resize': [payload: CalendarScheduleResizePayload]
 }>()
 
 const resolvedTimeSlotSource = computed<TimeSlotSelectSource>(
@@ -66,22 +71,59 @@ const timeRange = {
   hourHeightPx: HOUR_HEIGHT_PX,
 }
 
-const { selectedSlot, isDragging, onPointerDown, onPointerMove, onPointerUp, cancelDrag, selectionStyle } =
-  useTimeSlotSelection(computed(() => props.days), timeRange)
+const slotSel = useTimeSlotSelection(computed(() => props.days), timeRange)
+const schedDrag = useScheduleDrag(timeRange)
+
+// 드래그 완료 직후 click 이벤트 억제
+let justDragged = false
 
 function handlePointerDown(event: PointerEvent, day: Date) {
-  onPointerDown(event, day)
+  slotSel.onPointerDown(event, day)
 }
 
 function handlePointerMove(event: PointerEvent) {
-  onPointerMove(event)
+  if (schedDrag.isDragging.value) {
+    schedDrag.onPointerMove(event)
+  } else {
+    slotSel.onPointerMove(event)
+  }
 }
 
 function handlePointerUp(event: PointerEvent) {
-  const slot = onPointerUp(event)
-  if (slot) {
-    emit('time-slot-select', { ...slot, source: resolvedTimeSlotSource.value })
+  if (schedDrag.isDragging.value) {
+    const result = schedDrag.onPointerUp()
+    if (result) {
+      justDragged = true
+      if (result.type === 'move') emit('schedule-move', result.payload)
+      else emit('schedule-resize', result.payload)
+    }
+  } else {
+    const slot = slotSel.onPointerUp(event)
+    if (slot) {
+      emit('time-slot-select', { ...slot, source: resolvedTimeSlotSource.value })
+    }
   }
+}
+
+function cancelAllDrags() {
+  slotSel.cancelDrag()
+  schedDrag.cancelDrag()
+}
+
+function handleMovePointerDown(event: PointerEvent, schedule: Schedule, day: Date) {
+  schedDrag.onMovePointerDown(event, schedule, day)
+}
+
+function handleResizePointerDown(event: PointerEvent, schedule: Schedule, day: Date) {
+  schedDrag.onResizePointerDown(event, schedule, day)
+}
+
+function handleScheduleClick(schedule: Schedule, day: Date) {
+  if (justDragged) {
+    justDragged = false
+    return
+  }
+  emit('schedule-click', { schedule, source: props.timedScheduleSource, date: day })
 }
 
 const now = ref(new Date())
@@ -110,6 +152,17 @@ const dayColumns = computed(() =>
   }),
 )
 
+// 드래그 중인 열의 ghost 정보
+const ghostInfo = computed(() => {
+  const state = schedDrag.dragState.value
+  if (!state) return null
+  const ghostStart = state.type === 'move' ? state.ghostStart : state.schedule.start
+  const ghostEnd = state.ghostEnd
+  const style = schedDrag.ghostStyle(ghostStart, ghostEnd)
+  const typeStyle = props.getTypeStyle(state.schedule.type)
+  return { day: state.day, schedule: state.schedule, style, typeStyle }
+})
+
 onMounted(() => {
   if (!props.showCurrentTime) {
     return
@@ -130,7 +183,11 @@ onUnmounted(() => {
 <template>
   <div
     class="timed-grid"
-    :class="{ 'single-day': singleDay, 'is-dragging': isDragging }"
+    :class="{
+      'single-day': singleDay,
+      'is-dragging': slotSel.isDragging.value,
+      'is-event-dragging': schedDrag.isDragging.value,
+    }"
     :style="{
       '--hour-height': `${HOUR_HEIGHT_PX}px`,
       '--day-count': String(dayCount),
@@ -174,14 +231,29 @@ onUnmounted(() => {
             @pointerdown="handlePointerDown($event, column.day)"
             @pointermove="handlePointerMove($event)"
             @pointerup="handlePointerUp($event)"
-            @pointercancel="cancelDrag"
+            @pointercancel="cancelAllDrags"
           >
+            <!-- 시간 슬롯 선택 오버레이 -->
             <div
-              v-if="selectedSlot && selectedSlot.date.getTime() === column.day.getTime()"
+              v-if="slotSel.selectedSlot.value && slotSel.selectedSlot.value.date.getTime() === column.day.getTime()"
               class="time-slot-selection"
-              :style="selectionStyle(selectedSlot.start, selectedSlot.end)"
+              :style="slotSel.selectionStyle(slotSel.selectedSlot.value.start, slotSel.selectedSlot.value.end)"
               aria-hidden="true"
             />
+
+            <!-- 이벤트 드래그 ghost -->
+            <div
+              v-if="ghostInfo && ghostInfo.day.getTime() === column.day.getTime()"
+              class="drag-ghost"
+              :style="{
+                ...ghostInfo.style,
+                backgroundColor: ghostInfo.typeStyle.backgroundColor,
+                borderColor: ghostInfo.typeStyle.color,
+              }"
+              aria-hidden="true"
+            >
+              <span class="drag-ghost-title">{{ ghostInfo.schedule.title }}</span>
+            </div>
 
             <div
               v-if="column.currentTime.visible"
@@ -195,14 +267,15 @@ onUnmounted(() => {
               v-for="item in column.layout"
               :key="item.schedule.id"
               class="timed-event"
+              :class="{ 'is-dragging-origin': schedDrag.dragState.value?.schedule.id === item.schedule.id }"
               :style="{
                 top: `${item.top}%`,
                 height: `${item.height}%`,
                 left: `calc(${item.left}% + 2px)`,
                 width: `calc(${item.width}% - 4px)`,
               }"
-              @pointerdown.stop
-            @click.stop="emit('schedule-click', { schedule: item.schedule, source: timedScheduleSource, date: column.day })"
+              @pointerdown.stop="handleMovePointerDown($event, item.schedule, column.day)"
+              @click.stop="handleScheduleClick(item.schedule, column.day)"
             >
               <ScheduleEventChip
                 :schedule="item.schedule"
@@ -212,6 +285,11 @@ onUnmounted(() => {
               <span class="inline-time">
                 {{ formatTime(item.schedule.start) }} ~ {{ formatTime(item.schedule.end) }}
               </span>
+              <!-- 리사이즈 핸들 (하단) -->
+              <div
+                class="resize-handle"
+                @pointerdown.stop="handleResizePointerDown($event, item.schedule, column.day)"
+              />
             </div>
           </div>
         </div>
@@ -281,6 +359,10 @@ onUnmounted(() => {
   cursor: ns-resize;
 }
 
+.timed-grid.is-event-dragging .day-column {
+  cursor: grabbing;
+}
+
 .day-column.is-last-column {
   border-right: none;
 }
@@ -296,15 +378,55 @@ onUnmounted(() => {
   pointer-events: none;
 }
 
+.drag-ghost {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  z-index: 4;
+  border: 2px dashed;
+  border-radius: 4px;
+  opacity: 0.85;
+  box-sizing: border-box;
+  pointer-events: none;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  overflow: hidden;
+}
+
+.drag-ghost-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .timed-event {
   position: absolute;
   z-index: 1;
   overflow: hidden;
-  cursor: pointer;
+  cursor: grab;
+}
+
+.timed-event.is-dragging-origin {
+  opacity: 0.4;
+}
+
+.timed-grid.is-event-dragging .timed-event {
+  cursor: grabbing;
 }
 
 .inline-time {
   display: none;
+}
+
+.resize-handle {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  cursor: ns-resize;
+  z-index: 2;
 }
 
 .current-time-line {

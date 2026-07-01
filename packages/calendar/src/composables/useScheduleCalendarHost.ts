@@ -4,6 +4,8 @@ import type {
   CalendarNavigatePayload,
   CalendarOverflowClickPayload,
   CalendarScheduleClickPayload,
+  CalendarScheduleMovePayload,
+  CalendarScheduleResizePayload,
   CalendarTimeSlotSelectPayload,
   CalendarViewChangePayload,
   ScheduleCalendarHostContext,
@@ -64,6 +66,14 @@ export function useScheduleCalendarHost(
     options.onTimeSlotSelect?.(payload)
   }
 
+  function onScheduleMove(payload: CalendarScheduleMovePayload) {
+    options.onScheduleMove?.(payload)
+  }
+
+  function onScheduleResize(payload: CalendarScheduleResizePayload) {
+    options.onScheduleResize?.(payload)
+  }
+
   const handlers = {
     onViewChange,
     onDateSelect,
@@ -73,6 +83,8 @@ export function useScheduleCalendarHost(
     onListFilterClear,
     onQueryChange,
     onTimeSlotSelect,
+    onScheduleMove,
+    onScheduleResize,
   }
 
   const calendarListeners = {
@@ -84,6 +96,8 @@ export function useScheduleCalendarHost(
     'list-filter-clear': onListFilterClear,
     'query-change': onQueryChange,
     'time-slot-select': onTimeSlotSelect,
+    'schedule-move': onScheduleMove,
+    'schedule-resize': onScheduleResize,
   }
 
   return {

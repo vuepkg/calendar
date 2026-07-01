@@ -140,7 +140,7 @@ for (const [, viewport] of Object.entries(VIEWPORTS)) {
       const listMetrics = await getScrollMetrics(page.locator('.list-view'))
 
       expect(tableMetrics.scrollWidth).toBeLessThanOrEqual(listMetrics.clientWidth + 2)
-      await expect(page.getByText('VVNST A 방선')).toBeVisible()
+      await expect(page.getByText('고객사 A 미팅')).toBeVisible()
     })
 
     test('view switching works after resize context', async ({ page }) => {

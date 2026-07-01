@@ -18,6 +18,8 @@ export type {
   CalendarNavigatePayload,
   CalendarOverflowClickPayload,
   CalendarScheduleClickPayload,
+  CalendarScheduleMovePayload,
+  CalendarScheduleResizePayload,
   CalendarTimeSlotSelectPayload,
   CalendarViewChangePayload,
   // payload 상세 타입

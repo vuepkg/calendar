@@ -26,6 +26,8 @@ export type {
   CalendarNavigatePayload,
   CalendarOverflowClickPayload,
   CalendarScheduleClickPayload,
+  CalendarScheduleMovePayload,
+  CalendarScheduleResizePayload,
   CalendarTimeSlotSelectPayload,
   CalendarViewChangePayload,
   DateSelectSource,

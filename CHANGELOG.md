@@ -3,6 +3,15 @@
 ## [Unreleased]
 
 ### Added
+- **F4-4** Drag-and-drop event move and resize in Week/Day timed grid
+  - `useScheduleDrag` composable — pointer-event based move/resize with hour-snapping and ghost overlay
+  - `schedule-move` emit — `{ schedule, date, newStart, newEnd }` on confirmed drag move
+  - `schedule-resize` emit — `{ schedule, date, newEnd }` on confirmed drag resize
+  - `CalendarScheduleMovePayload` / `CalendarScheduleResizePayload` exported from `@vuepkg/calendar`
+  - `onScheduleMove` / `onScheduleResize` options added to `useScheduleCalendarHost`
+  - Resize handle (8px hit area) at bottom of each timed event
+  - Ghost overlay shows new position during drag; origin event dims to 40% opacity
+  - `justDragged` flag suppresses spurious click event after pointer drag
 - `scheduleTypeOptions` prop on `ScheduleCalendar` — register custom schedule type colors/labels
 - `build:lib` script — ES + CJS + TypeScript declaration file output (`vite.lib.config.ts`)
 - Library packaging: `main`, `module`, `types`, `exports`, `files` fields in `package.json`

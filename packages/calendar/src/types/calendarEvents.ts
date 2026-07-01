@@ -77,6 +77,22 @@ export type DateSelectSource = 'month-cell' | 'week-day-header'
 /** Week/Day 시간 그리드 빈 셀 클릭 출처 — `time-slot-select` payload의 `source` */
 export type TimeSlotSelectSource = 'week-timed-slot' | 'day-timed-slot'
 
+/** Week/Day 시간 그리드 — 이벤트 이동 (같은 날 이내 hour-snap) */
+export interface CalendarScheduleMovePayload {
+  schedule: Schedule
+  /** 이동 후 날짜 (자정 기준) */
+  date: Date
+  newStart: Date
+  newEnd: Date
+}
+
+/** Week/Day 시간 그리드 — 이벤트 리사이즈 (end 시각 변경, hour-snap) */
+export interface CalendarScheduleResizePayload {
+  schedule: Schedule
+  date: Date
+  newEnd: Date
+}
+
 /** Week/Day 시간 그리드 빈 셀 클릭 — 1시간 단위 start/end */
 export interface CalendarTimeSlotSelectPayload {
   /** 슬롯이 속한 날짜 (자정 기준) */
@@ -132,6 +148,10 @@ export interface ScheduleCalendarEmits {
   'query-change': [payload: ScheduleQueryChangePayload]
   /** Week/Day 시간 그리드 빈 셀 클릭 — 일정 생성 등에 start/end 전달 */
   'time-slot-select': [payload: CalendarTimeSlotSelectPayload]
+  /** Week/Day 시간 그리드 — 드래그로 이벤트 이동 확정 */
+  'schedule-move': [payload: CalendarScheduleMovePayload]
+  /** Week/Day 시간 그리드 — 드래그로 이벤트 end 시각 리사이즈 확정 */
+  'schedule-resize': [payload: CalendarScheduleResizePayload]
 }
 
 /** `useScheduleCalendarHost` 옵션 */
@@ -152,6 +172,10 @@ export interface UseScheduleCalendarHostOptions {
   onOverflowClick?: (payload: CalendarOverflowClickPayload) => void
   /** Week/Day 시간 그리드 빈 셀 클릭 — 일정 생성 등 */
   onTimeSlotSelect?: (payload: CalendarTimeSlotSelectPayload) => void
+  /** Week/Day 이벤트 드래그 이동 확정 — 소비자가 schedule.start/end 갱신 */
+  onScheduleMove?: (payload: CalendarScheduleMovePayload) => void
+  /** Week/Day 이벤트 리사이즈 확정 — 소비자가 schedule.end 갱신 */
+  onScheduleResize?: (payload: CalendarScheduleResizePayload) => void
 }
 
 /** emit 핸들러 묶음 (camelCase) */
@@ -164,6 +188,8 @@ export interface ScheduleCalendarHostHandlers {
   onListFilterClear: () => void
   onQueryChange: (payload: ScheduleQueryChangePayload) => void
   onTimeSlotSelect: (payload: CalendarTimeSlotSelectPayload) => void
+  onScheduleMove: (payload: CalendarScheduleMovePayload) => void
+  onScheduleResize: (payload: CalendarScheduleResizePayload) => void
 }
 
 /** `v-on` spread용 — kebab-case 이벤트 키 */
@@ -176,6 +202,8 @@ export type ScheduleCalendarHostListeners = {
   'list-filter-clear': () => void
   'query-change': (payload: ScheduleQueryChangePayload) => void
   'time-slot-select': (payload: CalendarTimeSlotSelectPayload) => void
+  'schedule-move': (payload: CalendarScheduleMovePayload) => void
+  'schedule-resize': (payload: CalendarScheduleResizePayload) => void
 }
 
 /** `useScheduleCalendarHost` 반환값 */

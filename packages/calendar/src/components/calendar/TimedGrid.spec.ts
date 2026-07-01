@@ -4,6 +4,8 @@ import { nextTick } from 'vue'
 import { mockCompanyHolidays } from '@/data/mockSchedules'
 import { HOUR_HEIGHT_PX, SCHEDULE_TYPE_OPTIONS } from '@/constants/calendarView'
 import { startOfDay } from '@/utils/date'
+import type { CalendarScheduleMovePayload, CalendarScheduleResizePayload } from '@/types'
+import type { Schedule } from '@/types/schedule'
 import TimedGrid from './TimedGrid.vue'
 
 function getTypeStyle(type: string) {
@@ -162,5 +164,140 @@ describe('TimedGrid', () => {
     await pointerUp(column, 100 + 8 * HOUR_HEIGHT_PX)
 
     expect(wrapper.emitted('time-slot-select')).toBeUndefined()
+  })
+})
+
+describe('TimedGrid — drag-and-drop (useScheduleDrag)', () => {
+  const TOP = 100
+  const day = startOfDay(new Date(2026, 3, 22))
+
+  function makeSchedule(overrides?: Partial<Schedule>): Schedule {
+    return {
+      id: 'evt-1',
+      title: 'Test Event',
+      start: new Date(2026, 3, 22, 10, 0, 0, 0),
+      end: new Date(2026, 3, 22, 11, 0, 0, 0),
+      type: 'company',
+      ...overrides,
+    }
+  }
+
+  function mountWithSchedule(schedule: Schedule) {
+    const wrapper = mount(TimedGrid, {
+      props: { days: [day], schedules: [schedule], getTypeStyle },
+    })
+    const column = wrapper.get('.day-column').element as HTMLElement
+    setupColumn(column, TOP)
+    const timedEvent = wrapper.get('.timed-event').element as HTMLElement
+    timedEvent.getBoundingClientRect = () =>
+      ({
+        top: TOP + 10 * HOUR_HEIGHT_PX,
+        bottom: TOP + 11 * HOUR_HEIGHT_PX,
+        left: 0,
+        right: 200,
+        width: 200,
+        height: HOUR_HEIGHT_PX,
+        x: 0,
+        y: TOP + 10 * HOUR_HEIGHT_PX,
+        toJSON: () => ({}),
+      }) as DOMRect
+    return { wrapper, column, timedEvent }
+  }
+
+  it('emits schedule-move when dragging a timed event to a new hour slot', async () => {
+    const schedule = makeSchedule()
+    const { wrapper, column, timedEvent } = mountWithSchedule(schedule)
+
+    // pointerdown on the event element at the very top (anchorHourOffset = 0)
+    await pointerDown(timedEvent, TOP + 10 * HOUR_HEIGHT_PX + 5)
+    // drag to hour-14 position
+    await pointerMove(column, TOP + 14 * HOUR_HEIGHT_PX + 5)
+    await pointerUp(column, TOP + 14 * HOUR_HEIGHT_PX + 5)
+
+    const emitted = wrapper.emitted('schedule-move')
+    expect(emitted).toHaveLength(1)
+    const payload = emitted![0]![0] as CalendarScheduleMovePayload
+    expect(payload.schedule.id).toBe(schedule.id)
+    expect(payload.newStart.getHours()).toBe(14)
+    expect(payload.newEnd.getHours()).toBe(15)
+  })
+
+  it('does not emit schedule-move when pointer position does not change', async () => {
+    const schedule = makeSchedule()
+    const { wrapper, column, timedEvent } = mountWithSchedule(schedule)
+
+    // pointerdown then immediate pointerup at the same position
+    await pointerDown(timedEvent, TOP + 10 * HOUR_HEIGHT_PX + 5)
+    await pointerUp(column, TOP + 10 * HOUR_HEIGHT_PX + 5)
+
+    expect(wrapper.emitted('schedule-move')).toBeUndefined()
+  })
+
+  it('emits schedule-resize when dragging the resize handle to a new end hour', async () => {
+    const schedule = makeSchedule()
+    const { wrapper, column } = mountWithSchedule(schedule)
+
+    const resizeHandle = wrapper.get('.resize-handle').element as HTMLElement
+    // pointerdown on the resize handle (at bottom of event)
+    await pointerDown(resizeHandle, TOP + 11 * HOUR_HEIGHT_PX)
+    // drag to hour-13 band → end snaps to 14:00 (endIndex = max(11, 13+1) = 14)
+    await pointerMove(column, TOP + 13 * HOUR_HEIGHT_PX + 5)
+    await pointerUp(column, TOP + 13 * HOUR_HEIGHT_PX + 5)
+
+    const emitted = wrapper.emitted('schedule-resize')
+    expect(emitted).toHaveLength(1)
+    const payload = emitted![0]![0] as CalendarScheduleResizePayload
+    expect(payload.schedule.id).toBe(schedule.id)
+    expect(payload.newEnd.getHours()).toBe(14)
+  })
+
+  it('does not emit schedule-resize when end time does not change', async () => {
+    const schedule = makeSchedule()
+    const { wrapper, column } = mountWithSchedule(schedule)
+
+    const resizeHandle = wrapper.get('.resize-handle').element as HTMLElement
+    // pointerdown on resize then immediate pointerup — end stays at 11:00
+    await pointerDown(resizeHandle, TOP + 11 * HOUR_HEIGHT_PX)
+    await pointerUp(column, TOP + 11 * HOUR_HEIGHT_PX)
+
+    expect(wrapper.emitted('schedule-resize')).toBeUndefined()
+  })
+
+  it('suppresses schedule-click immediately after a successful move drag', async () => {
+    const schedule = makeSchedule()
+    const { wrapper, column, timedEvent } = mountWithSchedule(schedule)
+
+    await pointerDown(timedEvent, TOP + 10 * HOUR_HEIGHT_PX + 5)
+    await pointerMove(column, TOP + 14 * HOUR_HEIGHT_PX + 5)
+    await pointerUp(column, TOP + 14 * HOUR_HEIGHT_PX + 5)
+
+    // browser fires a click right after pointerup — should be suppressed
+    timedEvent.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    await nextTick()
+
+    expect(wrapper.emitted('schedule-click')).toBeUndefined()
+
+    // second click fires normally (justDragged has been reset)
+    timedEvent.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    await nextTick()
+
+    expect(wrapper.emitted('schedule-click')).toHaveLength(1)
+  })
+
+  it('emits schedule-click when clicking a timed event without dragging', async () => {
+    const schedule = makeSchedule()
+    const { wrapper, column, timedEvent } = mountWithSchedule(schedule)
+
+    // pointerdown then immediate pointerup with no position change → no drag result
+    await pointerDown(timedEvent, TOP + 10 * HOUR_HEIGHT_PX + 5)
+    await pointerUp(column, TOP + 10 * HOUR_HEIGHT_PX + 5)
+
+    // click fires normally
+    timedEvent.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    await nextTick()
+
+    const emitted = wrapper.emitted('schedule-click')
+    expect(emitted).toHaveLength(1)
+    expect((emitted![0]![0] as { schedule: Schedule }).schedule.id).toBe(schedule.id)
   })
 })

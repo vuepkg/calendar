@@ -4,6 +4,8 @@ import type { CalendarContext } from '@/types'
 import type {
   CalendarNavigateAction,
   CalendarScheduleClickPayload,
+  CalendarScheduleMovePayload,
+  CalendarScheduleResizePayload,
   CalendarTimeSlotSelectPayload,
 } from '@/types/calendarEvents'
 import CalendarPeriodNav from '../CalendarPeriodNav.vue'
@@ -17,6 +19,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   'schedule-click': [payload: CalendarScheduleClickPayload]
   'time-slot-select': [payload: CalendarTimeSlotSelectPayload]
+  'schedule-move': [payload: CalendarScheduleMovePayload]
+  'schedule-resize': [payload: CalendarScheduleResizePayload]
   navigate: [action: CalendarNavigateAction]
 }>()
 
@@ -51,6 +55,8 @@ const periodLabel = computed(() => formatDayViewDate(selectedDate.value))
         all-day-schedule-source="day-all-day-bar"
         @schedule-click="emit('schedule-click', $event)"
         @time-slot-select="emit('time-slot-select', $event)"
+        @schedule-move="emit('schedule-move', $event)"
+        @schedule-resize="emit('schedule-resize', $event)"
       />
     </div>
   </div>

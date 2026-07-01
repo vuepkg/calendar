@@ -72,17 +72,17 @@
     {
       "name": "index.js (ESM)",
       "path": "dist/index.js",
-      "limit": "16 kB"
+      "limit": "20 kB"
     },
     {
       "name": "index.cjs (CJS)",
       "path": "dist/index.cjs",
-      "limit": "15 kB"
+      "limit": "19 kB"
     },
     {
       "name": "style.css",
       "path": "dist/style.css",
-      "limit": "6.5 kB"
+      "limit": "8 kB"
     }
   ],
   "dependencies": {

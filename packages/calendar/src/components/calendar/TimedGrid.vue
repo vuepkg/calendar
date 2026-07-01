@@ -73,9 +73,6 @@ const slotSel = useTimeSlotSelection(
 )
 const schedDrag = useScheduleDrag(timeRange)
 
-// 드래그 완료 직후 click 이벤트 억제
-let justDragged = false
-
 function handlePointerDown(event: PointerEvent, day: Date) {
   slotSel.onPointerDown(event, day)
 }
@@ -90,11 +87,24 @@ function handlePointerMove(event: PointerEvent) {
 
 function handlePointerUp(event: PointerEvent) {
   if (schedDrag.isDragging.value) {
+    // onPointerUp()이 dragState를 내부에서 null로 되돌리므로 emit에 필요한
+    // schedule/day는 호출 전에 미리 읽어둔다.
+    const activeState = schedDrag.dragState.value
     const result = schedDrag.onPointerUp()
     if (result) {
-      justDragged = true
       if (result.type === 'move') emit('schedule-move', result.payload)
       else emit('schedule-resize', result.payload)
+    } else if (activeState) {
+      // 실제 이동/리사이즈가 없었다면 클릭으로 간주한다.
+      // .timed-event pointerdown에서 setPointerCapture가 .day-column으로 걸리기 때문에
+      // 브라우저가 합성하는 click 이벤트의 target도 .day-column으로 재지정되어
+      // .timed-event에 바인딩한 @click 리스너는 실제 브라우저에서 도달하지 않는다.
+      // 그래서 click을 별도로 듣지 않고 pointerup 시점에 직접 schedule-click을 emit한다.
+      emit('schedule-click', {
+        schedule: activeState.schedule,
+        source: props.timedScheduleSource,
+        date: activeState.day,
+      })
     }
   } else {
     const slot = slotSel.onPointerUp(event)
@@ -115,14 +125,6 @@ function handleMovePointerDown(event: PointerEvent, schedule: Schedule, day: Dat
 
 function handleResizePointerDown(event: PointerEvent, schedule: Schedule, day: Date) {
   schedDrag.onResizePointerDown(event, schedule, day)
-}
-
-function handleScheduleClick(schedule: Schedule, day: Date) {
-  if (justDragged) {
-    justDragged = false
-    return
-  }
-  emit('schedule-click', { schedule, source: props.timedScheduleSource, date: day })
 }
 
 const now = ref(new Date())
@@ -284,7 +286,7 @@ onUnmounted(() => {
                 width: `calc(${item.width}% - 4px)`,
               }"
               @pointerdown.stop="handleMovePointerDown($event, item.schedule, column.day)"
-              @click.stop="handleScheduleClick(item.schedule, column.day)"
+              @click.stop
             >
               <ScheduleEventChip
                 :schedule="item.schedule"

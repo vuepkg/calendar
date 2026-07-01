@@ -285,7 +285,40 @@ describe('ScheduleCalendar emit-only contract', () => {
       .findAll('.timed-event')
       .find((el) => el.text().includes('고객사 A 미팅'))
     expect(timedEvent).toBeDefined()
-    await timedEvent!.trigger('click')
+    const timedEventEl = timedEvent!.element as HTMLElement
+    const columnEl = timedEventEl.closest('.day-column') as HTMLElement
+    columnEl.setPointerCapture = () => {}
+    timedEventEl.getBoundingClientRect = () =>
+      ({
+        top: 0,
+        left: 0,
+        right: 120,
+        bottom: HOUR_HEIGHT_PX,
+        width: 120,
+        height: HOUR_HEIGHT_PX,
+        x: 0,
+        y: 0,
+        toJSON: () => ({}),
+      }) as DOMRect
+
+    // real browsers retarget the synthesized `click` event to `.day-column` once
+    // setPointerCapture is engaged, so a plain `.trigger('click')` no longer reflects
+    // what actually opens the schedule — pointerdown+pointerup at the same Y does.
+    const clientY = 10
+    timedEventEl.dispatchEvent(
+      new PointerEvent('pointerdown', {
+        bubbles: true,
+        cancelable: true,
+        button: 0,
+        clientY,
+        pointerId: 1,
+      }),
+    )
+    await nextTick()
+    columnEl.dispatchEvent(
+      new PointerEvent('pointerup', { bubbles: true, cancelable: true, clientY, pointerId: 1 }),
+    )
+    await nextTick()
 
     const emitted = wrapper.emitted('schedule-click')?.[0]?.[0] as CalendarScheduleClickPayload
     expect(emitted.source).toBe('week-timed')

@@ -271,7 +271,7 @@ describe('TimedGrid — drag-and-drop (useScheduleDrag)', () => {
     expect(wrapper.emitted('schedule-resize')).toBeUndefined()
   })
 
-  it('suppresses schedule-click immediately after a successful move drag', async () => {
+  it('does not emit schedule-click after a successful move drag', async () => {
     const schedule = makeSchedule()
     const { wrapper, column, timedEvent } = mountWithSchedule(schedule)
 
@@ -279,15 +279,12 @@ describe('TimedGrid — drag-and-drop (useScheduleDrag)', () => {
     await pointerMove(column, TOP + 14 * HOUR_HEIGHT_PX + 5)
     await pointerUp(column, TOP + 14 * HOUR_HEIGHT_PX + 5)
 
-    // browser fires a click right after pointerup — should be suppressed
-    timedEvent.dispatchEvent(new MouseEvent('click', { bubbles: true }))
-    await nextTick()
-
     expect(wrapper.emitted('schedule-click')).toBeUndefined()
 
-    // second click fires normally (justDragged has been reset)
-    timedEvent.dispatchEvent(new MouseEvent('click', { bubbles: true }))
-    await nextTick()
+    // a later tap (pointerdown+up with no movement) still emits schedule-click normally —
+    // the earlier drag must not permanently suppress future clicks
+    await pointerDown(timedEvent, TOP + 14 * HOUR_HEIGHT_PX + 5)
+    await pointerUp(column, TOP + 14 * HOUR_HEIGHT_PX + 5)
 
     expect(wrapper.emitted('schedule-click')).toHaveLength(1)
   })
@@ -296,13 +293,12 @@ describe('TimedGrid — drag-and-drop (useScheduleDrag)', () => {
     const schedule = makeSchedule()
     const { wrapper, column, timedEvent } = mountWithSchedule(schedule)
 
-    // pointerdown then immediate pointerup with no position change → no drag result
+    // pointerdown then immediate pointerup with no position change → treated as a click.
+    // Real browsers retarget the native `click` event to `.day-column` once
+    // setPointerCapture is engaged on pointerdown, so schedule-click is emitted
+    // directly from the pointerup handler rather than a `@click` listener.
     await pointerDown(timedEvent, TOP + 10 * HOUR_HEIGHT_PX + 5)
     await pointerUp(column, TOP + 10 * HOUR_HEIGHT_PX + 5)
-
-    // click fires normally
-    timedEvent.dispatchEvent(new MouseEvent('click', { bubbles: true }))
-    await nextTick()
 
     const emitted = wrapper.emitted('schedule-click')
     expect(emitted).toHaveLength(1)

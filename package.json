@@ -20,7 +20,9 @@
     "typecheck": "turbo run typecheck",
     "size": "turbo run size",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "docs:dev": "turbo run docs:dev --filter=@vuepkg/docs",
+    "docs:build": "turbo run docs:build --filter=@vuepkg/docs"
   },
   "devDependencies": {
     "@changesets/cli": "^2.31.0",

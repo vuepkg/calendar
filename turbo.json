@@ -16,6 +16,9 @@
     "typecheck": {
       "dependsOn": ["^build:lib"]
     },
+    "size": {
+      "dependsOn": ["build:lib"]
+    },
     "dev": {
       "cache": false,
       "persistent": true

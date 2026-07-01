@@ -45,11 +45,29 @@
     "typecheck": "vue-tsc --noEmit -p tsconfig.app.json",
     "lint": "eslint .",
     "test": "vitest run --config vitest.config.ts --passWithNoTests",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "size": "size-limit"
   },
   "peerDependencies": {
     "vue": "^3.5.0"
   },
+  "size-limit": [
+    {
+      "name": "index.esm.js",
+      "path": "dist/index.esm.js",
+      "limit": "5 kB"
+    },
+    {
+      "name": "index.cjs.js",
+      "path": "dist/index.cjs.js",
+      "limit": "5 kB"
+    },
+    {
+      "name": "style.css",
+      "path": "dist/style.css",
+      "limit": "2 kB"
+    }
+  ],
   "dependencies": {
     "@vuepkg/core": "workspace:*"
   },

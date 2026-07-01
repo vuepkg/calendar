@@ -62,11 +62,29 @@
     "test:e2e:responsive": "playwright test e2e/calendar-responsive.spec.ts",
     "test:e2e:host": "playwright test e2e/calendar-host-integration.spec.ts",
     "test:e2e:ui": "playwright test --ui",
-    "release": "pnpm run build:lib && npm publish --access public"
+    "release": "pnpm run build:lib && npm publish --access public",
+    "size": "size-limit"
   },
   "peerDependencies": {
     "vue": "^3.5.0"
   },
+  "size-limit": [
+    {
+      "name": "index.js (ESM)",
+      "path": "dist/index.js",
+      "limit": "16 kB"
+    },
+    {
+      "name": "index.cjs (CJS)",
+      "path": "dist/index.cjs",
+      "limit": "15 kB"
+    },
+    {
+      "name": "style.css",
+      "path": "dist/style.css",
+      "limit": "6.5 kB"
+    }
+  ],
   "dependencies": {
     "@vuepkg/core": "workspace:*",
     "@vuepkg/ui": "workspace:*"

@@ -68,11 +68,24 @@
     "build:lib": "vue-tsc --noEmit -p tsconfig.app.json && vite build --config vite.lib.config.ts",
     "typecheck": "vue-tsc --noEmit -p tsconfig.app.json",
     "lint": "eslint .",
-    "test": "vitest run --config vitest.config.ts --passWithNoTests"
+    "test": "vitest run --config vitest.config.ts --passWithNoTests",
+    "size": "size-limit"
   },
   "peerDependencies": {
     "vue": "^3.5.0"
   },
+  "size-limit": [
+    {
+      "name": "index.esm.js",
+      "path": "dist/index.esm.js",
+      "limit": "3 kB"
+    },
+    {
+      "name": "index.cjs.js",
+      "path": "dist/index.cjs.js",
+      "limit": "3 kB"
+    }
+  ],
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "vue": "^3.5.34",

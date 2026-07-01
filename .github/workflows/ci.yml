@@ -36,6 +36,9 @@ jobs:
       - name: Build
         run: pnpm turbo run build:lib
 
+      - name: Bundle size budget (F4-9)
+        run: pnpm turbo run size
+
       - name: Install Playwright (chromium)
         run: pnpm --filter @vuepkg/calendar exec playwright install --with-deps chromium
 

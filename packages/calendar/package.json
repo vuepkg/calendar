@@ -12,7 +12,7 @@
     "schedule",
     "scheduler"
   ],
-  "homepage": "https://github.com/vuepkg/calendar",
+  "homepage": "https://vuepkg.github.io/calendar/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vuepkg/calendar.git"

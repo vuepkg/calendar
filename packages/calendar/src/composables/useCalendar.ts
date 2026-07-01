@@ -180,7 +180,7 @@ export function useCalendar(options: UseCalendarOptions): CalendarContext {
   function getTypeStyle(type: string) {
     const option = scheduleTypeOptions.find((item) => item.type === type)
     return {
-      color: option?.color ?? '#0277bd',
+      color: option?.color ?? '#01579b',
       backgroundColor: option?.backgroundColor ?? '#e1f5fe',
     }
   }

@@ -57,6 +57,9 @@
 
     --vp-holiday-chip-bg:    #4a1515;
     --vp-holiday-chip-color: #fca5a5;
+
+    /* 라이트 모드는 F3-5에서 red-700로 상향했지만, 어두운 배경에서는 기존 red-400이 더 읽기 좋아 다크 모드에서만 유지 */
+    --vp-color-danger: #ef4444;
   }
 }
 
@@ -108,4 +111,7 @@
 
   --vp-holiday-chip-bg:    #4a1515;
   --vp-holiday-chip-color: #fca5a5;
+
+  /* 라이트 모드는 F3-5에서 red-700로 상향했지만, 어두운 배경에서는 기존 red-400이 더 읽기 좋아 다크 모드에서만 유지 */
+  --vp-color-danger: #ef4444;
 }

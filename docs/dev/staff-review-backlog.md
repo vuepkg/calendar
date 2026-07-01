@@ -76,6 +76,7 @@
 | [SRV-P2-09](#srv-p2-09-month-cell-roving-tabindex) | MINOR | 접근성 | 모든 월간 셀 `tabindex="0"` — Tab 순서 과다 | **완료** | `role="grid"`/`row` + roving `tabindex` + 화살표 키 이동 (2026-07-02) |
 | [SRV-P2-10](#srv-p2-10-공휴일-api-응답-검증) | MINOR | 타입/보안 | `response.json() as SpcdeApiResponse` 단언 | **완료** | `isValidSpcdeApiResponse` 런타임 스키마 가드 + 개별 항목 필터링 (2026-07-02) |
 | [SRV-P2-11](#srv-p2-11-headless-서브패스) | MINOR | 로드맵 | `@vuepkg/calendar/headless` 서브패스 미구현 | **미착수** | Phase 3 F3-2와 연계 — tree-shake·번들 분리에도 유리 |
+| [SRV-P2-12](#srv-p2-12-visual-regression-스냅샷-재생성-필요) | MINOR | 테스트 | F3-5 색상 대비 토큰 변경으로 시각 회귀 스냅샷 8종 무효화 | **미착수** | Linux 스냅샷 재생성 필요 — 사람 리뷰 대상, 자동화 범위 밖 |
 
 ### NIT
 
@@ -310,6 +311,18 @@
 **수정 방향:** `@vuepkg/calendar/headless` 서브패스 + F3-2 문서 연계.
 
 **검증:** 미착수.
+
+---
+
+### SRV-P2-12: visual regression 스냅샷 재생성 필요
+
+**위치:** `packages/calendar/e2e/visual-regression.spec.ts-snapshots/*-linux.png` (8종)
+
+**문제:** F3-5 색상 대비 수정으로 `--vp-tab-text`, `--vp-month-cell-outside-text`, `--vp-color-danger`(light), `SCHEDULE_TYPE_OPTIONS`(my_schedule/company_schedule) 값이 바뀌어 Month/Week/Day/List × Light/Dark 스냅샷 8종이 모두 실제 픽셀과 달라짐 (의도된 변경).
+
+**수정 방향:** `pnpm --filter @vuepkg/calendar run test:e2e:update-snapshots:linux`(Docker)로 Linux baseline 재생성 후 diff를 사람이 시각 검토하고 커밋. macOS 로컬에서 생성되는 `*-darwin.png`는 저장소에 포함하지 않음(win32/linux만 공식 baseline).
+
+**검증:** 미착수 — Docker 필요 + 사람 리뷰 대상이라 이번 자동화 세션 범위 밖으로 분리.
 
 ---
 

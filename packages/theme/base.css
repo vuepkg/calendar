@@ -74,7 +74,7 @@
   --vp-color-primary-border: var(--vp-palette-blue-200);
 
   /* Danger */
-  --vp-color-danger:        var(--vp-palette-red-400);
+  --vp-color-danger:        var(--vp-palette-red-700); /* red-400 대비 --vp-color-danger-subtle 배경에서 3.23:1 — WCAG AA(4.5:1) 미달로 상향 (F3-5) */
   --vp-color-danger-subtle: rgb(239 68 68 / 12%);
 
   /* 요일 색상 */
@@ -98,7 +98,7 @@
   /* ── Component: 뷰 탭 (SegmentedControl) ─────────────────────────── */
   --vp-tab-track-bg:     var(--vp-color-bg-muted);
   --vp-tab-track-border: var(--vp-palette-slate-300);
-  --vp-tab-text:         var(--vp-palette-slate-500);
+  --vp-tab-text:         var(--vp-palette-slate-600); /* slate-500 대비 4.34:1 — WCAG AA(4.5:1) 미달로 상향 (F3-5) */
   --vp-tab-text-hover:   var(--vp-palette-slate-700);
   --vp-tab-bg-hover:     var(--vp-palette-slate-200);
   --vp-tab-active-bg:    var(--vp-color-bg);
@@ -134,7 +134,7 @@
   /* ── Component: 월간 셀 ──────────────────────────────────────────── */
   --vp-month-cell-bg:          var(--vp-color-bg);
   --vp-month-cell-outside-bg:  #fafbfc;
-  --vp-month-cell-outside-text: var(--vp-palette-slate-400);
+  --vp-month-cell-outside-text: var(--vp-palette-slate-500); /* slate-400 대비 2.47:1 — WCAG AA(4.5:1) 미달로 상향 (F3-5) */
   --vp-month-cell-selected-bg: var(--vp-color-selected-bg);
   --vp-month-header-bg:        var(--vp-color-bg-subtle);
 

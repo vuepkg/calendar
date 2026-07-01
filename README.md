@@ -300,10 +300,11 @@ const typeOptions: ScheduleTypeOption[] = [
 ## 접근성 (a11y)
 
 - **뷰 탭** — `role="group"` + `aria-pressed`로 현재 뷰 상태 노출, 화살표 키 네비게이션(roving tabindex)
-- **월간 셀** — `role="grid"`, 날짜 `aria-label`
+- **월간 셀** — `role="grid"`/`row`/`gridcell`, 단일 활성 셀만 `tabindex="0"`(roving tabindex) + 화살표 키 이동, `Enter`/`Space` 활성화
 - **팝오버** — focus trap, `Esc` 닫기, 외부 클릭 닫기, 닫힘 시 트리거로 focus 복원
 - **데이터 테이블(List 뷰)** — 행 `Enter`/`Space` 활성화, `aria-label`
 - **키보드 포커스** — 모든 인터랙티브 요소에 `:focus-visible` 아웃라인
+- **자동 검증** — `@axe-core/playwright`로 Month/Week/Day/List 뷰 + 일정 폼 모달을 CI에서 매 push마다 스캔 (`e2e/accessibility.spec.ts`)
 
 ---
 

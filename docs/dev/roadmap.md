@@ -1,12 +1,12 @@
 # Roadmap — @vuepkg/calendar
 
-> 최종 갱신: 2026-07-02 (F3-1, F4-11, IMP-02, IMP-03, F3-3, SRV-P1-04 완료 반영)
+> 최종 갱신: 2026-07-02 (F3-1, F4-11, IMP-02, IMP-03, F3-3, SRV-P1-04, SRV-P2-09, SRV-P2-10, EXT-01, SRV-P2-08, SRV-P1-05, F3-5 완료 반영)
 
 ---
 
 ## 다음 개발 추천 (2026-07-02 기준)
 
-> **현재 상태**: `@vuepkg/calendar@0.3.0` 배포 완료. F4-1~5 주요 기능, F3-1 문서 사이트, F4-11 자동 릴리즈, IMP-02/03/F3-3 소형 API, SRV-P1-04 번들 budget 상향까지 완료.
+> **현재 상태**: `@vuepkg/calendar@0.3.0` 배포 완료. F4-1~5 주요 기능, F3-1 문서 사이트, F4-11 자동 릴리즈, IMP-02/03/F3-3 소형 API, SRV-P1-04 번들 budget 상향, P1/P2 백로그 다수(P2-08/09/10, EXT-01), F3-5 axe a11y 감사까지 완료.
 
 ### 🥇 1순위 — F4-6 Timeline 뷰 (난이도 🔴, 예상 1주+)
 
@@ -19,17 +19,7 @@
 
 ---
 
-### 보너스 — F3-5 a11y 감사 (난이도 🟡, 독립 작업)
-
-**언제든 독립적으로 착수 가능. axe 통과 배지로 신뢰도 향상.**
-
-- **작업**: `axe-playwright` 통합 or `vitest-axe`로 전 컴포넌트 자동 접근성 점검
-- README에 a11y 항목 이미 노출 중 → 실제 axe 통과 배지 추가 시 신뢰도 상승
-- **영향 파일**: `e2e/accessibility.spec.ts` (신규), 필요 시 각 컴포넌트 `aria-*` 보완
-
----
-
-**추천 착수 순서**: ~~`IMP-02/03`~~ (완료) → ~~`F3-3 i18n`~~ (완료) → ~~번들 budget 상향`~~ (완료) → `F4-6 Timeline` (설계 논의 필요)
+**추천 착수 순서**: ~~`IMP-02/03`~~ (완료) → ~~`F3-3 i18n`~~ (완료) → ~~번들 budget 상향`~~ (완료) → ~~P1/P2 백로그(P2-08/09/10, EXT-01, P1-05)~~ (완료) → ~~`F3-5` a11y 감사~~ (완료) → `F4-6 Timeline` (설계 논의 필요)
 
 ---
 
@@ -55,6 +45,13 @@
 | [IMP-02] `weekdayLabels` prop | `MonthView` 요일 헤더 커스터마이즈, 미전달 시 영문 기본값(`SUN`~`SAT`) 유지 | 2026-07-01 |
 | [IMP-03] `startHour`/`endHour` prop | Week/Day 시간 그리드 표시 범위 커스터마이즈, 기본 0~23 | 2026-07-01 |
 | [F3-3] `locale` prop — i18n 자동 현지화 | `Intl.DateTimeFormat` 기반 요일 자동 현지화 (`formatWeekdayLabels`), `weekdayLabels` 수동 override 병행 지원 | 2026-07-01 |
+| [SRV-P1-04] 번들 budget 상향 | size-limit 16/15/6.5KB → 20/19/8KB, F4-6 착수 여유 확보 | 2026-07-02 |
+| [SRV-P2-09] Month cell roving tabindex | `role="grid"`/`row`, 단일 활성 셀만 `tabindex="0"`, 화살표 키 이동 | 2026-07-02 |
+| [SRV-P2-10] 공휴일 API 응답 스키마 검증 | `isValidSpcdeApiResponse` 런타임 가드, 개별 item 필터링 | 2026-07-02 |
+| [EXT-01] 공휴일 API 실패 UI | `ScheduleCalendar` dismissible alert 배너 (`role="alert"`) | 2026-07-02 |
+| [SRV-P2-08] ScheduleFormModal 분리 | `RecurrenceFields.vue` 추출, 611→431줄 | 2026-07-02 |
+| [SRV-P1-05] TimedGrid DnD 재팽창 해소 | `TimedGridDayColumn.vue` 추출, 495→336줄 | 2026-07-02 |
+| [F3-5] axe 자동 접근성 감사 | `e2e/accessibility.spec.ts`(`@axe-core/playwright`), Month/Week/Day/List/모달 전수 0 violation, CI(`test:e2e:ci`) 편입. 색상 대비 토큰 다수 상향(`--vp-tab-text`, `--vp-month-cell-outside-text`, `--vp-color-danger`, `SCHEDULE_TYPE_OPTIONS`) | 2026-07-02 |
 
 ---
 

@@ -259,6 +259,8 @@ function onGridKeydown(event: KeyboardEvent) {
           <div
             v-if="week.barRowCount > 0"
             class="month-week-bars"
+            role="gridcell"
+            aria-colspan="7"
             :style="{
               height: `${week.barRowCount * MONTH_CELL_BAR_ROW_HEIGHT_PX}px`,
               gridTemplateRows: `repeat(${week.barRowCount}, ${MONTH_CELL_BAR_ROW_HEIGHT_PX}px)`,

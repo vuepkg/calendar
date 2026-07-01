@@ -1,10 +1,11 @@
 import type { ScheduleTypeOption } from '@/types/schedule'
 
 // ── Schedule Types ────────────────────────────────────────────────────
+// color는 각 backgroundColor 대비 WCAG AA(4.5:1) 이상 확보 — 참가자 라벨의 opacity 0.85 dimming 후에도 통과 (F3-5)
 export const SCHEDULE_TYPE_OPTIONS: ScheduleTypeOption[] = [
-  { type: 'my_schedule', label: '내 일정', color: '#0277bd', backgroundColor: '#e1f5fe' },
+  { type: 'my_schedule', label: '내 일정', color: '#01579b', backgroundColor: '#e1f5fe' },
   { type: 'team_schedule', label: '팀 일정', color: '#6a1b9a', backgroundColor: '#f3e5f5' },
-  { type: 'company_schedule', label: '회사 일정', color: '#546e7a', backgroundColor: '#eceff1' },
+  { type: 'company_schedule', label: '회사 일정', color: '#3e5157', backgroundColor: '#eceff1' },
 ]
 
 // ── Timed View (Week/Day 공통) ───────────────────────────────────────

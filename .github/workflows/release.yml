@@ -28,6 +28,7 @@ jobs:
         with:
           node-version: 24
           cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -35,16 +36,26 @@ jobs:
       - name: Build library
         run: pnpm turbo run build:lib --filter=@vuepkg/calendar
 
-      - name: Configure npm auth
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
-
-      - name: Create Release PR or Publish to npm
+      - name: Create Release PR
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: cd packages/calendar && npm publish --access public
           title: 'chore: version packages'
           commit: 'chore: version packages'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish to npm
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        working-directory: packages/calendar
+        run: |
+          PUBLISHED=$(npm view @vuepkg/calendar version 2>/dev/null || echo "none")
+          LOCAL=$(node -p "require('./package.json').version")
+          echo "npm: $PUBLISHED / local: $LOCAL"
+          if [ "$LOCAL" != "$PUBLISHED" ]; then
+            npm publish --access public
+          else
+            echo "Already published at $LOCAL, skipping."
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

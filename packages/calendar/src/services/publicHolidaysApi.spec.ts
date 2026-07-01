@@ -172,4 +172,80 @@ describe('fetchPublicHolidays', () => {
       }),
     ).rejects.toThrow('공공데이터포털 API error (30)')
   })
+
+  describe('response schema validation (SRV-P2-10)', () => {
+    it('throws a clear error when the response has no `response` envelope', async () => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: true,
+          json: async () => ({ error: 'unexpected shape' }),
+        }),
+      )
+
+      await expect(
+        fetchPublicHolidays(2026, { apiUrl: '/api/spcde/getRestDeInfo' }),
+      ).rejects.toThrow('응답 형식이 예상과 다릅니다')
+    })
+
+    it('throws a clear error when `response.header` is missing', async () => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: true,
+          json: async () => ({ response: { body: {} } }),
+        }),
+      )
+
+      await expect(
+        fetchPublicHolidays(2026, { apiUrl: '/api/spcde/getRestDeInfo' }),
+      ).rejects.toThrow('응답 형식이 예상과 다릅니다')
+    })
+
+    it('throws a clear error when the body is null', async () => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: true,
+          json: async () => ({ response: { header: { resultCode: '00' }, body: null } }),
+        }),
+      )
+
+      await expect(
+        fetchPublicHolidays(2026, { apiUrl: '/api/spcde/getRestDeInfo' }),
+      ).rejects.toThrow('응답 형식이 예상과 다릅니다')
+    })
+
+    it('filters out malformed holiday items instead of producing garbage dates', async () => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: true,
+          json: async () => ({
+            response: {
+              header: { resultCode: '00', resultMsg: 'NORMAL_SERVICE' },
+              body: {
+                items: {
+                  item: [
+                    { dateName: '신정', isHoliday: 'Y', locdate: 20260101 },
+                    { dateName: '깨진 항목', isHoliday: 'Y', locdate: 'not-a-number' },
+                    { isHoliday: 'Y', locdate: 20260505 },
+                  ],
+                },
+                numOfRows: 100,
+                pageNo: 1,
+                totalCount: 3,
+              },
+            },
+          }),
+        }),
+      )
+
+      const holidays = await fetchPublicHolidays(2026, { apiUrl: '/api/spcde/getRestDeInfo' })
+
+      expect(holidays).toEqual([
+        { id: 'public-2026-01-01', dateKey: '2026-01-01', name: '신정', kind: 'public' },
+      ])
+    })
+  })
 })

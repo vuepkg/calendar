@@ -795,4 +795,53 @@ describe('ScheduleCalendar public holiday fetching', () => {
     expect(chipLabels).toContain('어린이날')
     expect(chipLabels).toContain('창립기념일')
   })
+
+  describe('holiday fetch failure UI (EXT-01)', () => {
+    it('shows a dismissible alert banner when the public holiday fetch fails', async () => {
+      mockedFetch.mockRejectedValue(new Error('network down'))
+
+      const wrapper = mount(ScheduleCalendar, {
+        props: {
+          schedules: mockSchedules,
+          view: 'month',
+          date: startOfDay(new Date(2026, 4, 1)),
+          fetchPublicHolidays: true,
+        },
+        global: {
+          stubs: { DataTable: { template: '<div />' }, Column: true },
+        },
+      })
+
+      expect(wrapper.find('.holiday-fetch-error').exists()).toBe(false)
+
+      await flushPromises()
+
+      const banner = wrapper.find('.holiday-fetch-error')
+      expect(banner.exists()).toBe(true)
+      expect(banner.attributes('role')).toBe('alert')
+
+      await wrapper.find('.holiday-fetch-error-dismiss').trigger('click')
+      expect(wrapper.find('.holiday-fetch-error').exists()).toBe(false)
+    })
+
+    it('does not show the banner when the fetch succeeds', async () => {
+      mockedFetch.mockResolvedValue([])
+
+      const wrapper = mount(ScheduleCalendar, {
+        props: {
+          schedules: mockSchedules,
+          view: 'month',
+          date: startOfDay(new Date(2026, 4, 1)),
+          fetchPublicHolidays: true,
+        },
+        global: {
+          stubs: { DataTable: { template: '<div />' }, Column: true },
+        },
+      })
+
+      await flushPromises()
+
+      expect(wrapper.find('.holiday-fetch-error').exists()).toBe(false)
+    })
+  })
 })

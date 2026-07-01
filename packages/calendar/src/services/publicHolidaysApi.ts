@@ -70,7 +70,37 @@ function parseHolidayItems(body: SpcdeApiResponse['response']['body']): SpcdeHol
     return []
   }
 
-  return Array.isArray(item) ? item : [item]
+  const rawItems = Array.isArray(item) ? item : [item]
+  return rawItems.filter(
+    (candidate): candidate is SpcdeHolidayItem =>
+      typeof candidate === 'object' &&
+      candidate !== null &&
+      typeof candidate.locdate === 'number' &&
+      typeof candidate.dateName === 'string',
+  )
+}
+
+/** 공공데이터포털 응답 최소 스키마 검증 — `response.header`/`body`가 없으면 이후 접근이 throw됨 (SRV-P2-10) */
+function isValidSpcdeApiResponse(data: unknown): data is SpcdeApiResponse {
+  if (typeof data !== 'object' || data === null) {
+    return false
+  }
+
+  const response = (data as Record<string, unknown>).response
+  if (typeof response !== 'object' || response === null) {
+    return false
+  }
+
+  const header = (response as Record<string, unknown>).header
+  const body = (response as Record<string, unknown>).body
+
+  return (
+    typeof header === 'object' &&
+    header !== null &&
+    typeof (header as Record<string, unknown>).resultCode === 'string' &&
+    typeof body === 'object' &&
+    body !== null
+  )
 }
 
 export function buildPublicHolidaysApiUrl(
@@ -122,7 +152,19 @@ export async function fetchPublicHolidays(
     throw new Error(`Failed to fetch public holidays (${response.status})`)
   }
 
-  const data = (await response.json()) as SpcdeApiResponse
+  const rawData: unknown = await response.json()
+
+  if (!isValidSpcdeApiResponse(rawData)) {
+    if (import.meta.env.DEV) {
+      console.warn(
+        '[publicHolidaysApi] Unexpected API response shape — expected SpcdeInfoService/getRestDeInfo schema (response.header/body).',
+        rawData,
+      )
+    }
+    throw new Error('공공데이터포털 API 응답 형식이 예상과 다릅니다 (schema mismatch).')
+  }
+
+  const data = rawData
   const { resultCode, resultMsg } = data.response.header
 
   if (resultCode !== '00') {

@@ -74,7 +74,7 @@
 | [SRV-P2-07](#srv-p2-07-headless-export) | MINOR | 로드맵 | `useCalendar` 미공개 — headless 포지셔닝 약함 | **완료** (부분) | `index.ts`에 `export { useCalendar }` (2026-07-01). 서브패스는 [SRV-P2-11](#srv-p2-11-headless-서브패스) |
 | [SRV-P2-08](#srv-p2-08-scheduleformmodal-단일-대형-파일) | MINOR | 유지보수 | `ScheduleFormModal.vue` **611줄** — 폼·반복 UI·검증 단일 파일 | **미착수** | recurrence 섹션·폼 필드 컴포넌트 분리 검토 |
 | [SRV-P2-09](#srv-p2-09-month-cell-roving-tabindex) | MINOR | 접근성 | 모든 월간 셀 `tabindex="0"` — Tab 순서 과다 | **완료** | `role="grid"`/`row` + roving `tabindex` + 화살표 키 이동 (2026-07-02) |
-| [SRV-P2-10](#srv-p2-10-공휴일-api-응답-검증) | MINOR | 타입/보안 | `response.json() as SpcdeApiResponse` 단언 | **미착수** | 경량 스키마 검증 또는 실패 시 빈 배열 + warn |
+| [SRV-P2-10](#srv-p2-10-공휴일-api-응답-검증) | MINOR | 타입/보안 | `response.json() as SpcdeApiResponse` 단언 | **완료** | `isValidSpcdeApiResponse` 런타임 스키마 가드 + 개별 항목 필터링 (2026-07-02) |
 | [SRV-P2-11](#srv-p2-11-headless-서브패스) | MINOR | 로드맵 | `@vuepkg/calendar/headless` 서브패스 미구현 | **미착수** | Phase 3 F3-2와 연계 — tree-shake·번들 분리에도 유리 |
 
 ### NIT
@@ -285,11 +285,13 @@
 
 ### SRV-P2-10: 공휴일 API 응답 검증
 
-**위치:** `publicHolidaysApi.ts` L125
+**위치:** `publicHolidaysApi.ts`
 
-**문제:** `(await response.json()) as SpcdeApiResponse` — 스키마 불일치 시 런타임 throw 가능.
+**문제:** `(await response.json()) as SpcdeApiResponse` — 스키마 불일치 시 (`response`/`header`/`body` 누락) 이후 접근에서 raw `TypeError`가 던져져 진단이 어려움. 개별 holiday item도 검증 없이 매핑되어 깨진 `locdate`가 조용히 잘못된 날짜로 변환될 수 있었음.
 
-**수정 방향:** 최소 필드 검증 후 실패 시 `[]` + DEV warn.
+**수정:** `isValidSpcdeApiResponse()` 런타임 가드 추가 — `response`/`header.resultCode`/`body` 최소 구조 확인 후 불일치 시 명확한 한글 에러 메시지로 throw(+ DEV `console.warn`으로 raw payload 노출). `parseHolidayItems()`는 `locdate`가 number, `dateName`이 string인 항목만 통과시키도록 필터링해 깨진 항목을 조용히 제외.
+
+**검증:** ✅ `publicHolidaysApi.spec.ts` `describe('response schema validation (SRV-P2-10)')` 4건 — envelope 누락/header 누락/body null/깨진 item 필터링 (2026-07-02).
 
 **검증:** 미착수.
 

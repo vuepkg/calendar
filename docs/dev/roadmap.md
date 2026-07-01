@@ -151,7 +151,7 @@
 
 | ID | 내용 | 상태 |
 | -- | ---- | ---- |
-| EXT-01 | 공휴일 API 실패 시 graceful degrade UI | 미착수 (DEV `console.warn`만 존재, 사용자 노출 UI 없음) |
+| EXT-01 | 공휴일 API 실패 시 graceful degrade UI | ✅ 완료 (2026-07-02) — `ScheduleCalendar` 상단 dismissible alert 배너 (`role="alert"`), 캘린더 자체는 계속 정상 동작 |
 | EXT-02 | `fetch-public-holidays` + SSR/프록시 키 관리 가이드 | ✅ 완료 — `apps/docs/guide/public-holidays.md`(BFF 프록시 패턴), `docs/guide/integration.md`(dev/preview proxy + 프로덕션 BFF 가이드) |
 | ~~NPM-01~~ | ~~LICENSE 파일 추가~~ | ✅ 완료 |
 | ~~NPM-02~~ | ~~`fetchPublicHolidays` 기본값 `false`~~ | ✅ 완료 |

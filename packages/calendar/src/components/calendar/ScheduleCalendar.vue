@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent, onMounted, toRef, useAttrs, watch } from 'vue'
+import { computed, defineAsyncComponent, onMounted, ref, toRef, useAttrs, watch } from 'vue'
 import { useCalendar } from '@/composables/useCalendar'
 import { usePublicHolidays } from '@/composables/usePublicHolidays'
 import type {
@@ -122,11 +122,24 @@ const {
   serviceKey: props.publicHolidayServiceKey,
 })
 
+const holidayErrorDismissed = ref(false)
+
 watch(publicHolidaysError, (message) => {
-  if (message && import.meta.env.DEV) {
-    console.warn('[ScheduleCalendar] public holidays:', message)
+  if (message) {
+    if (import.meta.env.DEV) {
+      console.warn('[ScheduleCalendar] public holidays:', message)
+    }
+    holidayErrorDismissed.value = false
   }
 })
+
+const showHolidayErrorBanner = computed(
+  () => publicHolidaysError.value !== null && !holidayErrorDismissed.value,
+)
+
+function dismissHolidayError() {
+  holidayErrorDismissed.value = true
+}
 
 const resolvedHolidays = computed(() => {
   const companyHolidays = props.holidays ?? []
@@ -248,6 +261,18 @@ function handleScheduleResize(payload: CalendarScheduleResizePayload) {
 
 <template>
   <div class="schedule-calendar">
+    <div v-if="showHolidayErrorBanner" class="holiday-fetch-error" role="alert">
+      <span>공휴일 정보를 불러오지 못했습니다. 캘린더는 정상적으로 사용할 수 있습니다.</span>
+      <button
+        type="button"
+        class="holiday-fetch-error-dismiss"
+        aria-label="닫기"
+        @click="dismissHolidayError"
+      >
+        ×
+      </button>
+    </div>
+
     <CalendarToolbar v-if="!hideToolbar" :calendar="calendar" @view-change="handleViewChange" />
 
     <section
@@ -329,5 +354,29 @@ function handleScheduleResize(payload: CalendarScheduleResizePayload) {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+
+.holiday-fetch-error {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--vp-color-danger);
+  background: var(--vp-color-danger-subtle);
+  border-bottom: 1px solid var(--vp-calendar-border);
+}
+
+.holiday-fetch-error-dismiss {
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
 }
 </style>

@@ -9,7 +9,11 @@ import { startOfDay } from '@/utils/date'
 import MonthView from './MonthView.vue'
 
 describe('MonthView', () => {
-  function mountMonthView(date = startOfDay(new Date(2026, 4, 1)), holidays: Holiday[] = []) {
+  function mountMonthView(
+    date = startOfDay(new Date(2026, 4, 1)),
+    holidays: Holiday[] = [],
+    monthWeekCount?: 2 | 3 | 6,
+  ) {
     const calendar = useCalendar({
       schedules: mockSchedules,
       holidays,
@@ -18,7 +22,7 @@ describe('MonthView', () => {
     })
 
     return mount(MonthView, {
-      props: { calendar },
+      props: { calendar, monthWeekCount },
     })
   }
 
@@ -157,5 +161,32 @@ describe('MonthView', () => {
     const moreBtn = may15Cell?.find('button.more-events')
     expect(moreBtn?.element.tagName).toBe('BUTTON')
     expect(moreBtn?.attributes('type')).toBe('button')
+  })
+
+  describe('monthWeekCount (F4-2)', () => {
+    it('renders all 6 weeks by default', () => {
+      const wrapper = mountMonthView(startOfDay(new Date(2026, 4, 1)))
+      expect(wrapper.findAll('.month-week')).toHaveLength(6)
+    })
+
+    it('renders only 2 weeks when monthWeekCount is 2', () => {
+      const wrapper = mountMonthView(startOfDay(new Date(2026, 4, 15)), [], 2)
+      const weeks = wrapper.findAll('.month-week')
+
+      expect(weeks).toHaveLength(2)
+      expect(wrapper.find('.month-cell.selected').exists()).toBe(true)
+    })
+
+    it('renders only 3 weeks when monthWeekCount is 3', () => {
+      const wrapper = mountMonthView(startOfDay(new Date(2026, 4, 15)), [], 3)
+      expect(wrapper.findAll('.month-week')).toHaveLength(3)
+    })
+
+    it('keeps the selected date visible even when its week is near the grid end', () => {
+      // 2026-05-31 falls in the last (6th) grid week — window must clamp, not run past it
+      const wrapper = mountMonthView(startOfDay(new Date(2026, 4, 31)), [], 3)
+      expect(wrapper.findAll('.month-week')).toHaveLength(3)
+      expect(wrapper.find('.month-cell.selected').exists()).toBe(true)
+    })
   })
 })

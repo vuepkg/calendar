@@ -125,6 +125,29 @@ function buildChipSchedules(singleDayAllDay: Schedule[], timedSchedules: Schedul
   return [...singleDayAllDay, ...timedSchedules]
 }
 
+/**
+ * 42셀(6주) 월간 그리드를 `weekCount`주 만큼으로 축소한다.
+ * 선택 날짜가 포함된 주가 창의 첫 주가 되도록 슬라이싱하되,
+ * 그리드 끝을 넘지 않도록 시작 주 인덱스를 clamp한다.
+ */
+export function sliceMonthCellsForWeekCount(
+  monthCells: MonthDayCell[],
+  weekCount: number,
+): MonthDayCell[] {
+  const totalWeeks = Math.ceil(monthCells.length / 7)
+
+  if (weekCount >= totalWeeks) {
+    return monthCells
+  }
+
+  const selectedIndex = monthCells.findIndex((cell) => cell.isSelected)
+  const selectedWeek = selectedIndex === -1 ? 0 : Math.floor(selectedIndex / 7)
+  const maxStartWeek = totalWeeks - weekCount
+  const startWeek = Math.min(selectedWeek, maxStartWeek)
+
+  return monthCells.slice(startWeek * 7, (startWeek + weekCount) * 7)
+}
+
 export function layoutMonthWeeks(
   monthCells: MonthDayCell[],
   cellHeightPx = MONTH_CELL_HEIGHT_PX,

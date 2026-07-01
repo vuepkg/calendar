@@ -7,6 +7,7 @@ export type {
   FetchPublicHolidaysOptions,
   Holiday,
   HolidayKind,
+  MonthWeekCount,
   Participant,
   Schedule,
   ScheduleDraft,

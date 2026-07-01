@@ -1,14 +1,18 @@
-import { onUnmounted, ref, watch, type Ref } from 'vue'
+import { onUnmounted, ref, toValue, watch, type MaybeRefOrGetter, type Ref } from 'vue'
 import { MONTH_CELL_HEIGHT_PX } from '@/constants/calendarView'
 
-const MONTH_WEEK_COUNT = 6
+const DEFAULT_MONTH_WEEK_COUNT = 6
 const MIN_MONTH_CELL_HEIGHT_PX = 72
 
 /**
  * 월간 그리드 주 영역 높이를 측정해 셀당 픽셀 높이를 반환합니다.
- * 부모 컨테이너에 맞춰 6주 행을 균등 분할할 때 칩 슬롯 계산에 사용합니다.
+ * 부모 컨테이너에 맞춰 렌더링된 주 행 수만큼 균등 분할할 때 칩 슬롯 계산에 사용합니다.
+ * `weekCount`(기본 6)는 `monthWeekCount` prop에 따라 2/3주 축소 뷰일 때도 정확한 셀 높이를 계산하기 위함입니다.
  */
-export function useMonthMeasuredCellHeight(weeksContainerRef: Ref<HTMLElement | null>) {
+export function useMonthMeasuredCellHeight(
+  weeksContainerRef: Ref<HTMLElement | null>,
+  weekCount: MaybeRefOrGetter<number> = DEFAULT_MONTH_WEEK_COUNT,
+) {
   const cellHeightPx = ref(MONTH_CELL_HEIGHT_PX)
   let observer: ResizeObserver | undefined
 
@@ -18,7 +22,7 @@ export function useMonthMeasuredCellHeight(weeksContainerRef: Ref<HTMLElement | 
       return
     }
 
-    const weekHeight = container.clientHeight / MONTH_WEEK_COUNT
+    const weekHeight = container.clientHeight / toValue(weekCount)
     if (weekHeight <= 0) {
       return
     }
@@ -47,6 +51,8 @@ export function useMonthMeasuredCellHeight(weeksContainerRef: Ref<HTMLElement | 
     },
     { flush: 'post' },
   )
+
+  watch(() => toValue(weekCount), updateCellHeight, { flush: 'post' })
 
   onUnmounted(() => {
     observer?.disconnect()

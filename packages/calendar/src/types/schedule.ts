@@ -7,6 +7,9 @@ export type { Holiday, HolidayKind }
 /** Month / Week / Day / List 탭 식별자 */
 export type CalendarView = 'month' | 'week' | 'day' | 'list'
 
+/** 월간 뷰에 표시할 주(week) 수 — 6=전체 월, 2\|3=선택 날짜 기준 축소 뷰 */
+export type MonthWeekCount = 2 | 3 | 6
+
 /**
  * 기본 제공 일정 분류 리터럴.
  * `Schedule.type`은 `string`이므로 소비자가 이 외의 타입 문자열을 자유롭게 사용할 수 있습니다.

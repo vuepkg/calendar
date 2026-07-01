@@ -20,6 +20,7 @@
 | [SRV-P0-01] `query-change` 정확성 | navigate/view-change 시 다음 date/view를 payload에 반영 | 2026-06-30 |
 | [IMP-04 / F4-1] 드래그 시간 슬롯 범위 선택 | `useTimeSlotSelection` composable, pointer event 기반 | 2026-07-01 |
 | [IMP-06 / F4-4] 드래그&드롭 이벤트 이동·리사이즈 | `useScheduleDrag` composable, `schedule-move`/`schedule-resize` emit | 2026-07-01 |
+| [IMP-05 / F4-2] 2/3주 월간 뷰 변형 | `monthWeekCount?: 2\|3\|6` prop, 선택 날짜 기준 window + clamp | 2026-07-01 |
 
 ---
 
@@ -62,13 +63,9 @@
 
 ---
 
-#### [IMP-05] 2-week / 3-week 월간 뷰 변형
+#### [IMP-05] 2-week / 3-week 월간 뷰 변형 — ✅ 완료 (2026-07-01, F4-2)
 
-**개선 방향**
-- `monthWeekCount?: 2 | 3 | 6` prop 추가 (기본 6)
-- 현재 선택 날짜 기준으로 어느 주를 보여줄지 결정
-
-**영향 파일**: `views/MonthView.vue`, `utils/date.ts`, `utils/month.ts`
+`monthWeekCount?: 2 | 3 | 6` prop 구현 완료. 상세는 [framework-roadmap.md](./framework-roadmap.md) F4-2 참고.
 
 ---
 

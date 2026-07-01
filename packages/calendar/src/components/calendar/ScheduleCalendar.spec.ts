@@ -439,6 +439,34 @@ describe('ScheduleCalendar emit-only contract', () => {
     expect(wrapper.find('.timed-grid').exists()).toBe(true)
   })
 
+  // F4-2 — monthWeekCount prop 전달 검증
+  it('renders all 6 weeks by default (monthWeekCount omitted)', () => {
+    const wrapper = mount(ScheduleCalendar, {
+      props: {
+        schedules: [],
+        view: 'month',
+        date: startOfDay(new Date(2026, 4, 1)),
+        fetchPublicHolidays: false,
+      },
+    })
+
+    expect(wrapper.findAll('.month-week')).toHaveLength(6)
+  })
+
+  it('renders a reduced grid when monthWeekCount is 2', () => {
+    const wrapper = mount(ScheduleCalendar, {
+      props: {
+        schedules: [],
+        view: 'month',
+        date: startOfDay(new Date(2026, 4, 15)),
+        fetchPublicHolidays: false,
+        monthWeekCount: 2,
+      },
+    })
+
+    expect(wrapper.findAll('.month-week')).toHaveLength(2)
+  })
+
   it('emits list-filter-clear from list view', async () => {
     const wrapper = mount(ScheduleCalendar, {
       props: {

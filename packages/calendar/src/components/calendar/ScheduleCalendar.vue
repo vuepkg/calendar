@@ -17,7 +17,13 @@ import type {
   ScheduleQueryTrigger,
 } from '@/types/calendarEvents'
 import type { Holiday } from '@/types/schedule'
-import type { CalendarView, Schedule, ScheduleTypeOption, ViewScope } from '@/types/schedule'
+import type {
+  CalendarView,
+  MonthWeekCount,
+  Schedule,
+  ScheduleTypeOption,
+  ViewScope,
+} from '@/types/schedule'
 import { startOfDay } from '@/utils/date'
 import { mergeHolidays } from '@/utils/holiday'
 import { resolveCalendarNavigateDate } from '@/utils/date'
@@ -58,9 +64,15 @@ const props = withDefaults(
      * `[...SCHEDULE_TYPE_OPTIONS, { type: 'project', label: '프로젝트', color: '...', backgroundColor: '...' }]`
      */
     scheduleTypeOptions?: ScheduleTypeOption[]
+    /**
+     * 월간 뷰에 표시할 주(week) 수 — 기본 `6`(전체 월).
+     * `2`\|`3`이면 `date` v-model 기준 선택 날짜가 포함된 주부터 축소 표시합니다.
+     */
+    monthWeekCount?: MonthWeekCount
   }>(),
   {
     fetchPublicHolidays: false,
+    monthWeekCount: 6,
   },
 )
 
@@ -231,6 +243,7 @@ function handleScheduleResize(payload: CalendarScheduleResizePayload) {
       <MonthView
         v-if="currentView === 'month'"
         :calendar="calendar"
+        :month-week-count="monthWeekCount"
         @date-select="handleDateSelect"
         @overflow-click="handleOverflowClick"
         @schedule-click="handleScheduleClick"

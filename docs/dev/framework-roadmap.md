@@ -219,7 +219,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | ID | 작업 | 난이도 | 비고 |
 | -- | ---- | ------ | ---- |
 | F4-1 | 드래그로 시간 슬롯 범위 선택 (IMP-04) | 🟡 | ✅ **완료 (2026-07-01)** — `useTimeSlotSelection` composable로 분리. `pointerdown→pointermove→pointerup` 순수 pointer event 드래그, 위·아래 방향 모두 지원. `setPointerCapture`로 열 외부 이탈 보호. `isDragging` 상태로 `cursor: ns-resize` 피드백. |
-| F4-2 | 2-week / 3-week 월간 뷰 변형 (IMP-05) | 🟡 | `monthWeekCount?: 2\|3\|6` prop |
+| F4-2 | 2-week / 3-week 월간 뷰 변형 (IMP-05) | 🟡 | ✅ **완료 (2026-07-01)** — `monthWeekCount?: 2\|3\|6` prop, 선택 날짜 기준 주 window + clamp, `useMonthMeasuredCellHeight` weekCount 파라미터화 |
 | F4-3 | 일정 상세/생성 모달 (CRUD UI) | 🔴 | `Dialog` primitive(F2-7)를 이 작업과 함께 추출 |
 | F4-4 | 드래그&드롭 이벤트 이동·리사이즈 (IMP-06, 보류 해제) | 🔴 | ✅ **완료 (2026-07-01)** — `useScheduleDrag` composable, hour-snapping + ghost overlay, `schedule-move`/`schedule-resize` emit, `onScheduleMove`/`onScheduleResize` 호스트 옵션 추가 |
 | F4-5 | Recurring Event (반복 일정) — 신규 | 🔴 | RRULE 서브셋 또는 자체 recurrence 규칙. 현재 로드맵에서 가장 큰 차별화 포인트 |
@@ -356,13 +356,13 @@ component     --vp-chip-bg: var(--vp-color-surface);
 
 ### 다음 단계 — Phase 4 진행 현황 (2026-07-01 갱신)
 
-> **진행 현황 (2026-07-01)**: SRV-P1-01/P1-03 완료 → F4-1(드래그 슬롯 선택) 완료 → SRV-P2 부채 전량 처리 완료 (P2-01~07 + NIT-01) → F4-4(DnD 이동·리사이즈) 완료. `useTimeSlotSelection`의 pointer event 인프라가 F4-4 `useScheduleDrag`로 재사용됨.
+> **진행 현황 (2026-07-01)**: SRV-P1-01/P1-03 완료 → F4-1(드래그 슬롯 선택) 완료 → SRV-P2 부채 전량 처리 완료 (P2-01~07 + NIT-01) → F4-4(DnD 이동·리사이즈) 완료 → F4-2(2/3주 월간 뷰) 완료 → F4-9(size-limit 게이트)·F4-10(CONTRIBUTING) 완료. `useTimeSlotSelection`의 pointer event 인프라가 F4-4 `useScheduleDrag`로 재사용됨. 저난이도 백로그가 모두 소진돼 다음은 🔴 고난이도 항목(F4-3/F4-5/F4-6) 또는 §1.5 잔여 기술부채가 남음.
 
 | ID | 작업 | 난이도 | 비고 |
 | -- | ---- | ------ | ---- |
 | ~~F4-1~~ | ~~드래그 시간 슬롯 범위 선택 (IMP-04)~~ | ~~🟡~~ | ✅ 완료 (2026-07-01) |
 | ~~F4-4~~ | ~~드래그&드롭 이벤트 이동·리사이즈 (IMP-06)~~ | ~~🔴~~ | ✅ 완료 (2026-07-01) |
-| F4-2 | 2-week / 3-week 월간 뷰 변형 (IMP-05) | 🟡 | `monthWeekCount?: 2\|3\|6` prop — **다음 작업 후보** |
+| ~~F4-2~~ | ~~2-week / 3-week 월간 뷰 변형 (IMP-05)~~ | ~~🟡~~ | ✅ 완료 (2026-07-01) |
 | ~~F4-9~~ | ~~번들 사이즈 예산 + size-limit CI 게이트~~ | ~~🟢~~ | ✅ 완료 (2026-07-01) |
 | ~~F4-10~~ | ~~RFC 프로세스 + CONTRIBUTING + 기능 추가 체크리스트~~ | ~~🟢~~ | ✅ 완료 (2026-07-01) |
 | — | §1.5 잔여 항목 (`vite-plugin-dts` 상대경로 누수) 설계 검토 | 🟡 | 영향도 낮음 — Phase 4 작업과 별개로 여유 있을 때 처리 |

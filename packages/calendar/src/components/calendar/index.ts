@@ -11,6 +11,7 @@ export type {
   Participant,
   // 뷰·필터 상태
   CalendarView,
+  MonthWeekCount,
   ViewScope,
   // emit payload
   CalendarDateSelectPayload,

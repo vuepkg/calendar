@@ -14,16 +14,27 @@ import type {
   CalendarOverflowClickPayload,
   CalendarScheduleClickPayload,
 } from '@/types/calendarEvents'
-import type { Schedule } from '@/types/schedule'
-import { layoutMonthWeeks, sortSchedulesForOverflowPopover } from '@/utils/month'
+import type { MonthWeekCount, Schedule } from '@/types/schedule'
+import {
+  layoutMonthWeeks,
+  sliceMonthCellsForWeekCount,
+  sortSchedulesForOverflowPopover,
+} from '@/utils/month'
 import CalendarMonthNav from '../CalendarMonthNav.vue'
 import MonthCell from '../MonthCell.vue'
 import AllDayBar from '../AllDayBar.vue'
 import MonthOverflowPopover from '../MonthOverflowPopover.vue'
 
-const props = defineProps<{
-  calendar: CalendarContext
-}>()
+const props = withDefaults(
+  defineProps<{
+    calendar: CalendarContext
+    /** 표시할 주(week) 수 — 기본 6(전체 월), 2\|3이면 선택 날짜 기준 축소 뷰 */
+    monthWeekCount?: MonthWeekCount
+  }>(),
+  {
+    monthWeekCount: 6,
+  },
+)
 
 const emit = defineEmits<{
   'date-select': [payload: CalendarDateSelectPayload]
@@ -85,12 +96,13 @@ watch(
 )
 
 const monthWeeksRef = ref<HTMLElement | null>(null)
-const { cellHeightPx } = useMonthMeasuredCellHeight(monthWeeksRef)
+const { cellHeightPx } = useMonthMeasuredCellHeight(monthWeeksRef, () => props.monthWeekCount)
 
 const monthLabel = computed(() => props.calendar.monthLabel.value)
-const monthWeeks = computed(() =>
-  layoutMonthWeeks(props.calendar.monthCells.value, cellHeightPx.value),
+const visibleMonthCells = computed(() =>
+  sliceMonthCellsForWeekCount(props.calendar.monthCells.value, props.monthWeekCount),
 )
+const monthWeeks = computed(() => layoutMonthWeeks(visibleMonthCells.value, cellHeightPx.value))
 
 const weekdayLabels = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 </script>

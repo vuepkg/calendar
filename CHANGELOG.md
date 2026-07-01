@@ -3,6 +3,11 @@
 ## [Unreleased]
 
 ### Added
+- **F4-2** `monthWeekCount?: 2 | 3 | 6` prop on `ScheduleCalendar` — shows a reduced 2/3-week window
+  (anchored to the `date` v-model's week, clamped to the grid) instead of the full 6-week month
+  - `MonthWeekCount` type exported from `@vuepkg/calendar`
+  - `sliceMonthCellsForWeekCount` internal util in `utils/month.ts`
+  - Default `6` preserves existing full-month behavior — non-breaking
 - **F4-4** Drag-and-drop event move and resize in Week/Day timed grid
   - `useScheduleDrag` composable — pointer-event based move/resize with hour-snapping and ghost overlay
   - `schedule-move` emit — `{ schedule, date, newStart, newEnd }` on confirmed drag move

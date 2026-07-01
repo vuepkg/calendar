@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { MONTH_CELL_HEIGHT_PX } from '@/constants/calendarView'
+import type { MonthDayCell } from '@/types/layout'
 import type { Holiday, Schedule } from '@/types/schedule'
 import {
   mockSchedules,
@@ -18,9 +19,33 @@ import {
   getMonthCellDisplay,
   getMonthCellMaxChipSlots,
   layoutMonthWeeks,
+  sliceMonthCellsForWeekCount,
   sortSchedulesForOverflowPopover,
 } from '@/utils/month'
 import { getSchedulesForDay } from '@/utils/schedule'
+
+function makeFakeMonthCells(totalWeeks: number, selectedWeekIndex: number): MonthDayCell[] {
+  const cells: MonthDayCell[] = []
+  for (let week = 0; week < totalWeeks; week += 1) {
+    for (let day = 0; day < 7; day += 1) {
+      const index = week * 7 + day
+      cells.push({
+        date: new Date(2026, 0, index + 1),
+        key: `cell-${index}`,
+        inCurrentMonth: true,
+        isToday: false,
+        isSelected: week === selectedWeekIndex && day === 0,
+        isSunday: day === 0,
+        isSaturday: day === 6,
+        schedules: [],
+        visibleSchedules: [],
+        hiddenScheduleCount: 0,
+        holidays: [],
+      })
+    }
+  }
+  return cells
+}
 
 describe('monthCellCapacity', () => {
   it('fits five title-only rows in a cell without spanning bars', () => {
@@ -94,6 +119,40 @@ function buildMonthCells(
     }
   })
 }
+
+describe('sliceMonthCellsForWeekCount', () => {
+  it('returns the full grid unchanged when weekCount covers all weeks', () => {
+    const cells = makeFakeMonthCells(6, 2)
+    expect(sliceMonthCellsForWeekCount(cells, 6)).toBe(cells)
+  })
+
+  it('slices to a window starting at the selected week', () => {
+    const cells = makeFakeMonthCells(6, 2)
+    const sliced = sliceMonthCellsForWeekCount(cells, 3)
+
+    expect(sliced).toHaveLength(21)
+    expect(sliced[0]).toBe(cells[14])
+    expect(sliced[0]?.isSelected).toBe(true)
+  })
+
+  it('clamps the window start so it never runs past the last week', () => {
+    const cells = makeFakeMonthCells(6, 5)
+    const sliced = sliceMonthCellsForWeekCount(cells, 3)
+
+    expect(sliced).toHaveLength(21)
+    // selected week (index 5) would need weeks 5~7, but only 6 exist (0~5) — clamp to 3~5
+    expect(sliced[0]).toBe(cells[21])
+    expect(sliced.at(-1)).toBe(cells.at(-1))
+  })
+
+  it('falls back to the first week when no cell is selected', () => {
+    const cells = makeFakeMonthCells(6, -1)
+    const sliced = sliceMonthCellsForWeekCount(cells, 2)
+
+    expect(sliced).toHaveLength(14)
+    expect(sliced[0]).toBe(cells[0])
+  })
+})
 
 describe('layoutMonthWeeks', () => {
   it('renders multi-day all-day schedule as one spanning bar in april week', () => {

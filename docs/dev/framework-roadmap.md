@@ -227,7 +227,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | F4-7 | 대량 일정 Virtualization | 🔴 | 월/리스트 뷰에 수백~수천 건 렌더링 시 성능 확보 |
 | F4-8 | 타임존 지원 (IMP-07, 재검토) | 🔴 | "국내 단일 타임존이라 ROI 낮음" 판단을 글로벌 캘린더 엔진 포지션 기준으로 재검토. 즉시 착수 아님 — F4-1~F4-7 이후 |
 | F4-9 | 번들 사이즈 예산 + size-limit CI 게이트 | 🟢 | 패키지별 budget |
-| F4-10 | RFC 프로세스 + CONTRIBUTING + 기능 추가 체크리스트 | 🟢 | 기여자 온보딩 |
+| F4-10 | RFC 프로세스 + CONTRIBUTING + 기능 추가 체크리스트 | 🟢 | ✅ **완료 (2026-07-01)** — `CONTRIBUTING.md` 신규 (설정·커밋 컨벤션·PR 절차·RFC 템플릿·기능 추가 체크리스트) |
 | F4-11 | 시맨틱 버저닝 자동 릴리즈 (changesets → npm publish 자동화) | 🟢 | F0-3 확장 |
 | F4-12 | 커뮤니티 노출 — "Vue 캘린더/스케줄러" 니치 타겟 | 🟢 | awesome-vue calendar 섹션, 예약·일정관리 SaaS 빌더 커뮤니티. 범용 UI 라이브러리 커뮤니티는 더 이상 타겟 아님 |
 
@@ -364,7 +364,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | ~~F4-4~~ | ~~드래그&드롭 이벤트 이동·리사이즈 (IMP-06)~~ | ~~🔴~~ | ✅ 완료 (2026-07-01) |
 | F4-2 | 2-week / 3-week 월간 뷰 변형 (IMP-05) | 🟡 | `monthWeekCount?: 2\|3\|6` prop — **다음 작업 후보** |
 | F4-9 | 번들 사이즈 예산 + size-limit CI 게이트 | 🟢 | F4-2와 병행 가능한 저난이도 작업 |
-| F4-10 | RFC 프로세스 + CONTRIBUTING + 기능 추가 체크리스트 | 🟢 | 기여자 온보딩, 코드 변경 없음 |
+| ~~F4-10~~ | ~~RFC 프로세스 + CONTRIBUTING + 기능 추가 체크리스트~~ | ~~🟢~~ | ✅ 완료 (2026-07-01) |
 | — | §1.5 잔여 항목 (`vite-plugin-dts` 상대경로 누수) 설계 검토 | 🟡 | 영향도 낮음 — Phase 4 작업과 별개로 여유 있을 때 처리 |
 | ~~—~~ | ~~[staff-review-backlog.md](./staff-review-backlog.md) P2~~ | ~~🟡~🔴~~ | ~~SRV-P2-01~P2-07 — 1.0.0 전 처리 필요~~ → ✅ 완료 (2026-07-01) |
 

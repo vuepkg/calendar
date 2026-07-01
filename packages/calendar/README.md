@@ -231,7 +231,7 @@ import type {
 
 ## Contributing
 
-[github.com/vuepkg/calendar](https://github.com/vuepkg/calendar)
+[github.com/vuepkg/calendar](https://github.com/vuepkg/calendar) · 상세 절차·RFC 프로세스는 [CONTRIBUTING.md](../../CONTRIBUTING.md) 참고
 
 **요구 사항**: Node 24+ (GitHub Actions CI 기준), pnpm 9+
 

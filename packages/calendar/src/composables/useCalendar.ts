@@ -7,6 +7,8 @@ import type { CalendarView } from '@/types/schedule'
 import {
   addDays,
   addMonths,
+  endOfDay,
+  endOfMonth,
   formatMonthLabel,
   formatPeriod,
   getMonthGridDays,
@@ -14,10 +16,12 @@ import {
   isSameDay,
   isSameMonth,
   startOfDay,
+  startOfMonth,
   toDateKey,
 } from '@/utils/date'
 import { getMonthCellDisplay } from '@/utils/month'
 import { groupHolidaysByDateKey, getHolidaysForDateKey } from '@/utils/holiday'
+import { expandRecurringSchedules } from '@/utils/recurrence'
 import {
   filterSchedulesForListDate,
   filterSchedulesForListMonth,
@@ -59,7 +63,38 @@ export function useCalendar(options: UseCalendarOptions): CalendarContext {
     },
   })
 
-  const schedules = computed(() => toValue(options.schedules))
+  /**
+   * 반복 일정 펼침 범위 — 실제 렌더링되는 뷰의 날짜 범위를 그대로 따른다.
+   * 반복이 없는 일정은 범위와 무관하게 그대로 통과하므로(useCalendar.spec 참고)
+   * 여기서의 범위 산정 오류는 반복 일정에만 영향을 준다.
+   */
+  const visibleRange = computed(() => {
+    const view = currentViewRef.value
+    const selected = selectedDateRef.value
+
+    if (view === 'week') {
+      const days = getWeekDays(selected)
+      return { start: startOfDay(days[0]!), end: endOfDay(days[days.length - 1]!) }
+    }
+    if (view === 'day') {
+      return { start: startOfDay(selected), end: endOfDay(selected) }
+    }
+    if (view === 'list') {
+      const filterDate = listFilterDateRef.value
+      return filterDate
+        ? { start: startOfDay(filterDate), end: endOfDay(filterDate) }
+        : { start: startOfMonth(selected), end: endOfMonth(selected) }
+    }
+
+    const gridDays = getMonthGridDays(selected)
+    return { start: startOfDay(gridDays[0]!), end: endOfDay(gridDays[gridDays.length - 1]!) }
+  })
+
+  const schedules = computed(() => {
+    const raw = toValue(options.schedules)
+    const range = visibleRange.value
+    return expandRecurringSchedules(raw, range.start, range.end)
+  })
   const holidays = computed(() => toValue(options.holidays ?? []))
   const holidaysByDate = computed(() => groupHolidaysByDateKey(holidays.value))
 

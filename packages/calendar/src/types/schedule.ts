@@ -20,6 +20,28 @@ export type ScheduleType = 'my_schedule' | 'team_schedule' | 'company_schedule'
 /** 부모 측 My/Company 필터 — `filterSchedulesByScope`와 함께 사용 */
 export type ViewScope = 'my' | 'company'
 
+/** 반복 주기 */
+export type RecurrenceFrequency = 'daily' | 'weekly' | 'monthly' | 'yearly'
+
+/**
+ * 반복 일정 규칙 — RRULE 서브셋.
+ * `Schedule.start`가 반복 시작일(anchor)이며, `expandRecurringSchedules`가
+ * 캘린더에 표시되는 기간 내에서만 실제 occurrence를 생성합니다.
+ */
+export interface RecurrenceRule {
+  freq: RecurrenceFrequency
+  /** 반복 간격 — 기본 1. `freq: 'weekly', interval: 2` → 격주 */
+  interval?: number
+  /** `freq: 'weekly'` 전용 — 반복 요일(0=일 ~ 6=토). 미지정 시 시작일 요일만 사용 */
+  byWeekday?: number[]
+  /** 종료 조건 — 총 발생 횟수. `until`과 동시 사용 시 먼저 도달하는 조건에서 종료 */
+  count?: number
+  /** 종료 조건 — 마지막 발생 가능일(포함) */
+  until?: Date
+  /** 삭제된 단일 회차 날짜(`YYYY-MM-DD`) — 해당 회차만 건너뜁니다 */
+  exceptions?: string[]
+}
+
 /** 참가자 마스터 (CRUD·필터 UI용, 캘린더 prop에는 불필요) */
 export interface Participant {
   /** 고유 ID — `Schedule.participantId`와 연결 */
@@ -61,6 +83,15 @@ export interface Schedule {
   remarks?: string
   /** true면 All Day 행·월간 바 레이아웃 */
   allDay?: boolean
+  /** 반복 규칙 — 지정 시 `expandRecurringSchedules`가 표시 기간 내 회차를 생성합니다 */
+  recurrence?: RecurrenceRule
+  /**
+   * @internal `expandRecurringSchedules`가 생성한 가상 회차에만 설정됩니다.
+   * 원본(마스터) 일정의 `id`를 가리킵니다 — 소비자는 시리즈 전체 수정/삭제 시 이 id를 사용하세요.
+   */
+  recurrenceId?: string
+  /** @internal `expandRecurringSchedules`가 생성한 가상 회차 여부 */
+  isRecurrenceInstance?: boolean
 }
 
 /** 일정 유형 선택지 — `SCHEDULE_TYPE_OPTIONS` 또는 소비자 커스텀 배열 */
@@ -81,6 +112,7 @@ export interface ScheduleDraft {
   start: Date
   end: Date
   allDay: boolean
+  recurrence?: RecurrenceRule
 }
 
 /** `useCalendar` 옵션 */

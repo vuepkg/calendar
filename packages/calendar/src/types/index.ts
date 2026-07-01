@@ -9,6 +9,8 @@ export type {
   HolidayKind,
   MonthWeekCount,
   Participant,
+  RecurrenceFrequency,
+  RecurrenceRule,
   Schedule,
   ScheduleDraft,
   ScheduleType,

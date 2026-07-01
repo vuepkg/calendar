@@ -10,6 +10,8 @@ export type {
   Holiday,
   HolidayKind,
   Participant,
+  RecurrenceFrequency,
+  RecurrenceRule,
   // 뷰·필터 상태
   CalendarView,
   MonthWeekCount,
@@ -48,6 +50,9 @@ export {
   removeSchedule,
   applyScheduleFilters,
 } from '@/utils/schedule'
+
+// 반복 일정 펼침 — Schedule.recurrence가 있는 일정을 기간 내 개별 회차로 확장
+export { expandRecurringSchedules } from '@/utils/recurrence'
 
 // 기본 일정 유형 상수 (커스텀 타입 확장 시 spread 베이스로 사용)
 export { SCHEDULE_TYPE_OPTIONS } from '@/constants/calendarView'

@@ -19,10 +19,10 @@ const emit = defineEmits<{
   <div class="period-nav">
     <Button weight="bold" @click="emit('today')">Today</Button>
     <div class="nav-arrows">
-      <IconButton size="sm" :aria-label="prevLabel ?? 'Previous'" @click="emit('prev')">
+      <IconButton size="sm" :ariaLabel="prevLabel ?? 'Previous'" @click="emit('prev')">
         ‹
       </IconButton>
-      <IconButton size="sm" :aria-label="nextLabel ?? 'Next'" @click="emit('next')"> › </IconButton>
+      <IconButton size="sm" :ariaLabel="nextLabel ?? 'Next'" @click="emit('next')"> › </IconButton>
     </div>
     <span v-if="periodLabel" class="period-label">{{ periodLabel }}</span>
   </div>

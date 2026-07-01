@@ -38,7 +38,7 @@ function isHighlighted(schedule: Schedule): boolean {
     :anchor-left="anchorLeft"
     :anchor-bottom="anchorBottom"
     :container-bounds="containerBounds"
-    :aria-label="`${dateLabel} schedules`"
+    :ariaLabel="`${dateLabel} schedules`"
     panel-class="month-overflow-popover"
     @close="emit('close')"
   >

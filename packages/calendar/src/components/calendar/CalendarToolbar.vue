@@ -28,7 +28,7 @@ function handleViewSelect(view: string) {
     <SegmentedControl
       :options="viewTabs"
       :model-value="calendar.state.currentView"
-      aria-label="캘린더 보기 선택"
+      ariaLabel="캘린더 보기 선택"
       @update:model-value="handleViewSelect"
     />
   </div>

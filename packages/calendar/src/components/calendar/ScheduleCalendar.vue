@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent, onMounted, toRef, watch } from 'vue'
+import { computed, defineAsyncComponent, onMounted, toRef, useAttrs, watch } from 'vue'
 import { useCalendar } from '@/composables/useCalendar'
 import { usePublicHolidays } from '@/composables/usePublicHolidays'
 import type {
@@ -60,6 +60,7 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<ScheduleCalendarEmits>()
+const attrs = useAttrs()
 
 const view = defineModel<CalendarView>('view', {
   default: 'month',
@@ -151,6 +152,14 @@ function emitQueryChange(
 }
 
 onMounted(() => {
+  if (import.meta.env.DEV && !('onNavigate' in attrs)) {
+    console.warn(
+      '[ScheduleCalendar] No `navigate` event listener detected. ' +
+        'Calendar navigation will be a dead-end without event handlers. ' +
+        'Use useScheduleCalendarHost() and spread v-bind="calendarListeners" on <ScheduleCalendar>.',
+    )
+  }
+
   emitQueryChange('init')
 })
 

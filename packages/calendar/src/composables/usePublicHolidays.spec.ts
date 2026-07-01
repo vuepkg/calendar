@@ -1,5 +1,5 @@
 import { flushPromises } from '@vue/test-utils'
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
 import { effectScope } from 'vue'
 import { fetchPublicHolidays } from '@/services/publicHolidaysApi'
 import type { Holiday } from '@/types/schedule'
@@ -38,7 +38,12 @@ describe('getRequiredYearsForDate', () => {
 describe('usePublicHolidays', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.useRealTimers()
     mockedFetch.mockImplementation(async (year) => [holiday(year, 1, 1, `${year} 신정`)])
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   it('fetches each required year only once on repeated ensureYearsForDate calls', async () => {
@@ -170,7 +175,7 @@ describe('usePublicHolidays', () => {
     expect(mockedFetch).toHaveBeenCalledTimes(1)
   })
 
-  it('does not retry the same year after a fetch failure', async () => {
+  it('does not retry the same year within the TTL window after a fetch failure', async () => {
     mockedFetch.mockRejectedValueOnce(new Error('network error'))
     const composable = usePublicHolidays({ serviceKey: 'test-key' })
 
@@ -180,6 +185,46 @@ describe('usePublicHolidays', () => {
     expect(mockedFetch).toHaveBeenCalledTimes(1)
     expect(composable.failedYears.has(2026)).toBe(true)
     expect(composable.error.value).toBe('network error')
+  })
+
+  it('retries a failed year after the TTL window expires', async () => {
+    vi.useFakeTimers()
+    mockedFetch
+      .mockRejectedValueOnce(new Error('network error'))
+      .mockResolvedValueOnce([holiday(2026, 1, 1, '2026 신정')])
+    const composable = usePublicHolidays({ serviceKey: 'test-key' })
+
+    await composable.ensureYearsForDate(new Date(2026, 3, 15))
+    expect(composable.failedYears.has(2026)).toBe(true)
+
+    vi.advanceTimersByTime(31_000)
+    await composable.ensureYearsForDate(new Date(2026, 6, 1))
+
+    expect(mockedFetch).toHaveBeenCalledTimes(2)
+    expect(composable.loadedYears.has(2026)).toBe(true)
+  })
+
+  it('loading is true while a fetch is in-flight and false after completion', async () => {
+    let resolveFetch: (() => void) | undefined
+    mockedFetch.mockImplementation(
+      () =>
+        new Promise<Holiday[]>((resolve) => {
+          resolveFetch = () => resolve([holiday(2026, 1, 1, '2026 신정')])
+        }),
+    )
+
+    const composable = usePublicHolidays({ serviceKey: 'test-key' })
+    expect(composable.loading.value).toBe(false)
+
+    const pending = composable.ensureYearsForDate(new Date(2026, 3, 15))
+    // micro-tick: request is registered, inflight
+    await Promise.resolve()
+    expect(composable.loading.value).toBe(true)
+
+    resolveFetch?.()
+    await pending
+
+    expect(composable.loading.value).toBe(false)
   })
 
   it('does not update publicHolidays after scope dispose', async () => {

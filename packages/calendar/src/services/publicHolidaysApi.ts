@@ -107,6 +107,13 @@ export async function fetchPublicHolidays(
     )
   }
 
+  if (serviceKey && !serverInjectsKey && import.meta.env.DEV) {
+    console.warn(
+      '[publicHolidaysApi] serviceKey is exposed in the browser bundle. ' +
+        'Use a same-origin BFF/proxy to inject the key server-side and omit serviceKey on the client.',
+    )
+  }
+
   const response = await fetch(buildPublicHolidaysApiUrl(year, apiUrl, serviceKey), {
     signal: options.signal,
   })

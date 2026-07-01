@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { toRectBounds } from '@vuepkg/core'
 import { useMonthMeasuredCellHeight } from '@/composables/useMonthMeasuredCellHeight'
 import {
@@ -76,6 +76,11 @@ function onOverflowScheduleClick(schedule: Schedule) {
   emit('schedule-click', { schedule, source: 'month-chip', date: overflowPopover.value.date })
   closeOverflowPopover()
 }
+
+watch(
+  () => props.calendar.monthLabel.value,
+  () => closeOverflowPopover(),
+)
 
 const monthWeeksRef = ref<HTMLElement | null>(null)
 const { cellHeightPx } = useMonthMeasuredCellHeight(monthWeeksRef)

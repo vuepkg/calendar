@@ -140,12 +140,15 @@ export interface CalendarContext {
   monthCells: ComputedRef<MonthDayCell[]>
   weekDays: ComputedRef<Date[]>
   listRows: ComputedRef<CalendarListRow[]>
+  /** @internal emit-only 연동에서는 사용하지 마세요. 직접 state 조작이 필요한 headless/standalone 용도 전용입니다. */
   setView: (view: CalendarView) => void
+  /** @internal emit-only 연동에서는 사용하지 마세요. 직접 state 조작이 필요한 headless/standalone 용도 전용입니다. */
   selectDate: (date: Date) => void
   moveDay: (offset: number) => void
   moveWeek: (offset: number) => void
   moveMonth: (offset: number) => void
   goToToday: () => void
+  /** @internal emit-only 부모는 v-model:listFilterDate 또는 list-filter-clear emit을 사용하세요. */
   clearListFilter: () => void
   /** `Schedule.type` 문자열로 색상을 조회합니다. 미등록 타입은 기본 색상을 반환합니다. */
   getTypeStyle: (type: string) => ScheduleTypeStyle
@@ -158,7 +161,11 @@ export interface UsePublicHolidaysOptions {
    * `false`이면 API를 호출하지 않고 `companyHolidays`만 사용합니다.
    */
   fetchPublicHolidays?: MaybeRefOrGetter<boolean>
-  /** 공공데이터포털 인증키. proxy/BFF 사용 시 생략 */
+  /**
+   * 공공데이터포털 인증키.
+   * **프로덕션에서는 BFF/same-origin proxy를 통해 서버에서 주입**하고 이 옵션을 생략하세요.
+   * 클라이언트에서 직접 전달하면 번들에 키가 노출됩니다. DEV 모드에서는 경고가 출력됩니다.
+   */
   serviceKey?: string
   /** API 결과와 병합할 회사·사내 기념일 */
   companyHolidays?: MaybeRefOrGetter<Holiday[]>

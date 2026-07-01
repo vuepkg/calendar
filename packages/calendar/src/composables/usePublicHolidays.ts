@@ -1,4 +1,4 @@
-import { onScopeDispose, ref, toValue } from 'vue'
+import { computed, onScopeDispose, ref, toValue } from 'vue'
 import type { UsePublicHolidaysOptions } from '@/types/schedule'
 import type { Holiday } from '@/types/schedule'
 import { fetchPublicHolidays } from '@/services/publicHolidaysApi'
@@ -34,29 +34,40 @@ function isAbortError(cause: unknown): boolean {
   return cause instanceof DOMException && cause.name === 'AbortError'
 }
 
+/** 실패한 연도는 이 시간 이후 재시도 허용 */
+const RETRY_AFTER_MS = 30_000
+
 /**
  * 공공데이터포털(SpcdeInfoService/getRestDeInfo)로 국가 공휴일을 조회하고, 연도별 캐시를 유지합니다.
- * 동일 연도는 1회만 요청하며, `ensureYearsForDate`는 필요한 연도가 바뀔 때만 API를 호출합니다.
+ * 동일 연도는 1회만 요청하며, 실패 시 30초 후 재시도합니다.
+ * `ensureYearsForDate`는 필요한 연도가 바뀔 때만 API를 호출합니다.
  */
 export function usePublicHolidays(options: UsePublicHolidaysOptions = {}) {
   const publicHolidays = ref<Holiday[]>([])
-  const loading = ref(false)
   const error = ref<string | null>(null)
   const loadedYears = new Set<number>()
-  const failedYears = new Set<number>()
+  /** year → 실패 시각(epoch ms). RETRY_AFTER_MS 이후 재시도 허용 */
+  const failedYears = new Map<number, number>()
   const inflightYears = new Map<number, Promise<void>>()
+  const inflightCount = ref(0)
+  const loading = computed(() => inflightCount.value > 0)
   const abortController = new AbortController()
 
   onScopeDispose(() => {
     abortController.abort()
   })
 
+  function isTemporarilyFailed(year: number): boolean {
+    const failedAt = failedYears.get(year)
+    return failedAt !== undefined && Date.now() - failedAt < RETRY_AFTER_MS
+  }
+
   async function ensureYear(year: number) {
     if (!isFetchEnabled(options.fetchPublicHolidays)) {
       return
     }
 
-    if (loadedYears.has(year) || failedYears.has(year)) {
+    if (loadedYears.has(year) || isTemporarilyFailed(year)) {
       return
     }
 
@@ -67,7 +78,7 @@ export function usePublicHolidays(options: UsePublicHolidaysOptions = {}) {
     }
 
     const request = (async () => {
-      loading.value = true
+      inflightCount.value++
       error.value = null
 
       try {
@@ -87,13 +98,13 @@ export function usePublicHolidays(options: UsePublicHolidaysOptions = {}) {
           return
         }
 
-        failedYears.add(year)
+        failedYears.set(year, Date.now())
         error.value = cause instanceof Error ? cause.message : 'Failed to load holidays'
         if (import.meta.env.DEV) {
           console.warn('[usePublicHolidays]', error.value)
         }
       } finally {
-        loading.value = false
+        inflightCount.value--
         inflightYears.delete(year)
       }
     })()
@@ -108,7 +119,7 @@ export function usePublicHolidays(options: UsePublicHolidaysOptions = {}) {
     }
 
     const missingYears = getRequiredYearsForDate(date).filter(
-      (year) => !loadedYears.has(year) && !failedYears.has(year),
+      (year) => !loadedYears.has(year) && !isTemporarilyFailed(year),
     )
     if (missingYears.length === 0) {
       return

@@ -18,7 +18,8 @@ const viewTabs: Array<{ value: CalendarView; label: string }> = [
 ]
 
 function handleViewSelect(view: string) {
-  emit('view-change', view as CalendarView)
+  const found = viewTabs.find((t) => t.value === view)
+  if (found) emit('view-change', found.value)
 }
 </script>
 

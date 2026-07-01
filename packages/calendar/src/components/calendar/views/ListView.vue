@@ -78,7 +78,7 @@ function onRowClick(row: CalendarListRow) {
       v-model:page="currentPage"
       :columns="columns"
       :rows="listRows"
-      :rowKey="(row: CalendarListRow) => row.no"
+      :rowKey="(row: CalendarListRow) => row.schedule.id"
       :pageSize="PAGE_SIZE"
       ariaLabel="Schedule list"
       emptyMessage="일정이 없습니다."

@@ -54,3 +54,4 @@ export { mergeHolidays } from '@/utils/holiday'
 // composable
 export { usePublicHolidays } from '@/composables/usePublicHolidays'
 export { useScheduleCalendarHost } from '@/composables/useScheduleCalendarHost'
+export { useCalendar } from '@/composables/useCalendar'

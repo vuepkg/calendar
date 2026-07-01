@@ -9,6 +9,15 @@ export default defineConfig({
 
   base: '/calendar/',
 
+  // changesets always writes to `CHANGELOG.md` (uppercase); route it to the
+  // lowercase `/changelog` URL the nav links to instead of tracking a second,
+  // manually-duplicated file (which collides with this one on case-insensitive
+  // filesystems like macOS/Windows but builds as two separate pages on Linux CI,
+  // breaking the build).
+  rewrites: {
+    'CHANGELOG.md': 'changelog.md',
+  },
+
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/calendar/favicon.svg' }],
     ['meta', { name: 'og:type', content: 'website' }],

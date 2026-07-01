@@ -60,7 +60,10 @@ export function useTimeSlotSelection(days: MaybeRef<Date[]>, timeRange: TimeGrid
   let anchorIndex = 0
 
   watch(
-    () => toValue(days).map((d) => d.getTime()).join(','),
+    () =>
+      toValue(days)
+        .map((d) => d.getTime())
+        .join(','),
     () => {
       selectedSlot.value = null
     },

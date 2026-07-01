@@ -80,7 +80,9 @@ describe('CalendarToolbar', () => {
     })
     const wrapper = mount(CalendarToolbar, { props: { calendar } })
 
-    const weekTab = wrapper.findAll('button.vp-segmented-control-item').find((tab) => tab.text() === 'Week')
+    const weekTab = wrapper
+      .findAll('button.vp-segmented-control-item')
+      .find((tab) => tab.text() === 'Week')
     expect(weekTab?.attributes('aria-pressed')).toBe('false')
 
     // 탭 클릭 후 calendar 상태를 직접 변경해 반응성 검증

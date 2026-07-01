@@ -60,9 +60,7 @@ export default defineConfig(({ mode }) => {
         '@vuepkg/ui': path.resolve(projectRoot, '../ui/src'),
       },
     },
-    plugins: [
-      vue(),
-    ],
+    plugins: [vue()],
     build: {
       rollupOptions: {
         output: {

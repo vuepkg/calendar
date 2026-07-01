@@ -45,12 +45,7 @@ function getTotalMinutes(): number {
   return (dayRange.endHour - dayRange.startHour + 1) * 60
 }
 
-function createSchedule(
-  id: string,
-  participantId: string,
-  start: string,
-  end: string,
-): Schedule {
+function createSchedule(id: string, participantId: string, start: string, end: string): Schedule {
   return {
     id,
     title: `Event ${id}`,
@@ -199,8 +194,6 @@ describe('scheduleLayout', () => {
   })
 })
 
-
-
 describe('scheduleCrud', () => {
   it('creates incremental schedule ids', () => {
     expect(createScheduleId([{ id: 's-009' } as never])).toBe('s-010')
@@ -253,8 +246,6 @@ describe('scheduleCrud', () => {
   })
 })
 
-
-
 describe('scheduleFilter', () => {
   it('filters schedules by my scope', () => {
     const mine = filterSchedulesByScope(mockSchedules, 'my', CURRENT_USER_ID)
@@ -306,8 +297,7 @@ describe('scheduleFilter', () => {
     expect(filtered.length).toBeGreaterThan(0)
     expect(
       filtered.every(
-        (schedule) =>
-          schedule.participantId === CURRENT_USER_ID && schedule.type === 'my_schedule',
+        (schedule) => schedule.participantId === CURRENT_USER_ID && schedule.type === 'my_schedule',
       ),
     ).toBe(true)
   })
@@ -323,8 +313,6 @@ describe('scheduleFilter', () => {
     expect(may.every((schedule) => schedule.start.getMonth() === 4)).toBe(true)
   })
 })
-
-
 
 describe('scheduleQuery', () => {
   const april22 = startOfDay(new Date(2026, 3, 22))

@@ -46,10 +46,12 @@ function closeOverflowPopover() {
   overflowPopover.value = null
 }
 
-function onOpenOverflow(payload: CalendarOverflowClickPayload & {
-  anchorRect: DOMRect
-  containerBounds: ReturnType<typeof toRectBounds> | null
-}) {
+function onOpenOverflow(
+  payload: CalendarOverflowClickPayload & {
+    anchorRect: DOMRect
+    containerBounds: ReturnType<typeof toRectBounds> | null
+  },
+) {
   overflowPopover.value = {
     date: payload.date,
     schedules: sortSchedulesForOverflowPopover(payload.schedules),
@@ -155,7 +157,13 @@ const weekdayLabels = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
                   :schedule="bar.schedule"
                   :span="bar.span"
                   v-bind="calendar.getTypeStyle(bar.schedule.type)"
-                  @click="emit('schedule-click', { schedule: bar.schedule, source: 'month-all-day-bar', date: week.cells[bar.startColumn]?.date })"
+                  @click="
+                    emit('schedule-click', {
+                      schedule: bar.schedule,
+                      source: 'month-all-day-bar',
+                      date: week.cells[bar.startColumn]?.date,
+                    })
+                  "
                 />
               </div>
             </div>

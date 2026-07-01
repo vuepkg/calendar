@@ -108,8 +108,6 @@ describe('getTimeSlotSelectionStyle', () => {
   })
 })
 
-
-
 describe('layoutWeekAllDayBars', () => {
   const weekDays = getWeekDays(new Date(2026, 3, 21))
 
@@ -149,8 +147,6 @@ describe('layoutWeekAllDayBars', () => {
     expect(getAllDayRowCount(bars)).toBeGreaterThan(1)
   })
 })
-
-
 
 describe('dayAllDayLayout', () => {
   it('limits visible area height to three rows', () => {

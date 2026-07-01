@@ -31,9 +31,7 @@ const emit = defineEmits<{
 
 const holidaysByDate = computed(() => groupHolidaysByDateKey(props.holidays))
 const hasHolidays = computed(() =>
-  props.days.some(
-    (day) => getHolidaysForDateKey(holidaysByDate.value, toDateKey(day)).length > 0,
-  ),
+  props.days.some((day) => getHolidaysForDateKey(holidaysByDate.value, toDateKey(day)).length > 0),
 )
 const dayHolidays = computed(() =>
   props.days.map((day) => ({

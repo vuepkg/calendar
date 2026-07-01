@@ -2,7 +2,10 @@ import { computed, ref } from 'vue'
 import type { CSSProperties } from 'vue'
 import type { Schedule } from '@/types/schedule'
 import type { TimeGridRange } from '@/types/layout'
-import type { CalendarScheduleMovePayload, CalendarScheduleResizePayload } from '@/types/calendarEvents'
+import type {
+  CalendarScheduleMovePayload,
+  CalendarScheduleResizePayload,
+} from '@/types/calendarEvents'
 import { CALENDAR_END_HOUR, CALENDAR_START_HOUR, HOUR_HEIGHT_PX } from '@/constants/calendarView'
 
 interface MoveDragState {
@@ -112,9 +115,7 @@ export function useScheduleDrag(timeRange: TimeGridRange) {
     if (state.type === 'move') {
       const pointerHourIndex = floorHourIndex(offsetY)
       const durationHours = Math.max(1, Math.ceil(state.durationMs / 3_600_000))
-      const newStartIndex = clampHourIndex(
-        Math.max(0, pointerHourIndex - state.anchorHourOffset),
-      )
+      const newStartIndex = clampHourIndex(Math.max(0, pointerHourIndex - state.anchorHourOffset))
       const clampedStart = Math.min(newStartIndex, totalHours - durationHours)
 
       const newStart = setHour(state.day, startHour + clampedStart)

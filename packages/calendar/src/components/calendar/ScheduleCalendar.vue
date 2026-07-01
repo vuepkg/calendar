@@ -12,7 +12,10 @@ import type {
   CalendarTimeSlotSelectPayload,
   ScheduleCalendarEmits,
 } from '@/types/calendarEvents'
-import type { BuildScheduleQueryChangePayloadInput, ScheduleQueryTrigger } from '@/types/calendarEvents'
+import type {
+  BuildScheduleQueryChangePayloadInput,
+  ScheduleQueryTrigger,
+} from '@/types/calendarEvents'
 import type { Holiday } from '@/types/schedule'
 import type { CalendarView, Schedule, ScheduleTypeOption, ViewScope } from '@/types/schedule'
 import { startOfDay } from '@/utils/date'

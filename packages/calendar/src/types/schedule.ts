@@ -80,7 +80,6 @@ export interface ScheduleDraft {
   allDay: boolean
 }
 
-
 /** `useCalendar` 옵션 */
 export interface UseCalendarOptions {
   schedules: MaybeRefOrGetter<Schedule[]>

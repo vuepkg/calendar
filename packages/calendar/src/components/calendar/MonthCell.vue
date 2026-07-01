@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import type { CalendarScheduleClickPayload, CalendarOverflowClickPayload } from '@/types/calendarEvents'
+import type {
+  CalendarScheduleClickPayload,
+  CalendarOverflowClickPayload,
+} from '@/types/calendarEvents'
 import type { MonthWeekCell } from '@/types/layout'
 import type { Schedule } from '@/types/schedule'
 import { toRectBounds } from '@vuepkg/core'
@@ -14,7 +17,12 @@ const props = defineProps<{
 const emit = defineEmits<{
   'date-select': [date: Date]
   'schedule-click': [payload: CalendarScheduleClickPayload]
-  'open-overflow': [payload: CalendarOverflowClickPayload & { anchorRect: DOMRect; containerBounds: ReturnType<typeof toRectBounds> | null }]
+  'open-overflow': [
+    payload: CalendarOverflowClickPayload & {
+      anchorRect: DOMRect
+      containerBounds: ReturnType<typeof toRectBounds> | null
+    },
+  ]
 }>()
 
 function onCellActivate() {

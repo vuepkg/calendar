@@ -22,7 +22,7 @@ const emit = defineEmits<{
     :class="{ compact, timed: !schedule.allDay }"
     clickable
     :color="color"
-    :backgroundColor="backgroundColor"
+    :background-color="backgroundColor"
     :title="`${schedule.title} (${schedule.participantName})`"
     @click="emit('click', schedule)"
   >

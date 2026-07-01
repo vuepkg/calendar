@@ -68,8 +68,6 @@ describe('getMonthCellDisplay', () => {
   })
 })
 
-
-
 function buildMonthCells(
   monthDate: Date,
   schedules: Schedule[] = mockSchedules,
@@ -246,8 +244,6 @@ describe('layoutMonthWeeks', () => {
     expect(holidayCell.chipVisible.length).toBeLessThan(baseCell.chipVisible.length)
   })
 })
-
-
 
 function schedule(
   partial: Partial<Schedule> & Pick<Schedule, 'id' | 'title' | 'start' | 'end'>,

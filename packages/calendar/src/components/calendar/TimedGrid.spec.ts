@@ -35,7 +35,13 @@ function setupColumn(element: HTMLElement, topPx = 100) {
 
 async function pointerDown(element: HTMLElement, clientY: number) {
   element.dispatchEvent(
-    new PointerEvent('pointerdown', { bubbles: true, cancelable: true, button: 0, clientY, pointerId: 1 }),
+    new PointerEvent('pointerdown', {
+      bubbles: true,
+      cancelable: true,
+      button: 0,
+      clientY,
+      pointerId: 1,
+    }),
   )
   await nextTick()
 }

@@ -56,7 +56,9 @@ describe('ScheduleCalendar emit-only contract', () => {
   it('emits view-change without updating view when parent does not handle it', async () => {
     const wrapper = mountScheduleCalendar({ view: 'month' })
 
-    const weekTab = wrapper.findAll('.vp-segmented-control-item').find((tab) => tab.text() === 'Week')
+    const weekTab = wrapper
+      .findAll('.vp-segmented-control-item')
+      .find((tab) => tab.text() === 'Week')
     await weekTab!.trigger('click')
 
     const emitted = wrapper.emitted('view-change')?.[0]?.[0] as CalendarViewChangePayload
@@ -256,7 +258,13 @@ describe('ScheduleCalendar emit-only contract', () => {
 
     const clientY = 200 + 8 * HOUR_HEIGHT_PX + 6
     columnEl.dispatchEvent(
-      new PointerEvent('pointerdown', { bubbles: true, cancelable: true, button: 0, clientY, pointerId: 1 }),
+      new PointerEvent('pointerdown', {
+        bubbles: true,
+        cancelable: true,
+        button: 0,
+        clientY,
+        pointerId: 1,
+      }),
     )
     await nextTick()
     columnEl.dispatchEvent(

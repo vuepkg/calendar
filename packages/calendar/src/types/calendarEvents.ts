@@ -3,13 +3,7 @@ import type { CalendarView, Schedule, ViewScope } from './schedule'
 
 /** Today·‹› 버튼 동작 — `navigate` payload의 `action` */
 export type CalendarNavigateAction =
-  | 'today'
-  | 'prev-day'
-  | 'next-day'
-  | 'prev-week'
-  | 'next-week'
-  | 'prev-month'
-  | 'next-month'
+  'today' | 'prev-day' | 'next-day' | 'prev-week' | 'next-week' | 'prev-month' | 'next-month'
 
 /** API 조회 기간 — 뷰·날짜·List 필터에 따라 계산 */
 export interface ScheduleQueryDateRange {
@@ -19,11 +13,7 @@ export interface ScheduleQueryDateRange {
 
 /** `query-change` emit 발생 원인 */
 export type ScheduleQueryTrigger =
-  | 'init'
-  | 'navigate'
-  | 'view-change'
-  | 'filter-change'
-  | 'list-filter-clear'
+  'init' | 'navigate' | 'view-change' | 'filter-change' | 'list-filter-clear'
 
 /**
  * 부모가 일정 API를 호출할 때 사용하는 조회 컨텍스트.

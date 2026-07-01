@@ -16,9 +16,9 @@ const emit = defineEmits<{
 
 <template>
   <div class="calendar-month-nav">
-    <IconButton :ariaLabel="prevLabel ?? 'Previous month'" @click="emit('prev')"> ‹ </IconButton>
+    <IconButton :aria-label="prevLabel ?? 'Previous month'" @click="emit('prev')"> ‹ </IconButton>
     <h2 class="calendar-month-nav-title">{{ label }}</h2>
-    <IconButton :ariaLabel="nextLabel ?? 'Next month'" @click="emit('next')"> › </IconButton>
+    <IconButton :aria-label="nextLabel ?? 'Next month'" @click="emit('next')"> › </IconButton>
   </div>
 </template>
 

@@ -16,11 +16,7 @@ import type { Holiday } from '@/types/schedule'
 import type { Schedule } from '@/types/schedule'
 import { getAllDayRowCount, layoutWeekAllDayBars } from '@/utils/timed'
 import { getCurrentTimeIndicator } from '@/utils/timed'
-import {
-  getTimedGridHeight,
-  getTimedSchedules,
-  layoutTimedSchedules,
-} from '@/utils/schedule'
+import { getTimedGridHeight, getTimedSchedules, layoutTimedSchedules } from '@/utils/schedule'
 import { formatHourLabel, formatTime } from '@/utils/date'
 import { useTimeSlotSelection } from '@/composables/useTimeSlotSelection'
 import { useScheduleDrag } from '@/composables/useScheduleDrag'
@@ -71,7 +67,10 @@ const timeRange = {
   hourHeightPx: HOUR_HEIGHT_PX,
 }
 
-const slotSel = useTimeSlotSelection(computed(() => props.days), timeRange)
+const slotSel = useTimeSlotSelection(
+  computed(() => props.days),
+  timeRange,
+)
 const schedDrag = useScheduleDrag(timeRange)
 
 // 드래그 완료 직후 click 이벤트 억제
@@ -235,9 +234,17 @@ onUnmounted(() => {
           >
             <!-- 시간 슬롯 선택 오버레이 -->
             <div
-              v-if="slotSel.selectedSlot.value && slotSel.selectedSlot.value.date.getTime() === column.day.getTime()"
+              v-if="
+                slotSel.selectedSlot.value &&
+                slotSel.selectedSlot.value.date.getTime() === column.day.getTime()
+              "
               class="time-slot-selection"
-              :style="slotSel.selectionStyle(slotSel.selectedSlot.value.start, slotSel.selectedSlot.value.end)"
+              :style="
+                slotSel.selectionStyle(
+                  slotSel.selectedSlot.value.start,
+                  slotSel.selectedSlot.value.end,
+                )
+              "
               aria-hidden="true"
             />
 
@@ -267,7 +274,9 @@ onUnmounted(() => {
               v-for="item in column.layout"
               :key="item.schedule.id"
               class="timed-event"
-              :class="{ 'is-dragging-origin': schedDrag.dragState.value?.schedule.id === item.schedule.id }"
+              :class="{
+                'is-dragging-origin': schedDrag.dragState.value?.schedule.id === item.schedule.id,
+              }"
               :style="{
                 top: `${item.top}%`,
                 height: `${item.height}%`,

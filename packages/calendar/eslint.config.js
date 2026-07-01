@@ -25,11 +25,6 @@ export default defineConfigWithVueTs(
   prettierConfig,
   {
     name: 'app/files-to-ignore',
-    ignores: [
-      'dist/**',
-      'node_modules/**',
-      'playwright-report/**',
-      'test-results/**',
-    ],
+    ignores: ['dist/**', 'node_modules/**', 'playwright-report/**', 'test-results/**'],
   },
 )

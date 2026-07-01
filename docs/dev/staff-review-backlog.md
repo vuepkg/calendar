@@ -59,7 +59,7 @@
 | [SRV-P1-02](#srv-p1-02-dtscss-alias-분리) | MAJOR | 타입/빌드 | `vite-plugin-dts` 깨진 상대경로 — CSS alias와 결합 | **미착수** | [framework-roadmap.md §1.5](./framework-roadmap.md) BLOCKED — F3-2 전 설계 필요 |
 | [SRV-P1-03](#srv-p1-03-대형-뷰-컴포넌트-분리) | MAJOR | 아키텍처 | `TimedGrid`(614줄)·`MonthView`(482줄) — Phase 4 DnD 병목 | **완료** | Header/AllDay/`useTimeSlotSelection`/`MonthCell` 분리 (2026-07-01). F4-4 이후 TimedGrid 재팽창 → [SRV-P1-05](#srv-p1-05-timedgrid-dnd-후-재팽창) |
 | [SRV-P1-04](#srv-p1-04-번들-budget-포화) | MAJOR | 아키텍처/성능 | `index.js` 15.57KB / 16KB limit (**97%**, IMP-02/03/F3-3 반영 후) — F4-6 추가 시 초과 확실 | **완료** | budget 상향 20KB/19KB/8KB (2026-07-02) — F4-6 착수 여유 확보 |
-| [SRV-P1-05](#srv-p1-05-timedgrid-dnd-후-재팽창) | MAJOR | 아키텍처 | F4-4 DnD 통합 후 `TimedGrid.vue` 303→**495줄**(IMP-03 prop 반영 후) 재팽창 | **미착수** | `useScheduleDrag`를 TimedGrid 본문에서 추가 오케스트레이션 레이어로 분리 검토 |
+| [SRV-P1-05](#srv-p1-05-timedgrid-dnd-후-재팽창) | MAJOR | 아키텍처 | F4-4 DnD 통합 후 `TimedGrid.vue` 303→495줄(IMP-03 prop 반영 후) 재팽창 | **완료** | `TimedGridDayColumn.vue` 분리 — 495→336줄 (2026-07-02) |
 
 ### P2 — 1.0.0 전
 
@@ -163,11 +163,13 @@
 
 ### SRV-P1-05: TimedGrid DnD 후 재팽창
 
-**위치:** `TimedGrid.vue`(495줄), `useScheduleDrag.ts`(196줄)
+**위치:** `TimedGrid.vue`, `TimedGridDayColumn.vue`(신규), `useScheduleDrag.ts`(196줄)
 
 **문제:** SRV-P1-03 분리 후 F4-4에서 DnD ghost·pointer capture·move/resize emit이 TimedGrid 본문에 재유입되어 303→489줄. IMP-03(`startHour`/`endHour` prop) 반영으로 495줄.
 
-**수정 방향:** `useScheduleDrag` 오케스트레이션을 `TimedGridDragLayer.vue` 또는 composable+slot 패턴으로 격리. `TimedGrid.spec.ts` DnD describe 블록 유지.
+**수정:** 일자별 컬럼 렌더링(시간 슬롯 선택 오버레이·드래그 ghost·현재 시각 선·`timed-event` 목록·리사이즈 핸들)을 `TimedGridDayColumn.vue`로 분리. `useTimeSlotSelection`/`useScheduleDrag` composable 초기화와 포인터 이벤트 핸들러(`handlePointerDown`/`Move`/`Up`, `handleMovePointerDown`, `handleResizePointerDown`)는 그리드 전체 상태를 다루므로 `TimedGrid.vue`에 유지 — 자식은 `day`/`layout`/`selectedSlot`/`ghost`/`draggingScheduleId` 등 이미 필터링된 값만 props로 받고 raw pointer 이벤트를 emit. 조상 클래스 기반 커서 CSS(`.timed-grid.is-dragging .day-column` 등)는 scoped 스타일 경계 때문에 `isSlotDragging`/`isEventDragging` prop 기반의 자체 클래스로 전환.
+
+**검증:** ✅ `TimedGrid.vue` 495→336줄, 신규 `TimedGridDayColumn.vue` 237줄. `TimedGrid.spec.ts` DnD describe 블록 포함 17건 무변경 통과 — 리팩터링이 동작을 보존함을 확인 (2026-07-02).
 
 **검증:** ✅ DnD 단위·통합 spec 존재 (`TimedGrid.spec.ts` describe `drag-and-drop`). 파일 크기 정리는 미착수.
 

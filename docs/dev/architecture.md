@@ -74,9 +74,10 @@ packages/calendar/src/
 │   ├── CalendarToolbar.vue      # Month/Week/Day/List 탭 (@vuepkg/ui SegmentedControl 소비)
 │   ├── CalendarMonthNav.vue     # ‹ YYYY-MM › (Month/List 공통, @vuepkg/ui IconButton 소비)
 │   ├── CalendarPeriodNav.vue    # Today + ‹ › (Week/Day, @vuepkg/ui Button/IconButton 소비)
-│   ├── TimedGrid.vue            # Week/Day 공통 그리드 (495줄, 시간축·이벤트 블록·DnD 오케스트레이션)
+│   ├── TimedGrid.vue            # Week/Day 공통 그리드 (336줄, 시간축 + composable 오케스트레이션)
 │   ├── TimedGridHeader.vue      # Week/Day 요일·날짜 헤더 행 (SRV-P1-03 분리)
 │   ├── TimedGridAllDay.vue      # 공휴일 칩 + All Day spanning 바 (SRV-P1-03 분리)
+│   ├── TimedGridDayColumn.vue   # 일자별 컬럼 — 시간 슬롯 선택·드래그 ghost·현재 시각 선·일정 블록 (SRV-P1-05 분리)
 │   ├── MonthCell.vue            # 월간 날짜 셀 (키보드 a11y — role=gridcell, SRV-P1-01/P1-03 분리)
 │   ├── HolidayChip.vue          # 공휴일·기념일 붉은 칩 (@vuepkg/ui Chip 소비)
 │   ├── AllDayBar.vue            # 종일/멀티데이 spanning 바

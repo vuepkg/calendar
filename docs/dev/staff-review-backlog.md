@@ -72,7 +72,7 @@
 | [SRV-P2-05](#srv-p2-05-usecalendar-dead-api) | MINOR | 아키텍처 | `setView`/`selectDate` dead path가 context에 노출 | **완료** | `CalendarContext` 타입에 `@internal` JSDoc (2026-07-01) |
 | [SRV-P2-06](#srv-p2-06-공휴일-api-키-가이드) | MINOR | 보안 | `serviceKey` 클라이언트 노출 가능 — BFF 미강제 | **완료** (부분) | DEV warn + JSDoc 강화 (2026-07-01). 런타임 DTO 검증은 [SRV-P2-10](#srv-p2-10-공휴일-api-응답-검증) |
 | [SRV-P2-07](#srv-p2-07-headless-export) | MINOR | 로드맵 | `useCalendar` 미공개 — headless 포지셔닝 약함 | **완료** (부분) | `index.ts`에 `export { useCalendar }` (2026-07-01). 서브패스는 [SRV-P2-11](#srv-p2-11-headless-서브패스) |
-| [SRV-P2-08](#srv-p2-08-scheduleformmodal-단일-대형-파일) | MINOR | 유지보수 | `ScheduleFormModal.vue` **611줄** — 폼·반복 UI·검증 단일 파일 | **미착수** | recurrence 섹션·폼 필드 컴포넌트 분리 검토 |
+| [SRV-P2-08](#srv-p2-08-scheduleformmodal-단일-대형-파일) | MINOR | 유지보수 | `ScheduleFormModal.vue` **611줄** — 폼·반복 UI·검증 단일 파일 | **완료** | `RecurrenceFields.vue`(230줄) 분리 — 611→431줄 (2026-07-02) |
 | [SRV-P2-09](#srv-p2-09-month-cell-roving-tabindex) | MINOR | 접근성 | 모든 월간 셀 `tabindex="0"` — Tab 순서 과다 | **완료** | `role="grid"`/`row` + roving `tabindex` + 화살표 키 이동 (2026-07-02) |
 | [SRV-P2-10](#srv-p2-10-공휴일-api-응답-검증) | MINOR | 타입/보안 | `response.json() as SpcdeApiResponse` 단언 | **완료** | `isValidSpcdeApiResponse` 런타임 스키마 가드 + 개별 항목 필터링 (2026-07-02) |
 | [SRV-P2-11](#srv-p2-11-headless-서브패스) | MINOR | 로드맵 | `@vuepkg/calendar/headless` 서브패스 미구현 | **미착수** | Phase 3 F3-2와 연계 — tree-shake·번들 분리에도 유리 |
@@ -259,11 +259,13 @@
 
 ### SRV-P2-08: ScheduleFormModal 단일 대형 파일
 
-**위치:** `ScheduleFormModal.vue` (611줄)
+**위치:** `ScheduleFormModal.vue`
 
-**문제:** create/edit·참가자·반복 규칙·검증이 단일 SFC에 집중. F4-5 이후 유지보수 비용 상승.
+**문제:** create/edit·참가자·반복 규칙·검증이 단일 SFC(611줄)에 집중. F4-5 이후 유지보수 비용 상승.
 
-**수정 방향:** `RecurrenceFields.vue` 등 섹션 컴포넌트 분리. 공개 API(`open`/`mode`/`submit`)는 유지.
+**수정:** 반복 규칙 UI(빈도·간격·요일·종료 조건)를 `RecurrenceFields.vue`로 분리 — `freq`/`interval`/`byWeekday`/`endMode`/`count`/`until` 6개 `defineModel`로 양방향 바인딩. 날짜·시간 조합 헬퍼(`withDateKeepingTime`/`combineDateAndTime`)는 두 컴포넌트가 공유하도록 `utils/scheduleForm.ts`로 추출. `ScheduleFormModal`의 공개 API(`open`/`mode`/`schedule`/`submit`/`delete`)는 변경 없음 — `RecurrenceFields`는 내부 전용이라 barrel export 대상 아님.
+
+**검증:** ✅ `ScheduleFormModal.spec.ts` 16건(반복 UI e2e 시나리오 포함) 무변경 통과 — 리팩터링이 동작을 보존함을 확인 (2026-07-02). `ScheduleFormModal.vue` 611→431줄.
 
 **검증:** ✅ `ScheduleFormModal.spec.ts` 13건 + `recurrence.spec.ts` 10건. 구조 분리는 미착수.
 

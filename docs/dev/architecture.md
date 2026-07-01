@@ -81,7 +81,8 @@ packages/calendar/src/
 │   ├── HolidayChip.vue          # 공휴일·기념일 붉은 칩 (@vuepkg/ui Chip 소비)
 │   ├── AllDayBar.vue            # 종일/멀티데이 spanning 바
 │   ├── ScheduleEventChip.vue    # 일정 칩 (클릭 emit, @vuepkg/ui Chip 소비)
-│   ├── ScheduleFormModal.vue    # 일정 생성/수정 모달 (611줄, 반복 규칙 UI 포함 — @vuepkg/ui Dialog 소비, F4-3/F4-5)
+│   ├── ScheduleFormModal.vue    # 일정 생성/수정 모달 (431줄 — @vuepkg/ui Dialog 소비, F4-3/F4-5)
+│   ├── RecurrenceFields.vue     # 반복 규칙 UI(빈도·간격·요일·종료조건) — SRV-P2-08 분리
 │   ├── MonthOverflowPopover.vue # +N 팝오버 (@vuepkg/ui Popover 소비)
 │   ├── views/
 │   │   ├── MonthView.vue        # weekdayLabels/monthWeekCount prop (IMP-02, F4-2)
@@ -116,7 +117,8 @@ packages/calendar/src/
     ├── schedule.ts              # filter · query · crud · layout · TimeGridRange 계산
     ├── month.ts                 # barLayout · cell · overflow
     ├── timed.ts                 # allDay · currentTime · timeSlot 통합
-    └── recurrence.ts            # expandRecurringSchedules — RRULE 서브셋 회차 전개 (F4-5)
+    ├── recurrence.ts            # expandRecurringSchedules — RRULE 서브셋 회차 전개 (F4-5)
+    └── scheduleForm.ts          # withDateKeepingTime · combineDateAndTime — ScheduleFormModal/RecurrenceFields 공유 (SRV-P2-08)
 ```
 
 ---

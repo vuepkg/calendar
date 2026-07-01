@@ -1,7 +1,7 @@
 {
   "name": "@vuepkg/theme",
   "version": "0.2.0",
-  "private": false,
+  "private": true,
   "description": "CSS variable design tokens for @vuepkg",
   "keywords": [
     "vue",

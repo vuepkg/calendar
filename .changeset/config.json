@@ -7,5 +7,5 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@vuepkg/core", "@vuepkg/ui", "@vuepkg/theme", "@vuepkg/docs", "@vuepkg/root"]
+  "ignore": []
 }

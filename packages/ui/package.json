@@ -1,6 +1,6 @@
 {
   "name": "@vuepkg/ui",
-  "private": false,
+  "private": true,
   "version": "0.2.0",
   "description": "Headless-friendly Vue 3 UI primitives for @vuepkg",
   "keywords": [

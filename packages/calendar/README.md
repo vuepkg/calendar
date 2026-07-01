@@ -99,25 +99,114 @@ const { view, date, listFilterDate, viewScope, scheduleTypes, calendarListeners 
 
 ## 일정 생성·수정 연결
 
-```ts
-useScheduleCalendarHost({
-  onTimeSlotSelect(payload) {
-    // Week/Day 빈 셀 클릭 — 일정 생성 다이얼로그
-    openCreateDialog({ start: payload.start, end: payload.end })
-  },
-  onScheduleClick(payload) {
-    // 일정 칩 클릭 — 상세/수정 다이얼로그
-    openEditDialog(payload.schedule)
-  },
-})
+`ScheduleFormModal`은 일정 생성/수정/삭제 폼을 제공하는 선택적 컴포넌트입니다. `ScheduleCalendar`와 마찬가지로 controlled — 모달의 열림 상태와 `schedules` 갱신은 항상 부모가 소유합니다.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import {
+  ScheduleCalendar,
+  ScheduleFormModal,
+  useScheduleCalendarHost,
+  upsertSchedule,
+  removeSchedule,
+  type Schedule,
+  type Participant,
+} from '@vuepkg/calendar'
+
+const schedules = ref<Schedule[]>([/* ... */])
+const participants: Participant[] = [{ id: 'user-1', name: '홍길동' }]
+
+const modalOpen = ref(false)
+const modalMode = ref<'create' | 'edit'>('create')
+const activeSchedule = ref<Schedule | null>(null)
+const initialStart = ref<Date>()
+const initialEnd = ref<Date>()
+
+const { view, date, listFilterDate, viewScope, scheduleTypes, calendarListeners } =
+  useScheduleCalendarHost({
+    onTimeSlotSelect(payload) {
+      // Week/Day 빈 셀 클릭 — 생성 모드로 오픈
+      modalMode.value = 'create'
+      activeSchedule.value = null
+      initialStart.value = payload.start
+      initialEnd.value = payload.end
+      modalOpen.value = true
+    },
+    onScheduleClick(payload) {
+      // 일정 칩 클릭 — 수정 모드로 오픈
+      modalMode.value = 'edit'
+      activeSchedule.value = payload.schedule
+      modalOpen.value = true
+    },
+  })
+
+function handleSubmit(schedule: Schedule) {
+  schedules.value = upsertSchedule(schedules.value, schedule)
+  modalOpen.value = false
+}
+
+function handleDelete(scheduleId: string) {
+  schedules.value = removeSchedule(schedules.value, scheduleId)
+  modalOpen.value = false
+}
+</script>
+
+<template>
+  <ScheduleCalendar
+    :schedules="schedules"
+    v-model:view="view"
+    v-model:date="date"
+    v-model:list-filter-date="listFilterDate"
+    v-model:view-scope="viewScope"
+    v-model:schedule-types="scheduleTypes"
+    v-on="calendarListeners"
+  />
+
+  <ScheduleFormModal
+    :open="modalOpen"
+    :mode="modalMode"
+    :schedule="activeSchedule"
+    :initial-start="initialStart"
+    :initial-end="initialEnd"
+    :participants="participants"
+    :existing-schedules="schedules"
+    @close="modalOpen = false"
+    @submit="handleSubmit"
+    @delete="handleDelete"
+  />
+</template>
 ```
 
-```ts
-import { upsertSchedule, removeSchedule, buildScheduleFromDraft, createScheduleId } from '@vuepkg/calendar'
+`ScheduleFormModal`이 원하는 폼 UI와 다르다면 데이터 헬퍼만 가져다 직접 다이얼로그를 구성할 수 있습니다:
 
-schedules.value = upsertSchedule(schedules.value, buildScheduleFromDraft({ id: createScheduleId(), ...draft }))
+```ts
+import { upsertSchedule, removeSchedule, buildScheduleFromDraft } from '@vuepkg/calendar'
+
+schedules.value = upsertSchedule(
+  schedules.value,
+  buildScheduleFromDraft(draft, participants, schedules.value),
+)
 schedules.value = removeSchedule(schedules.value, targetId)
 ```
+
+### `ScheduleFormModal` Props / Emits
+
+| Prop | 타입 | 설명 |
+| ---- | ---- | ---- |
+| `open` | `boolean` | 모달 표시 여부 |
+| `mode` | `'create' \| 'edit'` | 생성/수정 모드 |
+| `schedule` | `Schedule \| null` | edit 모드 수정 대상 |
+| `initialStart` / `initialEnd` | `Date` | create 모드 초기 시간 — `time-slot-select` payload 전달 |
+| `participants` | `Participant[]` | 참가자 선택지 + 이름 조회 |
+| `existingSchedules` | `Schedule[]` | create 모드 ID 충돌 방지용 (기본 `[]`) |
+| `scheduleTypeOptions` | `ScheduleTypeOption[]` | 유형 선택지 (기본 `SCHEDULE_TYPE_OPTIONS`) |
+
+| 이벤트 | 페이로드 | 설명 |
+| ------ | -------- | ---- |
+| `close` | — | 취소·Esc·배경 클릭 |
+| `submit` | `Schedule` | `buildScheduleFromDraft`로 완성된 일정 — `upsertSchedule`에 바로 전달 |
+| `delete` | `string` (scheduleId) | edit 모드 삭제 버튼 — `removeSchedule`에 바로 전달 |
 
 ---
 

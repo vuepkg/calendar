@@ -165,7 +165,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 
 ---
 
-### Phase 2 — Primitive 승격 (`@vuepkg/ui`) ✅ 완료 (2026-06-30, F2-6 취소·F2-7 보류)
+### Phase 2 — Primitive 승격 (`@vuepkg/ui`) ✅ 완료 (2026-06-30, F2-6 취소·F2-7는 F4-3에서 완료 2026-07-01)
 
 **목표**: calendar 내부 구현에서 재사용되는 부분만 primitive로 추출해 중복을 없앤다. **`ui`를 독립 판매 가능한 범용 컴포넌트 라이브러리로 키우는 것은 더 이상 목표가 아니다** (2026-06-30 방향 전환) — calendar 품질을 높이는 부산물로만 유지한다.
 
@@ -179,7 +179,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | F2-4 | `Popover` | `MonthOverflowPopover` (bounds·flip 로직 재사용) | 🔴 | ✅ (2026-06-30) — `RectBounds`/위치 계산 함수는 `@vuepkg/core`로 이관, `Popover`가 Teleport·backdrop·Esc·외부클릭(backdrop)·focus trap·focus 복원을 신규 구현 |
 | F2-5 | `DataTable` | `ListView` (페이지네이션·반응형 컬럼) | 🔴 | ✅ (2026-06-30) — 제네릭(`<script setup generic="T">`) 컴포넌트, `cell-{key}` named slot, 페이지네이션은 `IconButton` 재사용 + `useControllableState`(v-model). 정렬 aria·caption은 스코프 제외 |
 | F2-6 | ~~`Select`~~ (취소, 2026-06-30) | — | — | "폼 기반 확장 대비"용으로 잡혀 있던 신규 컴포넌트 — calendar에 실수요가 없어 범용 프레임워크 방향 폐기와 함께 취소 |
-| F2-7 | `Dialog` / `Modal` — calendar 일정 상세/생성 모달용 | calendar 신규 기능 종속 | 🔴 | 단독 추출 안 함. Phase 4 `F4-3`(일정 CRUD UI)가 실제로 착수될 때 그 작업과 함께 진행 |
+| F2-7 | `Dialog` | `ScheduleFormModal` (F4-3) | 🔴 | ✅ **완료 (2026-07-01)** — Popover와 동일한 focus trap/Esc/backdrop/focus 복원 패턴을 별도 컴포넌트로 구현(공유 컴포저블 추출은 보류), 중앙 정렬 모달 |
 | F2-8 | calendar를 ui primitive 소비로 리팩토링 (내부 중복 제거) | calendar | 🟡 | ✅ 완료 (2026-06-30) — `CalendarPeriodNav`/`CalendarMonthNav`/`CalendarToolbar`/`HolidayChip`/`ScheduleEventChip`/`MonthOverflowPopover`/`ListView` 전부 ui primitive 소비로 전환 |
 
 **각 primitive 공통 산출물**:
@@ -220,7 +220,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | -- | ---- | ------ | ---- |
 | F4-1 | 드래그로 시간 슬롯 범위 선택 (IMP-04) | 🟡 | ✅ **완료 (2026-07-01)** — `useTimeSlotSelection` composable로 분리. `pointerdown→pointermove→pointerup` 순수 pointer event 드래그, 위·아래 방향 모두 지원. `setPointerCapture`로 열 외부 이탈 보호. `isDragging` 상태로 `cursor: ns-resize` 피드백. |
 | F4-2 | 2-week / 3-week 월간 뷰 변형 (IMP-05) | 🟡 | ✅ **완료 (2026-07-01)** — `monthWeekCount?: 2\|3\|6` prop, 선택 날짜 기준 주 window + clamp, `useMonthMeasuredCellHeight` weekCount 파라미터화 |
-| F4-3 | 일정 상세/생성 모달 (CRUD UI) | 🔴 | `Dialog` primitive(F2-7)를 이 작업과 함께 추출 |
+| F4-3 | 일정 상세/생성 모달 (CRUD UI) | 🔴 | ✅ **완료 (2026-07-01)** — `ScheduleFormModal` 컴포넌트 신규, `Dialog` primitive(F2-7) 함께 추출. 구현 중 F4-4의 `setPointerCapture`가 실브라우저에서 `.timed-event` 클릭을 무효화하던 회귀 버그 발견·수정(§ CHANGELOG Fixed) |
 | F4-4 | 드래그&드롭 이벤트 이동·리사이즈 (IMP-06, 보류 해제) | 🔴 | ✅ **완료 (2026-07-01)** — `useScheduleDrag` composable, hour-snapping + ghost overlay, `schedule-move`/`schedule-resize` emit, `onScheduleMove`/`onScheduleResize` 호스트 옵션 추가 |
 | F4-5 | Recurring Event (반복 일정) — 신규 | 🔴 | RRULE 서브셋 또는 자체 recurrence 규칙. 현재 로드맵에서 가장 큰 차별화 포인트 |
 | F4-6 | Timeline / Resource Scheduler 뷰 — 신규 | 🔴 | 다중 리소스(인원/장소)를 가로 타임라인으로. FullCalendar Premium 라이선스 영역과 직접 겹침 — §4.1 수익화 시사점 참고 |
@@ -273,12 +273,12 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | ---- | ---------------------------- | ------------ | ------------ |
 | 패키지 수 | **4 (core/theme/ui/calendar)** | 4 ✅ 달성 | 4 유지 — `ui`는 calendar 전용으로 동결, 더 늘리지 않음 |
 | 실 주간 다운로드(봇 제외) | ~0 (배포 직후 크롤러 484) | 측정 체계 구축 | 의미 있는 유입 (캘린더/스케줄링 니치 타겟) |
-| `ui` primitive 수 (calendar 내부용, 동결) | **6종** (Button/IconButton/SegmentedControl/Chip/Popover/DataTable) | 6종 ✅ 달성 | 6~7종 유지 — `Dialog`는 F4-3 착수 시에만 추가, 그 외 신규 없음 |
-| **캘린더 도메인 기능 커버리지** (신규 KPI) | month/week/day/list 뷰, 공휴일, overflow popover, 드래그 시간 슬롯 선택(F4-1), DnD 이동·리사이즈(F4-4) | — | 반복 일정(F4-5), Timeline/Resource 뷰(F4-6), 대량 데이터 virtualization(F4-7), 타임존(F4-8) |
-| calendar 번들 사이즈 (gzip) | index.js ~12.1KB + style.css ~4.9KB (§1.5 dts 누수 부채 영향권) | core 분리로 ↓ | budget 내 유지 — 도메인 기능 추가에도 size-limit CI(F4-9)로 가드 |
-| 문서 커버리지 | docs/ 내부 문서 + theming.md + `@vuepkg/ui` README | 사이트 + 자동 API | 전 도메인 기능 라이브 데모(드래그·반복·Timeline 시연 포함) |
-| a11y | `@vuepkg/ui` 6종 키보드·aria 완비(Popover focus trap·Esc·외부클릭, DataTable row Enter/Space), calendar 전체는 부분 | ✅ primitive 키보드 100% 달성 | axe 통과 |
-| 테스트 | Vitest 336 / E2E 기능 **134**(CI·`test:e2e:ci`) + 시각 **8**(수동·`test:e2e:visual`) | 패키지별 유지·증가 | 도메인 기능별(드래그/반복/DnD) 신규 테스트 스위트 |
+| `ui` primitive 수 (calendar 내부용, 동결) | **7종** (Button/IconButton/SegmentedControl/Chip/Popover/DataTable/Dialog) | 6종 ✅ 달성 | 7종 유지 — `Dialog`는 F4-3에서 추가 완료(2026-07-01), 그 외 신규 없음 |
+| **캘린더 도메인 기능 커버리지** (신규 KPI) | month/week/day/list 뷰, 공휴일, overflow popover, 드래그 시간 슬롯 선택(F4-1), DnD 이동·리사이즈(F4-4), 일정 CRUD 모달(F4-3) | — | 반복 일정(F4-5), Timeline/Resource 뷰(F4-6), 대량 데이터 virtualization(F4-7), 타임존(F4-8) |
+| calendar 번들 사이즈 (gzip) | index.js ~13.8KB + style.css ~5.6KB (F4-3 Dialog·ScheduleFormModal 반영, size-limit budget 16KB/6.5KB 내) | core 분리로 ↓ | budget 내 유지 — 도메인 기능 추가에도 size-limit CI(F4-9)로 가드 |
+| 문서 커버리지 | docs/ 내부 문서 + theming.md + `@vuepkg/ui` README + CONTRIBUTING.md(F4-10) | 사이트 + 자동 API | 전 도메인 기능 라이브 데모(드래그·반복·Timeline 시연 포함) |
+| a11y | `@vuepkg/ui` 7종 키보드·aria 완비(Popover/Dialog focus trap·Esc·외부클릭, DataTable row Enter/Space), calendar 전체는 부분 | ✅ primitive 키보드 100% 달성 | axe 통과 |
+| 테스트 | Vitest 378(core 70 + ui 76 + calendar 232) / E2E 기능 **134**(CI·`test:e2e:ci`) + 시각 **8**(수동·`test:e2e:visual`) | 패키지별 유지·증가 | 도메인 기능별(드래그/반복/DnD) 신규 테스트 스위트 |
 
 > **다운로드 KPI 주의**: 현재 501/주는 신규 배포 크롤러 트래픽(6/26 484 + 6/27 17)이며 실사용 아님. 실유입 측정 체계(README npm 배지, 문서 사이트 analytics)부터 Phase 3에 구축.
 
@@ -356,7 +356,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 
 ### 다음 단계 — Phase 4 진행 현황 (2026-07-01 갱신)
 
-> **진행 현황 (2026-07-01)**: SRV-P1-01/P1-03 완료 → F4-1(드래그 슬롯 선택) 완료 → SRV-P2 부채 전량 처리 완료 (P2-01~07 + NIT-01) → F4-4(DnD 이동·리사이즈) 완료 → F4-2(2/3주 월간 뷰) 완료 → F4-9(size-limit 게이트)·F4-10(CONTRIBUTING) 완료. `useTimeSlotSelection`의 pointer event 인프라가 F4-4 `useScheduleDrag`로 재사용됨. 저난이도 백로그가 모두 소진돼 다음은 🔴 고난이도 항목(F4-3/F4-5/F4-6) 또는 §1.5 잔여 기술부채가 남음.
+> **진행 현황 (2026-07-01)**: SRV-P1-01/P1-03 완료 → F4-1(드래그 슬롯 선택) 완료 → SRV-P2 부채 전량 처리 완료 (P2-01~07 + NIT-01) → F4-4(DnD 이동·리사이즈) 완료 → F4-2(2/3주 월간 뷰) 완료 → F4-9(size-limit 게이트)·F4-10(CONTRIBUTING) 완료 → F4-3(일정 CRUD 모달)·F2-7(`Dialog`) 완료. `useTimeSlotSelection`의 pointer event 인프라가 F4-4 `useScheduleDrag`로 재사용됨. F4-3 구현 중 F4-4의 `setPointerCapture`가 실브라우저에서 기존 event 클릭을 무효화하던 회귀를 발견·수정(CHANGELOG Fixed 참고). 남은 항목은 전부 🔴 고난이도(F4-5/F4-6/F4-7/F4-8) 또는 §1.5 잔여 기술부채.
 
 | ID | 작업 | 난이도 | 비고 |
 | -- | ---- | ------ | ---- |
@@ -365,6 +365,8 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | ~~F4-2~~ | ~~2-week / 3-week 월간 뷰 변형 (IMP-05)~~ | ~~🟡~~ | ✅ 완료 (2026-07-01) |
 | ~~F4-9~~ | ~~번들 사이즈 예산 + size-limit CI 게이트~~ | ~~🟢~~ | ✅ 완료 (2026-07-01) |
 | ~~F4-10~~ | ~~RFC 프로세스 + CONTRIBUTING + 기능 추가 체크리스트~~ | ~~🟢~~ | ✅ 완료 (2026-07-01) |
+| ~~F4-3~~ | ~~일정 상세/생성 모달 (CRUD UI)~~ | ~~🔴~~ | ✅ 완료 (2026-07-01) — `ScheduleFormModal` + `Dialog`(F2-7) |
+| F4-5 | Recurring Event (반복 일정) | 🔴 | **다음 작업 후보** — 로드맵상 가장 큰 차별화 포인트 |
 | — | §1.5 잔여 항목 (`vite-plugin-dts` 상대경로 누수) 설계 검토 | 🟡 | 영향도 낮음 — Phase 4 작업과 별개로 여유 있을 때 처리 |
 | ~~—~~ | ~~[staff-review-backlog.md](./staff-review-backlog.md) P2~~ | ~~🟡~🔴~~ | ~~SRV-P2-01~P2-07 — 1.0.0 전 처리 필요~~ → ✅ 완료 (2026-07-01) |
 

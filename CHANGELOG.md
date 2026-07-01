@@ -3,6 +3,12 @@
 ## [Unreleased]
 
 ### Added
+- **F4-3** `ScheduleFormModal` — optional schedule create/edit/delete form component
+  - Controlled component: parent owns `open` state and applies `submit`/`delete` to its own `schedules`
+  - `submit` emits a fully-built `Schedule` via `buildScheduleFromDraft` — pass straight to `upsertSchedule`
+  - `delete` emits the target `scheduleId` — pass straight to `removeSchedule`
+  - `Dialog` primitive added to `@vuepkg/ui` (F2-7) — Teleport, focus trap, Esc/backdrop close, focus restore
+  - `--vp-dialog-*` component tokens added to `@vuepkg/theme`
 - **F4-2** `monthWeekCount?: 2 | 3 | 6` prop on `ScheduleCalendar` — shows a reduced 2/3-week window
   (anchored to the `date` v-model's week, clamped to the grid) instead of the full 6-week month
   - `MonthWeekCount` type exported from `@vuepkg/calendar`
@@ -16,10 +22,19 @@
   - `onScheduleMove` / `onScheduleResize` options added to `useScheduleCalendarHost`
   - Resize handle (8px hit area) at bottom of each timed event
   - Ghost overlay shows new position during drag; origin event dims to 40% opacity
-  - `justDragged` flag suppresses spurious click event after pointer drag
 - `scheduleTypeOptions` prop on `ScheduleCalendar` — register custom schedule type colors/labels
 - `build:lib` script — ES + CJS + TypeScript declaration file output (`vite.lib.config.ts`)
 - Library packaging: `main`, `module`, `types`, `exports`, `files` fields in `package.json`
+
+### Fixed
+- **Timed event click silently broken in real browsers** — `.timed-event`'s `@pointerdown` calls
+  `setPointerCapture` on `.day-column` for drag detection (F4-4). Once captured, the browser retargets
+  the synthesized `click` event to `.day-column` itself, so the `@click` listener bound on `.timed-event`
+  never received it — clicking an existing Week/Day event silently did nothing outside of unit tests
+  (`@vue/test-utils`'s `.trigger('click')` dispatches directly at the element and never exercises real
+  pointer-capture retargeting, so this was invisible to the existing suite). `schedule-click` is now
+  emitted directly from the `pointerup` handler when no real move/resize occurred, instead of relying on
+  a native `click` listener.
 
 ### Changed
 - `Schedule.type` widened from `ScheduleType` union to `string` — consumers can use any type string

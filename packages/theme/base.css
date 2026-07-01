@@ -161,6 +161,15 @@
   --vp-popover-item-highlighted-text: var(--vp-palette-blue-800);
   --vp-popover-z-index: 1000;
 
+  /* ── Component: 다이얼로그(모달) ─────────────────────────────────── */
+  --vp-dialog-bg:          var(--vp-popover-bg);
+  --vp-dialog-border:      var(--vp-popover-border);
+  --vp-dialog-shadow:      0 16px 48px rgb(15 23 42 / 24%);
+  --vp-dialog-radius:      6px;
+  --vp-dialog-backdrop-bg: rgb(15 23 42 / 45%);
+  --vp-dialog-max-width:   480px;
+  --vp-dialog-z-index:     1100;
+
   /* ── Component: List 뷰 ──────────────────────────────────────────── */
   --vp-list-filter-bg:     var(--vp-palette-blue-50);
   --vp-list-filter-border: var(--vp-palette-blue-200);

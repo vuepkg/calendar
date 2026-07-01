@@ -1,4 +1,5 @@
 export { default as ScheduleCalendar } from './ScheduleCalendar.vue'
+export { default as ScheduleFormModal } from './ScheduleFormModal.vue'
 
 export type {
   // 도메인 타입

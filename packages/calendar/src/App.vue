@@ -2,18 +2,31 @@
 import { computed, ref } from 'vue'
 import {
   ScheduleCalendar,
+  ScheduleFormModal,
   SCHEDULE_TYPE_OPTIONS,
   applyScheduleFilters,
+  removeSchedule,
+  upsertSchedule,
   useScheduleCalendarHost,
   type Schedule,
 } from '@/components/calendar'
-import { mockCompanyHolidays } from '@/data/mockSchedules'
-import { CURRENT_USER_ID, mockSchedules } from '@/data/mockSchedules'
+import {
+  CURRENT_USER_ID,
+  mockCompanyHolidays,
+  mockSchedules,
+  participants,
+} from '@/data/mockSchedules'
 import { startOfDay } from '@/utils/date'
 
 const allSchedules = ref<Schedule[]>(mockSchedules.map((schedule) => ({ ...schedule })))
 
 const ALL_SCHEDULE_TYPES = SCHEDULE_TYPE_OPTIONS.map((option) => option.type)
+
+const formModalOpen = ref(false)
+const formModalMode = ref<'create' | 'edit'>('create')
+const activeSchedule = ref<Schedule | null>(null)
+const formInitialStart = ref<Date>()
+const formInitialEnd = ref<Date>()
 
 const { view, date, listFilterDate, viewScope, scheduleTypes, calendarListeners } =
   useScheduleCalendarHost({
@@ -24,11 +37,28 @@ const { view, date, listFilterDate, viewScope, scheduleTypes, calendarListeners 
       }
     },
     onTimeSlotSelect: (payload) => {
-      if (import.meta.env.DEV) {
-        console.debug('[demo] time-slot-select', payload)
-      }
+      formModalMode.value = 'create'
+      activeSchedule.value = null
+      formInitialStart.value = payload.start
+      formInitialEnd.value = payload.end
+      formModalOpen.value = true
+    },
+    onScheduleClick: (payload) => {
+      formModalMode.value = 'edit'
+      activeSchedule.value = payload.schedule
+      formModalOpen.value = true
     },
   })
+
+function handleFormSubmit(schedule: Schedule) {
+  allSchedules.value = upsertSchedule(allSchedules.value, schedule)
+  formModalOpen.value = false
+}
+
+function handleFormDelete(scheduleId: string) {
+  allSchedules.value = removeSchedule(allSchedules.value, scheduleId)
+  formModalOpen.value = false
+}
 
 const schedules = computed(() =>
   applyScheduleFilters(allSchedules.value, {
@@ -83,6 +113,19 @@ function toggleScheduleType(type: string) {
       :schedules="schedules"
       :holidays="mockCompanyHolidays"
       v-on="calendarListeners"
+    />
+
+    <ScheduleFormModal
+      :open="formModalOpen"
+      :mode="formModalMode"
+      :schedule="activeSchedule"
+      :initial-start="formInitialStart"
+      :initial-end="formInitialEnd"
+      :participants="participants"
+      :existing-schedules="allSchedules"
+      @close="formModalOpen = false"
+      @submit="handleFormSubmit"
+      @delete="handleFormDelete"
     />
   </main>
 </template>

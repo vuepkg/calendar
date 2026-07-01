@@ -1,6 +1,6 @@
 # Roadmap — @vuepkg/calendar
 
-> 최종 갱신: 2026-06-30
+> 최종 갱신: 2026-07-01
 
 ---
 
@@ -18,6 +18,8 @@
 | [Phase 2] `@vuepkg/ui` Primitive 승격 (완료) | `Button`/`IconButton`/`SegmentedControl`/`Chip`/`Popover`/`DataTable` 추출, calendar 전체가 소비하도록 리팩토링 | 2026-06-30 |
 | CI E2E · Git hooks | GitHub Actions Node 24, `test:e2e:ci`(134) CI 편입, 시각 회귀 수동 workflow, Husky `verify:push` | 2026-06-30 |
 | [SRV-P0-01] `query-change` 정확성 | navigate/view-change 시 다음 date/view를 payload에 반영 | 2026-06-30 |
+| [IMP-04 / F4-1] 드래그 시간 슬롯 범위 선택 | `useTimeSlotSelection` composable, pointer event 기반 | 2026-07-01 |
+| [IMP-06 / F4-4] 드래그&드롭 이벤트 이동·리사이즈 | `useScheduleDrag` composable, `schedule-move`/`schedule-resize` emit | 2026-07-01 |
 
 ---
 
@@ -54,17 +56,9 @@
 
 ### 🟡 난이도 중간
 
-#### [IMP-04] 드래그로 시간 슬롯 범위 선택
+#### [IMP-04] 드래그로 시간 슬롯 범위 선택 — ✅ 완료 (2026-07-01, F4-1)
 
-**현황**  
-`time-slot-select` emit이 클릭 1회 = 1시간 단위 고정.
-
-**개선 방향**
-- `mousedown → mousemove → mouseup` 드래그로 확장
-- 드래그 중 시각적 하이라이트 영역 표시
-- 외부 드래그 라이브러리 없이 pointer event로 구현
-
-**영향 파일**: `TimedGrid.vue`, `utils/timed.ts`
+`useTimeSlotSelection` composable로 구현 완료. 상세는 [framework-roadmap.md](./framework-roadmap.md) F4-1 참고.
 
 ---
 
@@ -80,9 +74,9 @@
 
 ### 🔴 난이도 높음 (보류)
 
-#### [IMP-06] 드래그&드롭 이벤트 이동·리사이즈
+#### [IMP-06] 드래그&드롭 이벤트 이동·리사이즈 — ✅ 완료 (2026-07-01, F4-4)
 
-emit-only 아키텍처와 충돌 없이 구현하려면 별도 스프린트 필요. 외부 드래그 라이브러리 도입 여부 결정 필요.
+`useScheduleDrag` composable로 구현 완료. 상세는 [framework-roadmap.md](./framework-roadmap.md) F4-4 참고.
 
 #### [IMP-07] 타임존 지원 (제외)
 

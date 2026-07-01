@@ -221,7 +221,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | F4-1 | 드래그로 시간 슬롯 범위 선택 (IMP-04) | 🟡 | ✅ **완료 (2026-07-01)** — `useTimeSlotSelection` composable로 분리. `pointerdown→pointermove→pointerup` 순수 pointer event 드래그, 위·아래 방향 모두 지원. `setPointerCapture`로 열 외부 이탈 보호. `isDragging` 상태로 `cursor: ns-resize` 피드백. |
 | F4-2 | 2-week / 3-week 월간 뷰 변형 (IMP-05) | 🟡 | `monthWeekCount?: 2\|3\|6` prop |
 | F4-3 | 일정 상세/생성 모달 (CRUD UI) | 🔴 | `Dialog` primitive(F2-7)를 이 작업과 함께 추출 |
-| F4-4 | 드래그&드롭 이벤트 이동·리사이즈 (IMP-06, 보류 해제) | 🔴 | emit-only 아키텍처와 정합되는 `schedule-update` emit 설계 필요. 외부 드래그 라이브러리 도입 여부 결정 필요 |
+| F4-4 | 드래그&드롭 이벤트 이동·리사이즈 (IMP-06, 보류 해제) | 🔴 | ✅ **완료 (2026-07-01)** — `useScheduleDrag` composable, hour-snapping + ghost overlay, `schedule-move`/`schedule-resize` emit, `onScheduleMove`/`onScheduleResize` 호스트 옵션 추가 |
 | F4-5 | Recurring Event (반복 일정) — 신규 | 🔴 | RRULE 서브셋 또는 자체 recurrence 규칙. 현재 로드맵에서 가장 큰 차별화 포인트 |
 | F4-6 | Timeline / Resource Scheduler 뷰 — 신규 | 🔴 | 다중 리소스(인원/장소)를 가로 타임라인으로. FullCalendar Premium 라이선스 영역과 직접 겹침 — §4.1 수익화 시사점 참고 |
 | F4-7 | 대량 일정 Virtualization | 🔴 | 월/리스트 뷰에 수백~수천 건 렌더링 시 성능 확보 |
@@ -274,7 +274,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | 패키지 수 | **4 (core/theme/ui/calendar)** | 4 ✅ 달성 | 4 유지 — `ui`는 calendar 전용으로 동결, 더 늘리지 않음 |
 | 실 주간 다운로드(봇 제외) | ~0 (배포 직후 크롤러 484) | 측정 체계 구축 | 의미 있는 유입 (캘린더/스케줄링 니치 타겟) |
 | `ui` primitive 수 (calendar 내부용, 동결) | **6종** (Button/IconButton/SegmentedControl/Chip/Popover/DataTable) | 6종 ✅ 달성 | 6~7종 유지 — `Dialog`는 F4-3 착수 시에만 추가, 그 외 신규 없음 |
-| **캘린더 도메인 기능 커버리지** (신규 KPI) | month/week/day/list 뷰, 공휴일, overflow popover, 클릭 1시간 단위 슬롯 선택 | — | 반복 일정(F4-5), DnD 이동·리사이즈(F4-4), Timeline/Resource 뷰(F4-6), 대량 데이터 virtualization(F4-7), 타임존(F4-8) |
+| **캘린더 도메인 기능 커버리지** (신규 KPI) | month/week/day/list 뷰, 공휴일, overflow popover, 드래그 시간 슬롯 선택(F4-1), DnD 이동·리사이즈(F4-4) | — | 반복 일정(F4-5), Timeline/Resource 뷰(F4-6), 대량 데이터 virtualization(F4-7), 타임존(F4-8) |
 | calendar 번들 사이즈 (gzip) | index.js ~12.1KB + style.css ~4.9KB (§1.5 dts 누수 부채 영향권) | core 분리로 ↓ | budget 내 유지 — 도메인 기능 추가에도 size-limit CI(F4-9)로 가드 |
 | 문서 커버리지 | docs/ 내부 문서 + theming.md + `@vuepkg/ui` README | 사이트 + 자동 API | 전 도메인 기능 라이브 데모(드래그·반복·Timeline 시연 포함) |
 | a11y | `@vuepkg/ui` 6종 키보드·aria 완비(Popover focus trap·Esc·외부클릭, DataTable row Enter/Space), calendar 전체는 부분 | ✅ primitive 키보드 100% 달성 | axe 통과 |
@@ -356,17 +356,19 @@ component     --vp-chip-bg: var(--vp-color-surface);
 
 ### 다음 단계 — Phase 4 진행 현황 (2026-07-01 갱신)
 
-> **진행 현황 (2026-07-01)**: SRV-P1-01/P1-03 완료 → F4-1(드래그 슬롯 선택) 완료 → SRV-P2 부채 전량 처리 완료 (P2-01~07 + NIT-01). `useTimeSlotSelection` composable이 F4-4 DnD의 pointer event 인프라를 이미 갖추고 있다.
+> **진행 현황 (2026-07-01)**: SRV-P1-01/P1-03 완료 → F4-1(드래그 슬롯 선택) 완료 → SRV-P2 부채 전량 처리 완료 (P2-01~07 + NIT-01) → F4-4(DnD 이동·리사이즈) 완료. `useTimeSlotSelection`의 pointer event 인프라가 F4-4 `useScheduleDrag`로 재사용됨.
 
 | ID | 작업 | 난이도 | 비고 |
 | -- | ---- | ------ | ---- |
 | ~~F4-1~~ | ~~드래그 시간 슬롯 범위 선택 (IMP-04)~~ | ~~🟡~~ | ✅ 완료 (2026-07-01) |
-| F4-4 | 드래그&드롭 이벤트 이동·리사이즈 (IMP-06) | 🔴 | F4-1의 `useTimeSlotSelection` pointer 인프라 재사용 가능 — **다음 작업 후보** |
-| F4-2 | 2-week / 3-week 월간 뷰 변형 (IMP-05) | 🟡 | `monthWeekCount?: 2\|3\|6` prop — F4-4와 병행 가능 |
+| ~~F4-4~~ | ~~드래그&드롭 이벤트 이동·리사이즈 (IMP-06)~~ | ~~🔴~~ | ✅ 완료 (2026-07-01) |
+| F4-2 | 2-week / 3-week 월간 뷰 변형 (IMP-05) | 🟡 | `monthWeekCount?: 2\|3\|6` prop — **다음 작업 후보** |
+| F4-9 | 번들 사이즈 예산 + size-limit CI 게이트 | 🟢 | F4-2와 병행 가능한 저난이도 작업 |
+| F4-10 | RFC 프로세스 + CONTRIBUTING + 기능 추가 체크리스트 | 🟢 | 기여자 온보딩, 코드 변경 없음 |
 | — | §1.5 잔여 항목 (`vite-plugin-dts` 상대경로 누수) 설계 검토 | 🟡 | 영향도 낮음 — Phase 4 작업과 별개로 여유 있을 때 처리 |
 | ~~—~~ | ~~[staff-review-backlog.md](./staff-review-backlog.md) P2~~ | ~~🟡~🔴~~ | ~~SRV-P2-01~P2-07 — 1.0.0 전 처리 필요~~ → ✅ 완료 (2026-07-01) |
 
-F4-5(반복 일정)·F4-6(Timeline) 같은 고난도 항목은 F4-4로 DnD 인프라를 다진 뒤 착수 권장.
+F4-5(반복 일정)·F4-6(Timeline) 같은 고난도 항목은 F4-4로 DnD 인프라를 다진 지금이 착수 적기.
 
 ---
 

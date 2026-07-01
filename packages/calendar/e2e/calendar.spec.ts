@@ -94,7 +94,8 @@ test.describe('ScheduleCalendar E2E', () => {
       .locator('.month-cell:not(.outside)')
       .filter({ has: page.locator('.cell-date', { hasText: '21' }) })
 
-    await april21Cell.getByText('여수 출장').click()
+    // 날짜 숫자를 클릭 — 일정 칩 클릭은 F4-3 이후 ScheduleFormModal을 여므로 cell-date 사용
+    await april21Cell.locator('.cell-date').click()
 
     await expect(viewTab(page, 'Month')).toHaveClass(/active/)
     await expect(april21Cell).toHaveClass(/selected/)
@@ -117,9 +118,11 @@ test.describe('ScheduleCalendar E2E', () => {
   test('shows 30-minute schedules on may 20 in day view', async ({ page }) => {
     await viewTab(page, 'Month').click()
     await page.getByRole('button', { name: 'Next month' }).click()
+    // 날짜 숫자만 클릭 — 셀 중앙 클릭 시 일정 칩에 걸려 ScheduleFormModal이 열릴 수 있음
     await page
       .locator('.month-cell:not(.outside)')
       .filter({ has: page.locator('.cell-date', { hasText: '20' }) })
+      .locator('.cell-date')
       .click()
 
     await viewTab(page, 'Day').click()

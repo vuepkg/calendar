@@ -1,6 +1,6 @@
 # Roadmap — @vuepkg/calendar
 
-> 최종 갱신: 2026-07-01
+> 최종 갱신: 2026-07-01 (F3-1, F4-11 완료 반영)
 
 ---
 
@@ -21,6 +21,8 @@
 | [IMP-04 / F4-1] 드래그 시간 슬롯 범위 선택 | `useTimeSlotSelection` composable, pointer event 기반 | 2026-07-01 |
 | [IMP-06 / F4-4] 드래그&드롭 이벤트 이동·리사이즈 | `useScheduleDrag` composable, `schedule-move`/`schedule-resize` emit | 2026-07-01 |
 | [IMP-05 / F4-2] 2/3주 월간 뷰 변형 | `monthWeekCount?: 2\|3\|6` prop, 선택 날짜 기준 window + clamp | 2026-07-01 |
+| [F3-1] VitePress 문서 사이트 + GitHub Pages 배포 | `apps/docs`, `docs.yml` GitHub Actions, Getting Started·API·Theming·CHANGELOG·릴리즈 가이드 | 2026-07-01 |
+| [F4-11] Changesets 자동 릴리즈 | `release.yml` GitHub Actions, `@vuepkg/calendar@0.2.1` npm 자동 배포 | 2026-07-01 |
 
 ---
 
@@ -133,6 +135,8 @@
 | EXT-02 | `fetch-public-holidays` + SSR/프록시 키 관리 가이드 | 미착수 |
 | ~~NPM-01~~ | ~~LICENSE 파일 추가~~ | ✅ 완료 |
 | ~~NPM-02~~ | ~~`fetchPublicHolidays` 기본값 `false`~~ | ✅ 완료 |
+| ~~NPM-03~~ | ~~Changesets 자동 릴리즈 + npm publish CI~~ | ✅ 완료 (2026-07-01) |
+| ~~NPM-04~~ | ~~`homepage` → 문서 사이트 URL 반영~~ | ✅ 완료 (2026-07-01, `@vuepkg/calendar@0.2.1`) |
 
 ---
 

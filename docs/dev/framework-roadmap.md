@@ -1,6 +1,6 @@
 # Calendar Engine Roadmap — `@vuepkg/calendar` 고도화
 
-> 작성: 2026-06-29 · **대대적 개편: 2026-06-30**
+> 작성: 2026-06-29 · **대대적 개편: 2026-06-30** · **최종 갱신: 2026-07-01**
 > 목표: 단일 `@vuepkg/calendar` 컴포넌트 → **Vue 3 전용 Modern Calendar Engine**
 > **전략 결정 (2026-06-30, 방향 전환)**: 범용 Vue 3 디자인 시스템(PrimeVue/Vuetify식 풀세트) 방향을 폐기하고 **calendar 도메인 고도화에 집중**한다. `core`/`ui`/`theme`는 폐기가 아니라 **calendar를 지탱하는 내부 인프라로 스코프를 고정** — `ui`를 외부에 독립 판매하는 범용 컴포넌트 라이브러리로 키우는 것은 더 이상 목표가 아니다.
 > **이전 방향 (2026-06-29, 폐기)**: ~~실제 npm 배포 "범용 UI 프레임워크"로 채택을 노린다~~ — PrimeVue/Vuetify(풀세트)·shadcn-vue/Radix Vue(headless+Tailwind) 모두 이미 강자가 있는 레드오션이라는 경쟁 분석 결과 방향 전환. 반면 Vue 캘린더 생태계(FullCalendar/v-calendar/vue-cal)는 modern DX·headless 구조·DnD/Timeline/Recurring 지원이 빈 공간으로 확인됨.
@@ -200,12 +200,12 @@ component     --vp-chip-bg: var(--vp-color-surface);
 
 | ID | 작업 | 난이도 | 비고 |
 | -- | ---- | ------ | ---- |
-| F3-1 | VitePress 문서 사이트 (`apps/docs`) + 라이브 플레이그라운드 | 🟡 | props 인터랙티브 토글 |
+| F3-1 | VitePress 문서 사이트 (`apps/docs`) + 라이브 플레이그라운드 | 🟡 | ✅ **완료 (2026-07-01)** — `https://vuepkg.github.io/calendar/` 배포, GitHub Actions `docs.yml`, Getting Started·API·Theming·CHANGELOG·릴리즈 가이드 포함 |
 | F3-2 | `vue-component-meta`로 props/emits/slots API 표 자동 생성 | 🟡 | 수동 문서 drift 방지 |
 | F3-3 | **i18n/locale 시스템** — 백로그 `weekdayLabels`(IMP-02)를 범용 locale로 일반화 | 🟡 | `core/locale`, calendar·DataTable 공용 |
 | F3-4 | SSR / Nuxt 호환 검증 + `@vuepkg/nuxt` 모듈 (auto-import) | 🔴 | hydration·CSS 주입 |
 | F3-5 | 접근성 감사 — 전 컴포넌트 키보드·스크린리더 점검 (axe) | 🟡 | a11y 배지 |
-| F3-6 | 마이그레이션 가이드 (`@vuepkg/calendar` 0.0.x → 신 버전) | 🟢 | breaking 정리 |
+| F3-6 | 마이그레이션 가이드 (`@vuepkg/calendar` 0.0.x → 신 버전) | 🟢 | ✅ **완료 (2026-07-01)** — `apps/docs/guide/migration.md` 작성 완료 |
 | F3-7 | 시작 템플릿 (Vite/Nuxt starter) + StackBlitz 데모 링크 | 🟢 | 예약/일정관리 앱 시나리오로 데모 구성 — 범용 UI 데모 아님 |
 
 **완료 기준**: `vuepkg.dev`(가칭) 문서 사이트 배포. 각 컴포넌트 라이브 데모 + 자동 API 표. calendar i18n(요일·라벨) 동작.
@@ -228,7 +228,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | F4-8 | 타임존 지원 (IMP-07, 재검토) | 🔴 | "국내 단일 타임존이라 ROI 낮음" 판단을 글로벌 캘린더 엔진 포지션 기준으로 재검토. 즉시 착수 아님 — F4-1~F4-7 이후 |
 | F4-9 | 번들 사이즈 예산 + size-limit CI 게이트 | 🟢 | ✅ **완료 (2026-07-01)** — `size-limit`(brotli) 도입, calendar/ui/core 패키지별 budget, CI `Bundle size budget` 스텝 |
 | F4-10 | RFC 프로세스 + CONTRIBUTING + 기능 추가 체크리스트 | 🟢 | ✅ **완료 (2026-07-01)** — `CONTRIBUTING.md` 신규 (설정·커밋 컨벤션·PR 절차·RFC 템플릿·기능 추가 체크리스트) |
-| F4-11 | 시맨틱 버저닝 자동 릴리즈 (changesets → npm publish 자동화) | 🟢 | F0-3 확장 |
+| F4-11 | 시맨틱 버저닝 자동 릴리즈 (changesets → npm publish 자동화) | 🟢 | ✅ **완료 (2026-07-01)** — Changesets + GitHub Actions `release.yml`, `@vuepkg/calendar@0.2.0` npm 자동 배포 확인. 버전 직접 범프 시 PR 없이 즉시 배포, changeset 파일 존재 시 "Version Packages" PR 생성 후 머지 시 배포 |
 | F4-12 | 커뮤니티 노출 — "Vue 캘린더/스케줄러" 니치 타겟 | 🟢 | awesome-vue calendar 섹션, 예약·일정관리 SaaS 빌더 커뮤니티. 범용 UI 라이브러리 커뮤니티는 더 이상 타겟 아님 |
 
 #### 4.1 수익화 시사점 (참고)
@@ -356,7 +356,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 
 ### 다음 단계 — Phase 4 진행 현황 (2026-07-01 갱신)
 
-> **진행 현황 (2026-07-01)**: SRV-P1-01/P1-03 완료 → F4-1(드래그 슬롯 선택) 완료 → SRV-P2 부채 전량 처리 완료 (P2-01~07 + NIT-01) → F4-4(DnD 이동·리사이즈) 완료 → F4-2(2/3주 월간 뷰) 완료 → F4-9(size-limit 게이트)·F4-10(CONTRIBUTING) 완료 → F4-3(일정 CRUD 모달)·F2-7(`Dialog`) 완료 → F4-5(반복 일정) 완료. `useTimeSlotSelection`의 pointer event 인프라가 F4-4 `useScheduleDrag`로 재사용됨. F4-3 구현 중 F4-4의 `setPointerCapture`가 실브라우저에서 기존 event 클릭을 무효화하던 회귀를 발견·수정(CHANGELOG Fixed 참고). 남은 항목은 전부 🔴 고난이도(F4-6/F4-7/F4-8) 또는 §1.5 잔여 기술부채.
+> **진행 현황 (2026-07-01)**: SRV-P1-01/P1-03 완료 → F4-1(드래그 슬롯 선택) 완료 → SRV-P2 부채 전량 처리 완료 (P2-01~07 + NIT-01) → F4-4(DnD 이동·리사이즈) 완료 → F4-2(2/3주 월간 뷰) 완료 → F4-9(size-limit 게이트)·F4-10(CONTRIBUTING) 완료 → F4-3(일정 CRUD 모달)·F2-7(`Dialog`) 완료 → F4-5(반복 일정) 완료 → **F3-1(VitePress 문서 사이트 + GitHub Pages 배포) 완료** → **F4-11(Changesets 자동 릴리즈) 완료** → `@vuepkg/calendar@0.2.1` npm 배포 완료(homepage → 문서 사이트 URL 반영). `useTimeSlotSelection`의 pointer event 인프라가 F4-4 `useScheduleDrag`로 재사용됨. F4-3 구현 중 F4-4의 `setPointerCapture`가 실브라우저에서 기존 event 클릭을 무효화하던 회귀를 발견·수정(CHANGELOG Fixed 참고). 남은 항목은 전부 🔴 고난이도(F4-6/F4-7/F4-8) 또는 §1.5 잔여 기술부채.
 
 | ID | 작업 | 난이도 | 비고 |
 | -- | ---- | ------ | ---- |
@@ -367,7 +367,12 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | ~~F4-10~~ | ~~RFC 프로세스 + CONTRIBUTING + 기능 추가 체크리스트~~ | ~~🟢~~ | ✅ 완료 (2026-07-01) |
 | ~~F4-3~~ | ~~일정 상세/생성 모달 (CRUD UI)~~ | ~~🔴~~ | ✅ 완료 (2026-07-01) — `ScheduleFormModal` + `Dialog`(F2-7) |
 | ~~F4-5~~ | ~~Recurring Event (반복 일정)~~ | ~~🔴~~ | ✅ 완료 (2026-07-01) — `RecurrenceRule` + `expandRecurringSchedules`, 시리즈 단위 CRUD |
-| F4-6 | Timeline / Resource Scheduler 뷰 | 🔴 | **다음 작업 후보** — FullCalendar Premium 영역과 겹침(§4.1 수익화 시사점 참고) |
+| ~~F3-1~~ | ~~VitePress 문서 사이트 + GitHub Pages 배포~~ | ~~🟡~~ | ✅ 완료 (2026-07-01) — `https://vuepkg.github.io/calendar/` |
+| ~~F4-11~~ | ~~시맨틱 버저닝 자동 릴리즈~~ | ~~🟢~~ | ✅ 완료 (2026-07-01) — `@vuepkg/calendar@0.2.1` npm 배포 확인 |
+| F4-6 | Timeline / Resource Scheduler 뷰 | 🔴 | **다음 작업 후보** — FullCalendar Premium 영역과 겹침(§4.1 수익화 시사점 참고). 착수 전 번들 budget 상향 또는 코드 분할 먼저 검토 필요 |
+| F3-2 | `vue-component-meta` API 표 자동 생성 | 🟡 | 수동 문서 drift 방지 |
+| F3-3 | i18n/locale 시스템 | 🟡 | `weekdayLabels` 하드코딩 해소 |
+| F3-5 | 접근성 감사 (axe) | 🟡 | a11y 배지 |
 | — | §1.5 잔여 항목 (`vite-plugin-dts` 상대경로 누수) 설계 검토 | 🟡 | 영향도 낮음 — Phase 4 작업과 별개로 여유 있을 때 처리 |
 | ~~—~~ | ~~[staff-review-backlog.md](./staff-review-backlog.md) P2~~ | ~~🟡~🔴~~ | ~~SRV-P2-01~P2-07 — 1.0.0 전 처리 필요~~ → ✅ 완료 (2026-07-01) |
 

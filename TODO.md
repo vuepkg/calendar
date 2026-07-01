@@ -27,9 +27,9 @@
   - Props / Emits 요약표 (영문)
   - Korean public holiday API opt-in 주의 안내
 
-- [ ] **라이브 데모 배포** — react-calendar의 가장 강력한 차별점
-  - GitHub Pages 또는 Vercel로 데모 앱 배포
-  - README 상단에 링크 삽입
+- [x] **라이브 데모 배포** — react-calendar의 가장 강력한 차별점 (2026-07-01)
+  - `https://vuepkg.github.io/calendar/` GitHub Pages 배포 완료 (F3-1)
+  - README 상단 `homepage` 필드 반영 완료 (`@vuepkg/calendar@0.2.1`)
 
 ---
 

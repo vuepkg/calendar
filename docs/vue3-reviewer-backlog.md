@@ -118,8 +118,10 @@
 
 ## Low Priority
 
-- [ ] **`CalendarMonthNav` 청크 비대화 (14.44KB cjs gzip 3.95KB)**
-  - IconButton/DataTable 의존이 청크에 묶임. lazy 경로 최적화 여지.
+- [ ] **`CalendarMonthNav` 청크 비대화 (14.44KB cjs gzip 3.95KB)** — 원인 규명됨(2026-07-02), 조치는 보류
+  - 근본 원인: `@vuepkg/ui`가 단일 파일(`index.esm.js`)로 빌드돼 eager(CalendarMonthNav)·lazy(ListView) 양쪽에서 참조되는 순간 7개 primitive 전체가 하나의 공유 청크로 묶임.
+  - `@vuepkg/core`와 동일한 멀티 엔트리 패턴으로 `ui`도 분리 시도 → DataTable(3.25KB)은 진짜 lazy 분리 성공했으나, `index.js` brotli가 19.09KB→20.51KB로 늘어 size-limit(20KB) 초과 확인 후 **롤백**. Popover/SegmentedControl/Chip/Button/Dialog는 대부분 eager 경로에서만 쓰여 분리 이득이 없고, 공유 청크가 깨지며 압축 효율만 나빠짐(중복 증가).
+  - **재시도 조건:** `manualChunks`로 공유 여부를 명시적으로 제어하는 설계가 선행돼야 함. 그전까지는 손대지 않는 게 현재보다 나음 — Tier 5+ 후보.
 - [ ] **Node 24 engines 제약**
   - CI는 Node 24. 소비자·기여자 진입장벽. LTS 22 병행 검토.
 - [ ] **`ListView` defineAsyncComponent — loading/error UI 없음**

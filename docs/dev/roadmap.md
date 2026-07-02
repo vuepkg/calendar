@@ -195,10 +195,9 @@ Phase 0~2(2026-06-30 완료)에서 calendar 내부의 재사용 가능한 primit
 
 **Tier 4 — 단일 컴포넌트/모듈 단위 수정 (테스트 동반)**
 
-- [ ] ListView loading/error UI 추가
-- [ ] CalendarMonthNav 청크 비대화 — lazy import
-- [ ] core/ui tree-shake 순도 검증(빌드 리포트 조사)
-- [ ] F4-12 Awesome Vue 등록 (GR-03 완료 후 착수)
+- [x] ListView loading/error UI 추가 — `defineAsyncComponent({ loadingComponent, errorComponent, delay: 200, timeout: 10000 })`, `ScheduleCalendar.list-async.spec.ts` 신규(에러 상태 검증, 로더 mock rejection 격리)
+- [x] CalendarMonthNav 청크 비대화 / core·ui tree-shake 순도 검증 — **조사 결과 원인 규명, 코드 수정은 롤백**. 근본 원인: `@vuepkg/ui`가 단일 파일(`index.esm.js`)로만 빌드되어 CalendarMonthNav(eager)·ListView(lazy) 양쪽에서 참조되는 순간 전체 ui 번들(Button/Chip/DataTable/Dialog/IconButton/Popover/SegmentedControl 전부)이 "CalendarMonthNav" 청크 이름으로 뭉쳐 eager 로드됨 — `@vuepkg/core`(이미 멀티 엔트리 사례 존재)와 동일 패턴으로 `ui`도 컴포넌트별 entry 분리 시도 → DataTable(3.25KB)이 진짜 lazy 청크로 분리되는 것까지 확인했으나, **`index.js` brotli 실측이 19.09KB→20.51KB로 늘어 size-limit(20KB) 초과** — Popover/SegmentedControl/Chip/Button/Dialog가 기존엔 하나의 공유 청크로 합쳐져 있어 압축 효율이 좋았는데, 분리 후 각각 `index.js`에 인라인되며 총 전송 바이트가 오히려 증가(중복 발생). **원복 완료**, `@vuepkg/core`에는 안전한 부분만 유지: `sideEffects: false` 추가(무해함 확인, `pnpm run size` 19.09KB로 원상태). 향후 재시도 시 `manualChunks`로 공유 여부를 명시적으로 제어하는 설계가 선행되어야 함 — Tier 5+ 후보로 하향
+- [x] F4-12 Awesome Vue 등록 — **PR 제출은 보류, 사전 준비만 완료**. 등재 조건(`​.github/contributing.md`) 검토 중 2개 발견: (1) "documentation is in English" — 루트 README.md가 전체 한국어였음 → **영어로 전면 재작성 완료**(`packages/calendar/README.md`는 npm 대상, 한국어 유지, 이번 범위 아님). (2) AI 에이전트 프로젝트는 "최초~최신 릴리즈 간 최소 1개월, 3회 이상 업데이트" 증명 필요 — npm registry 실측 결과 최초 배포 2026-06-26, 최신 2026-07-02로 **6일**만 경과, 미충족. 등재 entry 문구는 준비 완료(§5.4 참고), 2026-07-26 이후 재개
 
 **Tier 5 — 리팩터링급 (여러 파일, API 표면 영향)**
 
@@ -399,6 +398,16 @@ Phase 0~2(2026-06-30 완료)에서 calendar 내부의 재사용 가능한 primit
 | EXT-02 | `fetch-public-holidays` + SSR/프록시 키 관리 가이드 | ✅ 완료 |
 | NPM-01~04 | LICENSE·기본값·Changesets·homepage | ✅ 전부 완료 |
 
+### 5.4 홍보·생태계 등록 준비 (F4-12)
+
+**Awesome Vue PR 초안** ([`vuejs/awesome-vue`](https://github.com/vuejs/awesome-vue) `README.md`의 `#### Calendar` 섹션, `vue-calendar` 항목 다음 줄에 추가):
+
+```md
+- [@vuepkg/calendar](https://github.com/vuepkg/calendar) - Vue 3 native schedule calendar with Month/Week/Day/List views, drag & drop, recurring events, and a headless mode — zero dependencies beyond Vue.
+```
+
+**착수 가능 시점**: 2026-07-26 이후(최초 npm 배포 2026-06-26 + 1개월, `.github/contributing.md`의 AI 프로젝트 릴리즈 이력 조건). 그 전에 제출 시 반려 가능성 높음 — 조건 상세는 Tier 4 실행 기록(§2 Phase C-1 실행 순서) 참고.
+
 ---
 
 ## 6. 아키텍처·리스크·KPI
@@ -472,6 +481,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | 2026-07-02 | **문서 통합** — `roadmap-progress.md`·`framework-roadmap.md`·`roadmap.md`(기능 백로그) 3개 문서를 본 문서로 병합. SRV 총계(19/20→20/21)·REV 총계(1/18→1/21)·Phase B 항목 누락(REV-B1/REV-B2) 등 문서 간 수치 불일치를 정정 |
 | 2026-07-02 | **Phase C-1 신설** — 외부 README/홍보 전략 의견을 리뷰어·전략 에이전트 관점으로 교차 검증, GR-01~04 Quick Win 채택 + Timeline 조기 홍보·다국어 README·다채널 동시 홍보 거부 |
 | 2026-07-02 | **Tier 1~3 실행 완료** — keywords·sideEffects·headless 노출(GR-01/04/REV-B1), Use Case·비교표·RRULE 한계 문서화·이슈 템플릿(GR-02/03), 시각 회귀 Linux baseline 재캡처(SRV-P2-12/F1-7)·StackBlitz Playground(F3-7). Phase 1 100%, Phase 3 86%, SRV 100% 달성, 전체 로드맵 85%→90% |
+| 2026-07-02 | **Tier 4 실행** — ListView 로딩/에러 UI 추가. `@vuepkg/ui` 멀티 엔트리 분리를 시도했으나 size-limit 초과로 롤백(원인은 규명해 문서화, `@vuepkg/core`의 `sideEffects: false`만 유지). 루트 README.md 영어 전면 재작성(Awesome Vue "documentation is in English" 조건 충족 목적). F4-12 Awesome Vue PR은 릴리즈 이력 조건(최초 배포 후 1개월) 미충족으로 2026-07-26 이후로 연기, entry 문구는 §5.4에 준비 완료 |
 
 ---
 

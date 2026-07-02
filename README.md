@@ -6,67 +6,67 @@
 
 Vue 3 schedule calendar — Month / Week / Day / List views, **zero extra dependencies** (`vue` peer only).
 
-Tailwind/shadcn 친화적 — scoped slot으로 부분 커스터마이징하거나, 스타일드 컴포넌트 없이 로직만 쓰는 [`@vuepkg/calendar/headless`](#headless-서브패스)로 완전히 직접 그릴 수 있습니다.
+Tailwind/shadcn friendly — customize part of the UI with scoped slots, or skip styled components entirely and use logic-only [`@vuepkg/calendar/headless`](#headless-subpath) to render everything yourself.
 
-**[⚡️ StackBlitz Playground에서 바로 써보기](https://stackblitz.com/github/vuepkg/calendar/tree/main/examples/stackblitz-demo)**
+**[⚡️ Try it on StackBlitz Playground](https://stackblitz.com/github/vuepkg/calendar/tree/main/examples/stackblitz-demo)**
 
-**지원 브라우저**: 최신 Chrome / Firefox / Safari / Edge (Evergreen browsers) — IE 미지원
+**Supported browsers**: latest Chrome / Firefox / Safari / Edge (evergreen browsers) — IE is not supported
 
-## 주요 기능
+## Features
 
-- **4가지 뷰** — Month / Week / Day / List
-- **월간 동적 레이아웃** — 6주 행이 부모 높이에 맞춰 균등 분할
-- **월간 `+N` 팝오버** — 숨긴 일정 목록
-- **멀티데이 spanning 바** — 2일 이상 종일 일정 바 표시
-- **Week/Day 시간 슬롯 선택** — 빈 셀 클릭 시 1시간 `start`/`end` 전달
-- **반복 일정** — 매일/매주(요일 지정)/매월/매년, 횟수·종료일 조건. `ScheduleFormModal`에 내장
-- **공휴일·기념일** — 사내 기념일 prop + 한국 공공 API opt-in
-- **커스텀 일정 타입** — `scheduleTypeOptions`로 도메인 타입·색상 등록
-- **TypeScript** — 완전한 타입 선언 포함
-
----
-
-## 적합한 사용처
-
-- **Admin Dashboard** — 내부 운영 도구의 일정 관리 패널
-- **Booking / Reservation** — 예약 시스템의 시간대 배정 UI
-- **Company Groupware** — 팀 일정 공유 캘린더
-- **Task Management** — 마감일 기반 작업 트래킹
+- **4 views** — Month / Week / Day / List
+- **Dynamic month layout** — 6 week rows split evenly to fill the parent's height
+- **Month `+N` popover** — list of overflowing schedules
+- **Multi-day spanning bars** — all-day bars for events spanning 2+ days
+- **Week/Day time slot selection** — click an empty cell to get a 1-hour `start`/`end`
+- **Recurring events** — daily/weekly (by weekday)/monthly/yearly, with count/until conditions. Built into `ScheduleFormModal`
+- **Holidays & anniversaries** — company-anniversary prop + opt-in Korean public holiday API
+- **Custom schedule types** — register domain types/colors via `scheduleTypeOptions`
+- **TypeScript** — full type declarations included
 
 ---
 
-## 다른 라이브러리와 비교
+## Suitable for
 
-| 기능 | `@vuepkg/calendar` | FullCalendar | vue-cal |
+- **Admin Dashboard** — schedule management panel for internal tools
+- **Booking / Reservation** — time-slot assignment UI for booking systems
+- **Company Groupware** — team schedule sharing calendar
+- **Task Management** — deadline-driven task tracking
+
+---
+
+## Comparison with other libraries
+
+| Feature | `@vuepkg/calendar` | FullCalendar | vue-cal |
 | ---- | :---: | :---: | :---: |
-| Vue 3 Composition API 네이티브 | ✅ | ⚠️ 프레임워크 어댑터(`@fullcalendar/vue3`) | ⚠️ props/emit 중심 |
+| Vue 3 Composition API native | ✅ | ⚠️ framework adapter (`@fullcalendar/vue3`) | ⚠️ props/emit-centric |
 | TypeScript | ✅ | ✅ | ✅ |
-| Zero dependency | ✅ (`vue` peer만) | ⚠️ core + 플러그인 다중 조합 | ✅ |
-| Headless (컴포넌트 없이 로직만) | ✅ [`/headless`](#headless-서브패스) | ⚠️ | ❌ |
-| Slot 커스터마이징 | ✅ `toolbar`/`day-cell`/`event`/`month-overflow-item` | ⚠️ | ✅ |
-| Drag & Drop 이동·리사이즈 | ✅ | ✅ | ✅ |
-| 반복 일정 | ✅ 무료 | ✅ RRule 플러그인, 무료 | ❌ |
-| Timeline / Resource 뷰 | 🚧 계획 ([F4-6](./docs/dev/roadmap.md)) | ✅ **Premium 유료** | ❌ |
-| 번들 사이즈 | 18.4KB (brotli, [size-limit](https://bundlephobia.com/package/@vuepkg/calendar) CI 게이트) | core+플러그인 조합 — [bundlephobia](https://bundlephobia.com/package/@fullcalendar/core)에서 직접 비교 | [bundlephobia](https://bundlephobia.com/package/vue-cal)에서 직접 비교 |
+| Zero dependency | ✅ (`vue` peer only) | ⚠️ core + multiple plugins | ✅ |
+| Headless (logic without components) | ✅ [`/headless`](#headless-subpath) | ⚠️ | ❌ |
+| Slot customization | ✅ `toolbar`/`day-cell`/`event`/`month-overflow-item` | ⚠️ | ✅ |
+| Drag & drop move/resize | ✅ | ✅ | ✅ |
+| Recurring events | ✅ free | ✅ RRule plugin, free | ❌ |
+| Timeline / Resource view | 🚧 planned ([F4-6](./docs/dev/roadmap.md)) | ✅ **paid Premium** | ❌ |
+| Bundle size | 18.4KB (brotli, [size-limit](https://bundlephobia.com/package/@vuepkg/calendar) CI gate) | core + plugin combo — compare directly on [bundlephobia](https://bundlephobia.com/package/@fullcalendar/core) | compare directly on [bundlephobia](https://bundlephobia.com/package/vue-cal) |
 
-> FullCalendar Premium 여부는 2026-07-02 [공식 pricing](https://fullcalendar.io/pricing)·[premium 문서](https://fullcalendar.io/docs/premium) 기준. 각 라이브러리의 최신 조건은 공식 문서를 확인하세요.
+> FullCalendar Premium boundaries verified against the official [pricing](https://fullcalendar.io/pricing) and [premium docs](https://fullcalendar.io/docs/premium) as of 2026-07-02. Check each library's official docs for the latest terms.
 
 ---
 
-## 설치
+## Installation
 
 ```bash
 npm install @vuepkg/calendar
 ```
 
 ```ts
-// main.ts — CSS 전역 임포트 (필수)
+// main.ts — global CSS import (required)
 import '@vuepkg/calendar/style.css'
 ```
 
 ---
 
-## 빠른 시작
+## Quick start
 
 ```vue
 <script setup lang="ts">
@@ -80,10 +80,10 @@ import {
 const schedules = ref<Schedule[]>([
   {
     id: '1',
-    title: '팀 회의',
+    title: 'Team Meeting',
     type: 'team_schedule',
     participantId: 'user-1',
-    participantName: '홍길동',
+    participantName: 'Jane Doe',
     start: new Date(2026, 5, 15, 10, 0),
     end:   new Date(2026, 5, 15, 11, 0),
   },
@@ -94,7 +94,7 @@ const { view, date, listFilterDate, viewScope, scheduleTypes, calendarListeners 
 </script>
 
 <template>
-  <!-- 부모에 height 지정 필수 — 캘린더가 100% 채움 -->
+  <!-- Parent must have a height — the calendar fills 100% -->
   <div style="height: 100vh; display: flex; flex-direction: column;">
     <ScheduleCalendar
       :schedules="schedules"
@@ -109,13 +109,13 @@ const { view, date, listFilterDate, viewScope, scheduleTypes, calendarListeners 
 </template>
 ```
 
-> **초보자 팁**: `useScheduleCalendarHost`와 `v-on="calendarListeners"`가 낯설다면 [시작하기 가이드](./docs/guide/getting-started.md)에서 단계별 설명을 확인하세요.
+> **New here?** If `useScheduleCalendarHost` and `v-on="calendarListeners"` look unfamiliar, walk through the [Getting Started guide](https://vuepkg.github.io/calendar/guide/getting-started.html) for a step-by-step explanation.
 
 ---
 
-## API에서 일정 가져오기
+## Fetching schedules from an API
 
-뷰·날짜가 바뀔 때마다 `query-change`가 발생합니다. `onQueryChange`로 API 호출을 연결합니다:
+`query-change` fires whenever the view or date changes. Wire it up to your API call with `onQueryChange`:
 
 ```ts
 const { view, date, listFilterDate, viewScope, scheduleTypes, calendarListeners } =
@@ -128,9 +128,9 @@ const { view, date, listFilterDate, viewScope, scheduleTypes, calendarListeners 
 
 ---
 
-## 일정 생성·수정 연결
+## Wiring up create/edit
 
-`ScheduleFormModal`은 일정 생성/수정/삭제 폼을 제공하는 선택적 컴포넌트입니다. `ScheduleCalendar`와 마찬가지로 controlled — 모달의 열림 상태와 `schedules` 갱신은 항상 부모가 소유합니다.
+`ScheduleFormModal` is an optional component that provides a create/edit/delete form for schedules. Like `ScheduleCalendar`, it's controlled — the parent always owns the modal's open state and the `schedules` update.
 
 ```vue
 <script setup lang="ts">
@@ -146,7 +146,7 @@ import {
 } from '@vuepkg/calendar'
 
 const schedules = ref<Schedule[]>([/* ... */])
-const participants: Participant[] = [{ id: 'user-1', name: '홍길동' }]
+const participants: Participant[] = [{ id: 'user-1', name: 'Jane Doe' }]
 
 const modalOpen = ref(false)
 const modalMode = ref<'create' | 'edit'>('create')
@@ -157,7 +157,7 @@ const initialEnd = ref<Date>()
 const { view, date, listFilterDate, viewScope, scheduleTypes, calendarListeners } =
   useScheduleCalendarHost({
     onTimeSlotSelect(payload) {
-      // Week/Day 빈 셀 클릭 — 생성 모드로 오픈
+      // Click on an empty Week/Day cell — open in create mode
       modalMode.value = 'create'
       activeSchedule.value = null
       initialStart.value = payload.start
@@ -165,8 +165,9 @@ const { view, date, listFilterDate, viewScope, scheduleTypes, calendarListeners 
       modalOpen.value = true
     },
     onScheduleClick(payload) {
-      // 일정 칩 클릭 — 수정 모드로 오픈.
-      // 반복 일정 회차를 클릭했다면 recurrenceId로 마스터 일정을 찾아 시리즈 전체를 연다.
+      // Click a schedule chip — open in edit mode.
+      // If a recurring instance was clicked, look up the master by recurrenceId
+      // to open the whole series.
       const masterId = payload.schedule.recurrenceId ?? payload.schedule.id
       modalMode.value = 'edit'
       activeSchedule.value = schedules.value.find((s) => s.id === masterId) ?? payload.schedule
@@ -211,7 +212,7 @@ function handleDelete(scheduleId: string) {
 </template>
 ```
 
-`ScheduleFormModal`이 원하는 폼 UI와 다르다면 데이터 헬퍼만 가져다 직접 다이얼로그를 구성할 수 있습니다:
+If `ScheduleFormModal`'s form UI doesn't fit your needs, you can use the data helpers directly and build your own dialog:
 
 ```ts
 import { upsertSchedule, removeSchedule, buildScheduleFromDraft } from '@vuepkg/calendar'
@@ -225,107 +226,107 @@ schedules.value = removeSchedule(schedules.value, targetId)
 
 ### `ScheduleFormModal` Props / Emits
 
-| Prop | 타입 | 설명 |
+| Prop | Type | Description |
 | ---- | ---- | ---- |
-| `open` | `boolean` | 모달 표시 여부 |
-| `mode` | `'create' \| 'edit'` | 생성/수정 모드 |
-| `schedule` | `Schedule \| null` | edit 모드 수정 대상 |
-| `initialStart` / `initialEnd` | `Date` | create 모드 초기 시간 — `time-slot-select` payload 전달 |
-| `participants` | `Participant[]` | 참가자 선택지 + 이름 조회 |
-| `existingSchedules` | `Schedule[]` | create 모드 ID 충돌 방지용 (기본 `[]`) |
-| `scheduleTypeOptions` | `ScheduleTypeOption[]` | 유형 선택지 (기본 `SCHEDULE_TYPE_OPTIONS`) |
+| `open` | `boolean` | Whether the modal is visible |
+| `mode` | `'create' \| 'edit'` | Create/edit mode |
+| `schedule` | `Schedule \| null` | Target being edited in edit mode |
+| `initialStart` / `initialEnd` | `Date` | Initial time for create mode — pass the `time-slot-select` payload |
+| `participants` | `Participant[]` | Participant options + name lookup |
+| `existingSchedules` | `Schedule[]` | Used to avoid ID collisions in create mode (default `[]`) |
+| `scheduleTypeOptions` | `ScheduleTypeOption[]` | Type options (defaults to `SCHEDULE_TYPE_OPTIONS`) |
 
-| 이벤트 | 페이로드 | 설명 |
+| Event | Payload | Description |
 | ------ | -------- | ---- |
-| `close` | — | 취소·Esc·배경 클릭 |
-| `submit` | `Schedule` | `buildScheduleFromDraft`로 완성된 일정 — `upsertSchedule`에 바로 전달 |
-| `delete` | `string` (scheduleId) | edit 모드 삭제 버튼 — `removeSchedule`에 바로 전달 |
+| `close` | — | Cancel, Esc, or backdrop click |
+| `submit` | `Schedule` | Completed schedule from `buildScheduleFromDraft` — pass straight to `upsertSchedule` |
+| `delete` | `string` (scheduleId) | Delete button in edit mode — pass straight to `removeSchedule` |
 
 ---
 
-## 반복 일정
+## Recurring events
 
-`Schedule.recurrence`에 `RecurrenceRule`을 지정하면 캘린더가 표시 중인 기간 내에서 자동으로 개별 회차를 생성합니다. 부모는 마스터 일정 한 건만 관리하면 됩니다 — 반복 펼침은 `ScheduleCalendar` 내부에서 처리됩니다.
+Setting a `RecurrenceRule` on `Schedule.recurrence` makes the calendar automatically generate individual occurrences within the currently displayed period. The parent only needs to manage a single master schedule — expansion is handled internally by `ScheduleCalendar`.
 
 ```ts
 import type { Schedule } from '@vuepkg/calendar'
 
 const schedule: Schedule = {
   id: 's-standup',
-  title: '주간 스탠드업',
+  title: 'Weekly Standup',
   type: 'team_schedule',
   participantId: 'user-1',
-  participantName: '홍길동',
+  participantName: 'Jane Doe',
   start: new Date(2026, 3, 6, 9, 0),
   end: new Date(2026, 3, 6, 9, 30),
   recurrence: {
     freq: 'weekly', // 'daily' | 'weekly' | 'monthly' | 'yearly'
-    interval: 1, // 기본 1. weekly + interval 2 → 격주
-    byWeekday: [1, 3, 5], // weekly 전용, 0=일 ~ 6=토
-    count: 20, // count 또는 until 중 하나 — 둘 다 없으면 열려있는 반복
+    interval: 1, // default 1. weekly + interval 2 → every other week
+    byWeekday: [1, 3, 5], // weekly only, 0=Sun ~ 6=Sat
+    count: 20, // count or until, not both — omit both for an open-ended series
   },
 }
 ```
 
-- 화면에 렌더링되는 각 회차는 `id: "${마스터id}::YYYY-MM-DD"`, `recurrenceId: 마스터id`, `isRecurrenceInstance: true`를 가진 파생 `Schedule` 객체입니다. 원본 배열에는 추가되지 않습니다.
-- `schedule-click`/`schedule-move`/`schedule-resize` 등 이벤트 payload의 `schedule`이 회차인 경우, `recurrenceId`로 마스터를 찾아 시리즈 전체에 반영하세요 (단일 회차만 수정/삭제하는 기능은 아직 없습니다 — v1 범위 밖).
-- `ScheduleFormModal`은 반복 없음/매일/매주/매월/매년 선택, 요일(weekly), 종료 없음/횟수/종료일 조건을 폼으로 제공합니다.
-- 반복 일정 칩에는 시작 부분에 ⟳ 아이콘이 표시됩니다.
+- Each occurrence rendered on screen is a derived `Schedule` object with `id: "${masterId}::YYYY-MM-DD"`, `recurrenceId: masterId`, and `isRecurrenceInstance: true`. It is not added to the original array.
+- If the `schedule` in an event payload (`schedule-click`/`schedule-move`/`schedule-resize`, etc.) is an occurrence, look up the master via `recurrenceId` to apply changes to the whole series (editing/deleting a single occurrence is not yet supported — out of scope for v1).
+- `ScheduleFormModal` provides a form for no-repeat/daily/weekly/monthly/yearly selection, weekday (weekly), and no-end/count/until conditions.
+- Recurring schedule chips show a ⟳ icon at the start.
 
-> **알려진 제약**: 자체 RRULE 서브셋으로 iCal 전체 사양과 호환되지 않습니다(BYSETPOS 미지원, 월말 기준일 롤오버 등) — 상세: [반복 일정 가이드 § 알려진 제약](https://vuepkg.github.io/calendar/guide/recurring-events.html#알려진-제약)
+> **Known limitations**: this is a self-implemented RRULE subset and is not compatible with the full iCal spec (no BYSETPOS support, month-end anchor rollover, etc.) — details: [Recurring Events guide § Known Limitations](https://vuepkg.github.io/calendar/guide/recurring-events.html#known-limitations)
 
 ---
 
 ## Props
 
-| Prop | 타입 | 기본값 | 설명 |
+| Prop | Type | Default | Description |
 | ---- | ---- | ------ | ---- |
-| `schedules` | `Schedule[]` | `[]` | 표시할 일정 목록 |
-| `holidays` | `Holiday[]` | `[]` | 기념일·공휴일 목록 |
-| `view` | `CalendarView` | `'month'` | 현재 뷰 (`'month'｜'week'｜'day'｜'list'`) |
-| `date` | `Date` | 오늘 | 현재 기준 날짜 |
-| `viewScope` | `ViewScope` | `'company'` | 일정 범위 필터 (`'my'｜'company'`) |
-| `scheduleTypes` | `string[] \| null` | `null` | 활성 일정 타입 필터 (`null`=전체) |
-| `listFilterDate` | `Date \| null` | `null` | List 뷰 날짜 필터 |
-| `scheduleTypeOptions` | `ScheduleTypeOption[]` | 기본 3종 | 커스텀 일정 타입 정의 |
-| `fetchPublicHolidays` | `boolean` | `false` | 한국 공공 API 공휴일 opt-in |
-| `publicHolidayServiceKey` | `string` | — | 공공데이터포털 인증키 (proxy/BFF 사용 시 생략) |
-| `hideToolbar` | `boolean` | `false` | 툴바 숨김 (뷰 고정 임베딩용) |
-| `monthWeekCount` | `2 \| 3 \| 6` | `6` | 월간 뷰 표시 주 수 — `2`\|`3`이면 선택 날짜 기준 축소 뷰 |
-| `weekdayLabels` | `string[]` | `['SUN', ..., 'SAT']` | 월간 뷰 요일 헤더 라벨 (일~토 순서 7개) |
-| `startHour` | `number` | `0` | Week/Day 시간 그리드 시작 시각 (0~23) |
-| `endHour` | `number` | `23` | Week/Day 시간 그리드 종료 시각 (0~23) |
-| `locale` | `string` | — | `Intl.DateTimeFormat` locale (예: `'ko-KR'`). 월간 요일 헤더·Week/Day 요일 라벨 자동 현지화. `weekdayLabels`가 우선 |
+| `schedules` | `Schedule[]` | `[]` | Schedules to display |
+| `holidays` | `Holiday[]` | `[]` | Anniversaries/holidays list |
+| `view` | `CalendarView` | `'month'` | Current view (`'month'｜'week'｜'day'｜'list'`) |
+| `date` | `Date` | today | Current reference date |
+| `viewScope` | `ViewScope` | `'company'` | Schedule scope filter (`'my'｜'company'`) |
+| `scheduleTypes` | `string[] \| null` | `null` | Active schedule type filter (`null` = all) |
+| `listFilterDate` | `Date \| null` | `null` | Date filter for the List view |
+| `scheduleTypeOptions` | `ScheduleTypeOption[]` | 3 defaults | Custom schedule type definitions |
+| `fetchPublicHolidays` | `boolean` | `false` | Opt-in to the Korean public holiday API |
+| `publicHolidayServiceKey` | `string` | — | Korean open-data portal auth key (omit when using a proxy/BFF) |
+| `hideToolbar` | `boolean` | `false` | Hide the toolbar (for fixed-view embedding) |
+| `monthWeekCount` | `2 \| 3 \| 6` | `6` | Number of weeks shown in the month view — `2`/`3` gives a compact view anchored to the selected date |
+| `weekdayLabels` | `string[]` | `['SUN', ..., 'SAT']` | Weekday header labels for the month view (7 items, Sun–Sat) |
+| `startHour` | `number` | `0` | Week/Day time grid start hour (0–23) |
+| `endHour` | `number` | `23` | Week/Day time grid end hour (0–23) |
+| `locale` | `string` | — | `Intl.DateTimeFormat` locale (e.g. `'ko-KR'`). Auto-localizes the month weekday header and Week/Day weekday labels. `weekdayLabels` takes precedence |
 
-> 전체 Props/v-model/Emits/Slots 표(자동 생성, F3-2): [문서 사이트 API 레퍼런스](https://vuepkg.github.io/calendar/api/schedule-calendar.html)
+> Full Props/v-model/Emits/Slots table (auto-generated, F3-2): [docs site API reference](https://vuepkg.github.io/calendar/api/schedule-calendar.html)
 
 ## Emits
 
-| 이벤트 | 페이로드 | 설명 |
+| Event | Payload | Description |
 | ------ | -------- | ---- |
-| `view-change` | `CalendarViewChangePayload` | 뷰 탭 전환 |
-| `date-select` | `CalendarDateSelectPayload` | 날짜 클릭 |
-| `navigate` | `CalendarNavigatePayload` | ‹ › · Today 네비 |
-| `schedule-click` | `CalendarScheduleClickPayload` | 일정 클릭 |
-| `time-slot-select` | `CalendarTimeSlotSelectPayload` | Week/Day 빈 셀 클릭 (1시간 단위) |
-| `schedule-move` | `CalendarScheduleMovePayload` | Week/Day 이벤트 드래그 이동 확정 |
-| `schedule-resize` | `CalendarScheduleResizePayload` | Week/Day 이벤트 드래그 리사이즈 확정 |
-| `overflow-click` | `CalendarOverflowClickPayload` | 월간 +N 클릭 |
-| `list-filter-clear` | — | List 날짜 필터 해제 |
-| `query-change` | `ScheduleQueryChangePayload` | 범위·필터 변경 (API 조회용) |
+| `view-change` | `CalendarViewChangePayload` | View tab switch |
+| `date-select` | `CalendarDateSelectPayload` | Date click |
+| `navigate` | `CalendarNavigatePayload` | ‹ › · Today navigation |
+| `schedule-click` | `CalendarScheduleClickPayload` | Schedule click |
+| `time-slot-select` | `CalendarTimeSlotSelectPayload` | Empty Week/Day cell click (1-hour granularity) |
+| `schedule-move` | `CalendarScheduleMovePayload` | Week/Day drag-move confirmed |
+| `schedule-resize` | `CalendarScheduleResizePayload` | Week/Day drag-resize confirmed |
+| `overflow-click` | `CalendarOverflowClickPayload` | Month `+N` click |
+| `list-filter-clear` | — | List date filter cleared |
+| `query-change` | `ScheduleQueryChangePayload` | Range/filter change (for API queries) |
 
-> `useScheduleCalendarHost`를 사용하면 위 이벤트가 자동으로 연결됩니다. `v-on="calendarListeners"`만 추가하면 됩니다.
+> `useScheduleCalendarHost` wires up all of the events above automatically. Just add `v-on="calendarListeners"`.
 
 ## Slots
 
-`ScheduleCalendar`는 4개 scoped slot을 제공합니다 — 미사용 시 기본 마크업이 그대로 렌더되는 non-breaking 추가입니다.
+`ScheduleCalendar` provides 4 scoped slots — a non-breaking addition, since the default markup renders as-is when unused.
 
-| Slot | Props | 설명 |
+| Slot | Props | Description |
 | ---- | ----- | ---- |
-| `toolbar` | `{ currentView, views, onSelect }` | 뷰 전환 UI 전체 교체 |
-| `day-cell` | `{ cell, getTypeStyle, onScheduleClick, onOpenOverflow }` | 월간 셀 내부 콘텐츠 교체 (`role="gridcell"` 셸은 유지) |
-| `event` | `{ schedule, source, typeStyle, compact?, showParticipant?, onSelect? }` | 칩·All Day 바·시간 그리드 블록 콘텐츠 교체 |
-| `month-overflow-item` | `{ schedule, isHighlighted, onSelect }` | 월간 `+N` 팝오버 항목 콘텐츠 교체 |
+| `toolbar` | `{ currentView, views, onSelect }` | Replace the entire view-switching UI |
+| `day-cell` | `{ cell, getTypeStyle, onScheduleClick, onOpenOverflow }` | Replace month cell content (the `role="gridcell"` shell is kept) |
+| `event` | `{ schedule, source, typeStyle, compact?, showParticipant?, onSelect? }` | Replace chip / all-day bar / time grid block content |
+| `month-overflow-item` | `{ schedule, isHighlighted, onSelect }` | Replace month `+N` popover item content |
 
 ```vue
 <ScheduleCalendar v-model:view="view" v-model:date="date" :schedules="schedules">
@@ -335,21 +336,21 @@ const schedule: Schedule = {
 </ScheduleCalendar>
 ```
 
-상세: [architecture.md § Scoped Slots](./docs/dev/architecture.md#scoped-slots-rev-a1-2026-07-02)
+Details: [architecture.md § Scoped Slots](./docs/dev/architecture.md#scoped-slots-rev-a1-2026-07-02)
 
 ---
 
-## 테마 · Tailwind
+## Theming · Tailwind
 
-- **기본:** `import '@vuepkg/calendar/style.css'` 후 CSS 변수(`--vp-*`)로 테마 — [문서 사이트 테마 가이드](https://vuepkg.github.io/calendar/guide/theming.html)
-- **Tailwind:** [`#event`/`#day-cell`/`#toolbar`/`#month-overflow-item` scoped slot](#slots)으로 해당 영역의 마크업을 Tailwind 콘텐츠로 직접 교체할 수 있습니다(List 행은 아직). 마크업 전체를 직접 그리려면 [`@vuepkg/calendar/headless`](#headless-서브패스) 사용 — [Tailwind §](https://vuepkg.github.io/calendar/guide/theming.html#tailwind-css-프로젝트에서-사용하기)
-- **로드맵·달성률:** [docs/dev/roadmap.md](./docs/dev/roadmap.md)
+- **Default:** import `@vuepkg/calendar/style.css`, then theme via CSS variables (`--vp-*`) — [docs site theming guide](https://vuepkg.github.io/calendar/guide/theming.html)
+- **Tailwind:** use the [`#event`/`#day-cell`/`#toolbar`/`#month-overflow-item` scoped slots](#slots) to directly replace that area's markup with Tailwind content (List rows not yet supported). To render the entire markup yourself, use [`@vuepkg/calendar/headless`](#headless-subpath) — [Tailwind section](https://vuepkg.github.io/calendar/guide/theming.html#tailwind-css-프로젝트에서-사용하기)
+- **Roadmap & progress:** [docs/dev/roadmap.md](./docs/dev/roadmap.md)
 
 ---
 
-## Headless 서브패스
+## Headless subpath
 
-`ScheduleCalendar`/`ScheduleFormModal` Vue 컴포넌트 없이 composable·타입·일정 CRUD 유틸만 필요하다면 `@vuepkg/calendar/headless`를 사용하세요. 스타일드 컴포넌트를 전혀 import하지 않아 커스텀 UI 위에 캘린더 로직만 재사용하고 싶을 때 유용합니다.
+If you need composables/types/schedule CRUD utilities without the `ScheduleCalendar`/`ScheduleFormModal` Vue components, use `@vuepkg/calendar/headless`. Useful when you want to reuse only the calendar logic on top of your own custom UI, without importing any styled components.
 
 ```ts
 import {
@@ -364,15 +365,15 @@ import {
 
 ---
 
-## 커스텀 일정 타입
+## Custom schedule types
 
 ```ts
 import { SCHEDULE_TYPE_OPTIONS, type ScheduleTypeOption } from '@vuepkg/calendar'
 
 const typeOptions: ScheduleTypeOption[] = [
   ...SCHEDULE_TYPE_OPTIONS,
-  { type: 'project', label: '프로젝트', color: '#fff', backgroundColor: '#6366f1' },
-  { type: 'leave',   label: '휴가',     color: '#fff', backgroundColor: '#f59e0b' },
+  { type: 'project', label: 'Project', color: '#fff', backgroundColor: '#6366f1' },
+  { type: 'leave',   label: 'Leave',   color: '#fff', backgroundColor: '#f59e0b' },
 ]
 ```
 
@@ -382,14 +383,14 @@ const typeOptions: ScheduleTypeOption[] = [
 
 ---
 
-## 접근성 (a11y)
+## Accessibility (a11y)
 
-- **뷰 탭** — `role="group"` + `aria-pressed`로 현재 뷰 상태 노출, 화살표 키 네비게이션(roving tabindex)
-- **월간 셀** — `role="grid"`/`row`/`gridcell`, 단일 활성 셀만 `tabindex="0"`(roving tabindex) + 화살표 키 이동, `Enter`/`Space` 활성화
-- **팝오버** — focus trap, `Esc` 닫기, 외부 클릭 닫기, 닫힘 시 트리거로 focus 복원
-- **데이터 테이블(List 뷰)** — 행 `Enter`/`Space` 활성화, `aria-label`
-- **키보드 포커스** — 모든 인터랙티브 요소에 `:focus-visible` 아웃라인
-- **자동 검증** — `@axe-core/playwright`로 Month/Week/Day/List 뷰 + 일정 폼 모달을 CI에서 매 push마다 스캔 (`e2e/accessibility.spec.ts`)
+- **View tabs** — `role="group"` + `aria-pressed` expose the current view state, arrow-key navigation (roving tabindex)
+- **Month cells** — `role="grid"`/`row`/`gridcell`, only one active cell has `tabindex="0"` (roving tabindex) + arrow-key movement, `Enter`/`Space` activation
+- **Popover** — focus trap, `Esc` to close, click-outside to close, restores focus to the trigger on close
+- **Data table (List view)** — row `Enter`/`Space` activation, `aria-label`
+- **Keyboard focus** — `:focus-visible` outline on every interactive element
+- **Automated verification** — `@axe-core/playwright` scans the Month/Week/Day/List views and the schedule form modal on every push in CI (`e2e/accessibility.spec.ts`)
 
 ---
 
@@ -410,30 +411,30 @@ import type {
 
 ---
 
-## 기술 스택
+## Tech stack
 
 - Vue 3 + TypeScript
-- 커스텀 HTML/CSS
+- Custom HTML/CSS
 - Vitest · Playwright E2E
 
 ---
 
 ## Contributing
 
-[github.com/vuepkg/calendar](https://github.com/vuepkg/calendar) · 상세 절차·RFC 프로세스는 [CONTRIBUTING.md](./CONTRIBUTING.md) 참고
+[github.com/vuepkg/calendar](https://github.com/vuepkg/calendar) · see [CONTRIBUTING.md](./CONTRIBUTING.md) for the detailed process and RFC workflow
 
-**요구 사항**: Node 24+ (GitHub Actions CI 기준), pnpm 9+
+**Requirements**: Node 24+ (matches GitHub Actions CI), pnpm 9+
 
 ```bash
-pnpm install                          # 의존성 설치 + Husky pre-push 훅 등록
-pnpm --filter @vuepkg/calendar dev    # 개발 서버
-pnpm verify:push                      # push 전 검증 (lint + typecheck + vitest)
-pnpm turbo run build:lib              # 전체 빌드
-pnpm test:e2e:ci                      # 기능 E2E (CI와 동일, 134건)
-pnpm test:e2e:visual                  # 시각 회귀 (UI/CSS 변경 시, 8건)
+pnpm install                          # install deps + register the Husky pre-push hook
+pnpm --filter @vuepkg/calendar dev    # dev server
+pnpm verify:push                      # pre-push checks (lint + typecheck + vitest)
+pnpm turbo run build:lib              # full build
+pnpm test:e2e:ci                      # functional E2E (same as CI, 142 tests)
+pnpm test:e2e:visual                  # visual regression (when UI/CSS changes, 8 tests)
 ```
 
-자세한 테스트 계층·CI 정책은 [docs/dev/architecture.md](docs/dev/architecture.md) §10 참고.
+See [docs/dev/architecture.md](docs/dev/architecture.md) §10 for the full test-layer and CI policy.
 
 ---
 

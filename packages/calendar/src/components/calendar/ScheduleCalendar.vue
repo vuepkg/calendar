@@ -1,5 +1,15 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent, onMounted, ref, toRef, useAttrs, watch } from 'vue'
+import {
+  computed,
+  defineAsyncComponent,
+  defineComponent,
+  h,
+  onMounted,
+  ref,
+  toRef,
+  useAttrs,
+  watch,
+} from 'vue'
 import { useCalendar } from '@/composables/useCalendar'
 import { usePublicHolidays } from '@/composables/usePublicHolidays'
 import { CALENDAR_VIEWS } from '@/constants/calendarView'
@@ -41,7 +51,33 @@ import DayView from './views/DayView.vue'
 import MonthView from './views/MonthView.vue'
 import WeekView from './views/WeekView.vue'
 
-const ListView = defineAsyncComponent(() => import('./views/ListView.vue'))
+const ListViewLoading = defineComponent({
+  name: 'ListViewLoading',
+  render: () =>
+    h(
+      'div',
+      { class: 'schedule-calendar-async-state', role: 'status', 'aria-live': 'polite' },
+      '불러오는 중…',
+    ),
+})
+
+const ListViewError = defineComponent({
+  name: 'ListViewError',
+  render: () =>
+    h(
+      'div',
+      { class: 'schedule-calendar-async-state schedule-calendar-async-state--error', role: 'alert' },
+      'List 뷰를 불러오지 못했습니다. 새로고침 후 다시 시도해주세요.',
+    ),
+})
+
+const ListView = defineAsyncComponent({
+  loader: () => import('./views/ListView.vue'),
+  loadingComponent: ListViewLoading,
+  errorComponent: ListViewError,
+  delay: 200,
+  timeout: 10000,
+})
 
 const props = withDefaults(
   defineProps<{
@@ -382,6 +418,19 @@ function handleScheduleResize(payload: CalendarScheduleResizePayload) {
 </style>
 
 <style scoped>
+.schedule-calendar-async-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  color: var(--vp-color-text-muted);
+  font-size: 14px;
+}
+
+.schedule-calendar-async-state--error {
+  color: var(--vp-color-danger);
+}
+
 .schedule-calendar {
   display: flex;
   flex-direction: column;

@@ -6,6 +6,8 @@
 
 Vue 3 schedule calendar — Month / Week / Day / List views, **zero extra dependencies** (`vue` peer only).
 
+Tailwind/shadcn 친화적 — scoped slot으로 부분 커스터마이징하거나, 스타일드 컴포넌트 없이 로직만 쓰는 [`@vuepkg/calendar/headless`](#headless-서브패스)로 완전히 직접 그릴 수 있습니다.
+
 **지원 브라우저**: 최신 Chrome / Firefox / Safari / Edge (Evergreen browsers) — IE 미지원
 
 ## 주요 기능

@@ -10,7 +10,13 @@
     "calendar-component",
     "calendar",
     "schedule",
-    "scheduler"
+    "scheduler",
+    "typescript",
+    "drag-drop",
+    "event-calendar",
+    "weekly-calendar",
+    "monthly-calendar",
+    "recurring-events"
   ],
   "homepage": "https://vuepkg.github.io/calendar/",
   "repository": {
@@ -22,6 +28,9 @@
   },
   "author": "vuepkg",
   "license": "MIT",
+  "sideEffects": [
+    "*.css"
+  ],
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",

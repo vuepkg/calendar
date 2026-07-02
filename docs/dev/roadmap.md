@@ -70,6 +70,7 @@
 | 2026-06-29 | ~~실제 npm 배포 "범용 UI 프레임워크"로 채택을 노린다~~ — PrimeVue/Vuetify(풀세트)·shadcn-vue/Radix Vue(headless+Tailwind) 모두 이미 강자가 있는 레드오션이라는 경쟁 분석 결과. Vue 캘린더 생태계(FullCalendar/v-calendar/vue-cal)는 modern DX·headless 구조·DnD/Timeline/Recurring 지원이 빈 공간으로 확인됨 |
 | 2026-06-30 | **방향 전환**: 범용 Vue 3 디자인 시스템 방향을 폐기하고 **calendar 도메인 고도화에 집중**. `core`/`ui`/`theme`는 폐기가 아니라 **calendar를 지탱하는 내부 인프라로 스코프 고정** — `ui`를 외부에 독립 판매하는 범용 컴포넌트 라이브러리로 키우는 것은 목표가 아님 |
 | 2026-07-02 | OSS 리뷰([vue3-reviewer-backlog.md](../vue3-reviewer-backlog.md)) 반영 — **F4-6 Timeline 즉시 착수 보류**, 1.0.0 API 게이트(Phase A)를 먼저 닫기로 확정 |
+| 2026-07-02 | 외부에서 받은 README/홍보 전략 의견을 vue3-oss-reviewer(정직성·과장 금지)·senior-product-strategy-agent(검증 우선·MVP 최소화) 두 관점으로 교차 검증 → **Phase C-1 신설**(§2). "Scheduler/Timeline Ready" 등 미구현 기능 홍보 문구·다국어 README 개별 파일·다채널 동시 홍보는 거부, keywords·Use Case·비교표·headless 노출 강화는 채택 |
 
 남은 유효 원칙: 실 사용자가 생기기 전(`1.0.0` 시점)까지 §6.1의 기술 부채는 여전히 정리 대상.
 
@@ -126,6 +127,92 @@ Phase 0~2(2026-06-30 완료)에서 calendar 내부의 재사용 가능한 primit
 | F4-8 | 타임존 | F4 | 🔴 (보류) |
 
 **~~이전 1순위~~ F4-6 Timeline — Phase C로 이동 (보류 사유):** 번들 92% 포화, slot API·이벤트 모델 미정리 상태에서 Timeline 추가 시 API breaking·유지보수 비용 증가. 설계 RFC는 Phase C 착수 시 진행.
+
+### Phase C-1 — README·홍보 고도화 (2026-07-02, 외부 의견 교차 검증)
+
+> 외부에서 "README/홍보 전략" 의견을 받아 `.cursor/rules/vue3-oss-reviewer.mdc`(정직성·과장 금지·OSS 채택성)·`.cursor/rules/senior-product-strategy-agent.mdc`(문제 검증 우선·MVP 최소화·성장 리스크) 두 관점으로 교차 검증. 원문 전체를 **이미 되어있음 / 채택 / 거부**로 분류.
+
+**이미 되어있어 재작업 불필요**
+
+| 의견 항목 | 현재 상태 |
+| ---- | ---- |
+| Quick Start (3분 설치→렌더) | README "빠른 시작" — 이미 30초~1분 내 렌더 가능한 수준 |
+| TypeScript 타입 공개 | README `## TypeScript` 섹션 기 존재 |
+| Slot / Custom Render 예제 | REV-A1 slot API 4종 + README `## Slots` 예제 기 존재 |
+| 문서 사이트(VitePress) | F3-1 완료, GitHub Pages 배포 중 |
+| npm 신뢰 배지 일부 | version/license/bundle size 배지 기 존재 |
+| keywords 기본 | `vue`/`vue3`/`calendar`/`schedule`/`scheduler` 등 기 등록 |
+
+**채택 — Quick Wins**
+
+| ID | 항목 | WHY | 실행 항목 |
+| -- | ---- | --- | -------- |
+| GR-01 | `keywords` 보강 | npm 검색 유입은 keywords 의존도가 큼. 현재 `typescript`/`drag-drop`/`event-calendar`/`planner` 등 핵심어 누락 | `packages/calendar/package.json` keywords에 `typescript`, `drag-drop`, `event-calendar`, `weekly-calendar`, `monthly-calendar`, `recurring-events` 추가. `timeline`은 F4-6 완료 전까지 **보류** — 미구현 기능 키워드 등록은 허위 유입 |
+| GR-02 | Use Case 목록 섹션 | 저비용·고효과, 구매자 페르소나 명확화 + SEO. 코드 변경 없음 | README에 "적합한 사용처" 섹션 추가 — Admin Dashboard / Booking System / Company Groupware / Task Management. Hospital Scheduler·Resource Planning은 Timeline 없이는 과장이므로 **제외** |
+| GR-03 | 비교표(FullCalendar/vue-cal) | 전환율에 큰 영향이라는 의견은 타당하나, 미구현 기능은 정직하게 표기해야 리뷰어 원칙(과장 금지)에 부합 | README에 비교표 추가. `Timeline/Scheduler` 행은 "🚧 계획(F4-6)"으로 명시, `Lightweight`는 정성 표현 대신 실측치(`18.4KB brotli / 20KB budget`) 병기 |
+| GR-04 | headless subpath 노출 강화 | OSS 리뷰 DX 항목에서 이미 "문서에서 더 전면 배치 권장"으로 지적됨([vue3-reviewer-backlog.md](../vue3-reviewer-backlog.md) DX 절) — 이번 의견의 "Slot 강조"와 방향 일치, 신규 항목 아닌 기존 지적과 통합 | README Hero 직후 "shadcn/Tailwind 친화" 문구에 `@vuepkg/calendar/headless` 링크 추가 |
+
+**채택 — 기존 Phase C 항목과 통합(신규 항목 아님, 우선순위만 재확인)**
+
+| 기존 ID | 항목 | 이번 의견과의 관계 |
+| -- | ---- | ---- |
+| F3-7 | StackBlitz Playground | 의견의 "Playground 필수" 재확인 — 착수 순서를 GR-01~04 다음으로 승격 |
+| F4-12 | Awesome Vue / VueScript / Vue Land Showcase 등록 | 의견의 "Vue Ecosystem 등록"과 동일 항목 — GR-03 비교표·F3-7 Playground 준비 후 착수(자료 없이 등록 시 전환율 낮음) |
+
+**거부/보류 — 근거**
+
+| 의견 항목 | 거부·보류 사유 |
+| ---- | ---- |
+| Hero에 "Scheduler / Timeline Ready" 문구 | **정직성 위반** — F4-6 Timeline은 Phase C 보류로 미구현. 리뷰어 원칙(과장 금지)과 정면 충돌. Timeline 배송 전까지 Hero·비교표·keywords 어디에도 "Timeline"을 완료형으로 쓰지 않는다 |
+| "Large dataset support / Optimized rendering" 성능 키워드 | F4-7 Virtualization 미착수(REV-B3 Critical) 상태에서 허위 주장. 1k+ 일정 rerender cascade가 이미 OSS 리뷰에서 지적됨 — F4-7 완료 후 재검토 |
+| README 다국어 분리 (README.ko.md/README.ja.md/README.zh.md) | §6.4 "단일 메인테이너 부담" 리스크와 정면 충돌. `packages/calendar/README.md`에 이미 영어 Quick Start 섹션이 내장돼 이중 관리 비용 없이 최소 요건을 충족 — 별도 파일 분리는 보류 |
+| GIF 데모 6종(월간뷰·주간뷰·드래그·생성·리사이즈·반응형) | 가치는 인정하나 우선순위 낮음 — Playground(F3-7)가 "실제 동작 체험"을 더 강하게 대체 가능. Playground 완료 후 1~2개(DnD, 반복 일정)만 선별 촬영으로 축소 |
+| YouTube Shorts + Twitter/Threads + Reddit + 블로그 동시 홍보 | Product Strategist 관점: 1인 메인테이너가 감당 불가한 채널 수. 현재 npm 다운로드는 크롤러 트래픽뿐(실사용자 0, [[framework-direction]] 다운로드 통계 메모) — 채널 확장 전에 **최소 1~2팀 실사용 dogfooding 검증이 선행**되어야 함(Core Mindset: 문제 검증 > 확산). `r/vuejs` 1건 + Awesome Vue 등록(F4-12)으로 축소, 반응 확인 후 확장 |
+| "개발 과정 콘텐츠화" (Velog/Medium/Dev.to) | 가치는 있으나 이번 라운드 범위 밖 — Playground·비교표·Use case 정비가 선행돼야 콘텐츠 CTA가 성립 |
+
+### Phase C-1 실행 순서 — 작업량 순 (2026-07-02)
+
+> 남은 백로그 전체(Phase B/C·Phase C-1·[vue3-reviewer-backlog.md](../vue3-reviewer-backlog.md) Low/Medium/High)를 작업량(파일 수·리팩터링 범위) 오름차순으로 재배열. 진행 상태는 각 Tier 안에서 체크.
+
+**Tier 1 — 즉시 처리 (파일 1곳, 텍스트/설정 한 줄 수준)**
+
+- [x] GR-01 `keywords` 보강 — `packages/calendar/package.json`
+- [x] REV-B1 `sideEffects` 선언 — `packages/calendar/package.json`
+- [x] GR-04 headless subpath 링크 노출 — README
+- [x] 패키지 네이밍·브랜드 혼선 정리 (GR-01과 동일 작업으로 흡수)
+
+**Tier 2 — 문서/텍스트 작성 (로직 변경 없음)**
+
+- [ ] GR-02 Use Case 섹션 — README
+- [ ] GR-03 비교표(FullCalendar/vue-cal) — README
+- [ ] 자체 RRULE 한계 문서화 (DST/윤년/BYSETPOS 미지원 명시)
+- [ ] 이슈 템플릿·GitHub Discussions 정비 — `.github/ISSUE_TEMPLATE/*.md`
+
+**Tier 3 — 명령 실행/설정형**
+
+- [ ] SRV-P2-12 / F1-7 시각 회귀 Linux baseline 재캡처
+- [ ] F3-7 StackBlitz Playground 최소 예제 구성
+
+**Tier 4 — 단일 컴포넌트/모듈 단위 수정 (테스트 동반)**
+
+- [ ] ListView loading/error UI 추가
+- [ ] CalendarMonthNav 청크 비대화 — lazy import
+- [ ] core/ui tree-shake 순도 검증(빌드 리포트 조사)
+- [ ] F4-12 Awesome Vue 등록 (GR-03 완료 후 착수)
+
+**Tier 5 — 리팩터링급 (여러 파일, API 표면 영향)**
+
+- [ ] `useCalendar` 내부 API 정리 — headless export mutation API 비공개화
+- [ ] REV-B2 TimedGrid DnD 키보드 대안 (Arrow+Shift)
+- [ ] `ScheduleFormModal` 국제화·slot화
+- [ ] 한국 공공 API 분리 (`locale-kr` 서브패스)
+
+**Tier 6 — 아키텍처급 (별도 세션 권장)**
+
+- [ ] F3-4 SSR/Nuxt 검증 + 모듈
+- [ ] REV-B3 / F4-7 Virtualization + 1k/10k 벤치마크
+- [ ] F4-6 Timeline / Resource Scheduler
+- [ ] F4-8 타임존 (보류 유지)
 
 ### 의도적으로 뒤로 미룸
 
@@ -381,6 +468,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | 2026-06-30 | 방향 전환(범용 UI 폐기 → calendar 도메인 고도화) 확정 |
 | 2026-07-02 | `roadmap-progress.md` 신규 작성 — Phase 0~4·SRV·REV 달성률, Phase A/B/C 방향 확정 |
 | 2026-07-02 | **문서 통합** — `roadmap-progress.md`·`framework-roadmap.md`·`roadmap.md`(기능 백로그) 3개 문서를 본 문서로 병합. SRV 총계(19/20→20/21)·REV 총계(1/18→1/21)·Phase B 항목 누락(REV-B1/REV-B2) 등 문서 간 수치 불일치를 정정 |
+| 2026-07-02 | **Phase C-1 신설** — 외부 README/홍보 전략 의견을 리뷰어·전략 에이전트 관점으로 교차 검증, GR-01~04 Quick Win 채택 + Timeline 조기 홍보·다국어 README·다채널 동시 홍보 거부 |
 
 ---
 

@@ -77,7 +77,7 @@
 | [SRV-P2-10](#srv-p2-10-공휴일-api-응답-검증) | MINOR | 타입/보안 | `response.json() as SpcdeApiResponse` 단언 | **완료** | `isValidSpcdeApiResponse` 런타임 스키마 가드 + 개별 항목 필터링 (2026-07-02) |
 | [SRV-P2-11](#srv-p2-11-headless-서브패스) | MINOR | 로드맵 | `@vuepkg/calendar/headless` 서브패스 미구현 | **미착수** | Phase 3 F3-2와 연계 — tree-shake·번들 분리에도 유리 |
 | [SRV-P2-12](#srv-p2-12-visual-regression-스냅샷-재생성-필요) | MINOR | 테스트 | F3-5 색상 대비 토큰 변경으로 시각 회귀 스냅샷 8종 무효화 | **미착수** | Linux 스냅샷 재생성 필요 — 사람 리뷰 대상, 자동화 범위 밖 |
-| [SRV-P2-13](#srv-p2-13-오늘-날짜-e2e-substring-flaky) | MINOR | 테스트 | `calendar.spec.ts` "navigates weeks with today and arrow buttons" — `hasText: today`가 부분 문자열 매칭이라 오늘이 2·1 등일 때 28/29 등과 충돌 | **미착수** | F3-5 검증 중 발견(2026-07-02, 오늘=2일이라 실패 재현). exact match(정규식 `^$`)로 교체 필요 |
+| [SRV-P2-13](#srv-p2-13-오늘-날짜-e2e-substring-flaky) | MINOR | 테스트 | `calendar.spec.ts` "navigates weeks with today and arrow buttons" — `hasText: today`가 부분 문자열 매칭이라 오늘이 2·1 등일 때 28/29 등과 충돌 | **완료** | `hasText`를 `new RegExp(`^${today}$`)` 정확 매칭으로 교체 (2026-07-02) |
 
 ### NIT
 
@@ -333,9 +333,9 @@
 
 **문제:** `page.locator('.day-header .day-number', { hasText: today })`가 `today = new Date().getDate().toString()` 를 부분 문자열로 매칭한다. 오늘이 두 자리 날짜의 접두/접미 숫자와 겹치면(예: 오늘=2일 → Week 뷰에 28·29·2가 함께 보이는 주) strict mode violation으로 실패한다. F3-5 검증 중 2026-07-02(오늘=2일)에 실제로 재현됨 — 내 변경과 무관한 기존 버그.
 
-**수정 방향:** `hasText`를 정확 매칭 정규식(`new RegExp(`^${today}$`)`)으로 교체하거나 `day-number` 대신 날짜 전체(`aria-label`/`data-*`)로 대상을 좁힌다.
+**수정:** `hasText`를 정확 매칭 정규식(`new RegExp(`^${today}$`)`)으로 교체.
 
-**검증:** 미착수 — 재현 확인만 하고 수정은 별도 작업으로 분리(F3-5 스코프 밖).
+**검증:** ✅ `calendar.spec.ts` 26건 전체 통과 (2026-07-02).
 
 ---
 

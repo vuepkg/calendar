@@ -112,7 +112,9 @@ test.describe('ScheduleCalendar E2E', () => {
 
     await page.getByRole('button', { name: 'Today' }).click()
     const today = new Date().getDate().toString()
-    await expect(page.locator('.day-header .day-number', { hasText: today })).toBeVisible()
+    await expect(
+      page.locator('.day-header .day-number', { hasText: new RegExp(`^${today}$`) }),
+    ).toBeVisible()
   })
 
   test('shows 30-minute schedules on may 20 in day view', async ({ page }) => {

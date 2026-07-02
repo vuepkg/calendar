@@ -1,16 +1,16 @@
 # Roadmap — @vuepkg/calendar
 
-> 최종 갱신: 2026-07-02 (F3-1, F4-11, IMP-02, IMP-03, F3-3, SRV-P1-04, SRV-P2-09, SRV-P2-10, EXT-01, SRV-P2-08, SRV-P1-05, F3-5 완료 반영)
+> 최종 갱신: 2026-07-02 (F3-1, F4-11, IMP-02, IMP-03, F3-3, SRV-P1-04, SRV-P2-09, SRV-P2-10, EXT-01, SRV-P2-08, SRV-P1-05, F3-5, SRV-P2-13, SRV-P2-11 완료 반영)
 
 ---
 
 ## 다음 개발 추천 (2026-07-02 기준)
 
-> **현재 상태**: `@vuepkg/calendar@0.3.0` 배포 완료. F4-1~5 주요 기능, F3-1 문서 사이트, F4-11 자동 릴리즈, IMP-02/03/F3-3 소형 API, SRV-P1-04 번들 budget 상향, P1/P2 백로그 다수(P2-08/09/10, EXT-01), F3-5 axe a11y 감사까지 완료.
+> **현재 상태**: `@vuepkg/calendar@0.4.0` 배포 완료. F4-1~5 주요 기능, F3-1 문서 사이트, F4-11 자동 릴리즈, IMP-02/03/F3-3 소형 API, SRV-P1-04 번들 budget 상향, P1/P2 백로그 대부분(P2-08/09/10/11/13, EXT-01), F3-5 axe a11y 감사까지 완료.
 
 ### 🥇 1순위 — F4-6 Timeline 뷰 (난이도 🔴, 예상 1주+)
 
-**가장 큰 차별화 기능. 번들 budget 상향(SRV-P1-04, 2026-07-02)으로 착수 여유 확보.**
+**가장 큰 차별화 기능. 단, SRV-P2-11(headless 서브패스) 도입 시 entry 분리 오버헤드로 번들 여유가 78%→92%(20KB 예산)로 줄어 있어 F4-6은 번들 크기를 각별히 주의해서 설계해야 함.**
 
 - **작업**: 다중 리소스(인원/장소) × 시간 타임라인 뷰. FullCalendar Premium 영역과 직접 겹침(§4.1 수익화 시사점 참고)
 - `useTimeSlotSelection`(F4-1)·`useScheduleDrag`(F4-4)·`expandRecurringSchedules`(F4-5) 인프라 재사용 가능
@@ -19,7 +19,7 @@
 
 ---
 
-**추천 착수 순서**: ~~`IMP-02/03`~~ (완료) → ~~`F3-3 i18n`~~ (완료) → ~~번들 budget 상향`~~ (완료) → ~~P1/P2 백로그(P2-08/09/10, EXT-01, P1-05)~~ (완료) → ~~`F3-5` a11y 감사~~ (완료) → `F4-6 Timeline` (설계 논의 필요)
+**추천 착수 순서**: ~~`IMP-02/03`~~ (완료) → ~~`F3-3 i18n`~~ (완료) → ~~번들 budget 상향`~~ (완료) → ~~P1/P2 백로그(P2-08/09/10, EXT-01, P1-05)~~ (완료) → ~~`F3-5` a11y 감사~~ (완료) → ~~SRV-P2-13 flaky 테스트~~ (완료) → ~~SRV-P2-11 headless 서브패스~~ (완료) → `F4-6 Timeline` (설계 논의 필요, 번들 budget 92% 소진 상태 재검토 필요)
 
 ---
 
@@ -52,6 +52,8 @@
 | [SRV-P2-08] ScheduleFormModal 분리 | `RecurrenceFields.vue` 추출, 611→431줄 | 2026-07-02 |
 | [SRV-P1-05] TimedGrid DnD 재팽창 해소 | `TimedGridDayColumn.vue` 추출, 495→336줄 | 2026-07-02 |
 | [F3-5] axe 자동 접근성 감사 | `e2e/accessibility.spec.ts`(`@axe-core/playwright`), Month/Week/Day/List/모달 전수 0 violation, CI(`test:e2e:ci`) 편입. 색상 대비 토큰 다수 상향(`--vp-tab-text`, `--vp-month-cell-outside-text`, `--vp-color-danger`, `SCHEDULE_TYPE_OPTIONS`) | 2026-07-02 |
+| [SRV-P2-13] E2E flaky 테스트 수정 | `calendar.spec.ts` 오늘 날짜 substring 매칭 버그 → 정확 매칭 정규식으로 교체 | 2026-07-02 |
+| [SRV-P2-11] headless 서브패스 | `@vuepkg/calendar/headless` — `src/headless.ts` + vite lib 2-entry 빌드 + `exports`. 번들 budget 78%→92%(20KB) 소진 | 2026-07-02 |
 
 ---
 

@@ -4,6 +4,8 @@
 
 > **대부분의 소비자는 이 composable을 직접 사용할 필요가 없습니다.** `ScheduleCalendar`가 내부적으로 사용하며, 커스텀 뷰를 구현하는 경우에만 직접 접근합니다.
 
+> Vue 컴포넌트 없이 로직만 필요하다면 `@vuepkg/calendar/headless`에서 동일하게 import할 수 있습니다.
+
 ## 시그니처
 
 ```ts

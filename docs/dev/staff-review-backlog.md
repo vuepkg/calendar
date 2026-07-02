@@ -75,7 +75,7 @@
 | [SRV-P2-08](#srv-p2-08-scheduleformmodal-단일-대형-파일) | MINOR | 유지보수 | `ScheduleFormModal.vue` **611줄** — 폼·반복 UI·검증 단일 파일 | **완료** | `RecurrenceFields.vue`(230줄) 분리 — 611→431줄 (2026-07-02) |
 | [SRV-P2-09](#srv-p2-09-month-cell-roving-tabindex) | MINOR | 접근성 | 모든 월간 셀 `tabindex="0"` — Tab 순서 과다 | **완료** | `role="grid"`/`row` + roving `tabindex` + 화살표 키 이동 (2026-07-02) |
 | [SRV-P2-10](#srv-p2-10-공휴일-api-응답-검증) | MINOR | 타입/보안 | `response.json() as SpcdeApiResponse` 단언 | **완료** | `isValidSpcdeApiResponse` 런타임 스키마 가드 + 개별 항목 필터링 (2026-07-02) |
-| [SRV-P2-11](#srv-p2-11-headless-서브패스) | MINOR | 로드맵 | `@vuepkg/calendar/headless` 서브패스 미구현 | **미착수** | Phase 3 F3-2와 연계 — tree-shake·번들 분리에도 유리 |
+| [SRV-P2-11](#srv-p2-11-headless-서브패스) | MINOR | 로드맵 | `@vuepkg/calendar/headless` 서브패스 미구현 | **완료** | `src/headless.ts` + vite lib 2-entry 빌드 + `exports["./headless"]` (2026-07-02). index.js 번들 78%→92%(20KB 예산) — 트레이드오프 상세는 본문 참고 |
 | [SRV-P2-12](#srv-p2-12-visual-regression-스냅샷-재생성-필요) | MINOR | 테스트 | F3-5 색상 대비 토큰 변경으로 시각 회귀 스냅샷 8종 무효화 | **미착수** | Linux 스냅샷 재생성 필요 — 사람 리뷰 대상, 자동화 범위 밖 |
 | [SRV-P2-13](#srv-p2-13-오늘-날짜-e2e-substring-flaky) | MINOR | 테스트 | `calendar.spec.ts` "navigates weeks with today and arrow buttons" — `hasText: today`가 부분 문자열 매칭이라 오늘이 2·1 등일 때 28/29 등과 충돌 | **완료** | `hasText`를 `new RegExp(`^${today}$`)` 정확 매칭으로 교체 (2026-07-02) |
 
@@ -305,13 +305,15 @@
 
 ### SRV-P2-11: headless 서브패스
 
-**위치:** `packages/calendar/package.json` `exports`
+**위치:** `packages/calendar/package.json` `exports`, `vite.lib.config.ts`, `src/headless.ts`(신규)
 
 **문제:** 메인 엔트리에 `useCalendar`만 export — styled 컴포넌트와 번들이 함께 로드됨.
 
-**수정 방향:** `@vuepkg/calendar/headless` 서브패스 + F3-2 문서 연계.
+**수정:** 컴포넌트 없는 타입·유틸·composable(`useCalendar`/`useTimeSlotSelection`/`useScheduleDrag`/`usePublicHolidays`/`useScheduleCalendarHost`, `expandRecurringSchedules`, `buildScheduleFromDraft` 등)을 `src/headless.ts`로 단일화하고, 메인 엔트리(`components/calendar/index.ts`)는 `export * from '@/headless'`로 재export. `vite.lib.config.ts`의 `build.lib.entry`를 `index`/`headless` 2개로 분리하고 `exports`에 `./headless` 서브패스 추가. Rollup이 두 엔트리의 공통 코드를 자동으로 공유 청크로 분리해, `@vuepkg/calendar/headless`만 import하면 Vue SFC 없이 로직 청크(~7.3KB brotli)만 로드된다.
 
-**검증:** 미착수.
+**트레이드오프:** entry를 2개로 분리하면서 번들링 오버헤드가 발생 — `index.js`(ESM) 실측이 15.57KB→18.39KB(20KB 예산 기준 78%→92%)로 증가했다. SRV-P1-04에서 F4-6 착수 여유를 확보하려고 올린 budget 대부분을 이 분리 비용이 소비한다. size-limit도 `dist/headless-*.js` 공유 청크를 포함하도록 glob 배열로 갱신(`index.js`/`index.cjs` 항목에 청크 포함, `headless.js` 항목 신설·9KB).
+
+**검증:** ✅ Vitest 290건 무변경 통과, typecheck/lint 무변경, `size-limit` green (index.js 18.39/20KB 92%, headless.js 7.32/9KB 81%), 빌드된 `dist/headless.js`를 순수 Node에서 `import()`해 Vue 컴포넌트·DOM 없이 로직만 로드되는지 확인 (2026-07-02).
 
 ---
 
@@ -351,15 +353,15 @@
 
 ---
 
-## 현재 테스트·빌드 스냅샷 (2026-07-01)
+## 현재 테스트·빌드 스냅샷 (2026-07-02)
 
 | 계층 | 규모 |
 | ---- | ---- |
-| Vitest (monorepo) | **429** (core 74 + ui 76 + calendar 279, F3-3 +10 반영) |
-| Playwright 기능 E2E (CI) | **137** (`test:e2e:ci`) |
-| Playwright 시각 회귀 | **8** (`test:e2e:visual`, 수동 workflow) |
+| Vitest (monorepo) | **440** (core 74 + ui 76 + calendar 290) |
+| Playwright 기능 E2E (CI) | **137** (`test:e2e:ci`, SRV-P2-13 flaky 수정 반영) |
+| Playwright 시각 회귀 | **8** (`test:e2e:visual`, 수동 workflow — SRV-P2-12로 스냅샷 재생성 필요) |
 | Node | **24** (CI·engines) |
-| 번들 (calendar, brotli) | index.js 15.57KB / 16KB (97%), style.css 5.05KB / 6.5KB |
+| 번들 (calendar, brotli) | index.js(ESM, headless 공유 청크 포함) 18.39KB / 20KB (92%), index.cjs 16.9KB / 19KB, headless.js 7.32KB / 9KB, style.css 5.13KB / 8KB |
 
 ---
 

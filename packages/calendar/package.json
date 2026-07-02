@@ -37,6 +37,16 @@
         "default": "./dist/index.cjs"
       }
     },
+    "./headless": {
+      "import": {
+        "types": "./dist/headless.d.ts",
+        "default": "./dist/headless.js"
+      },
+      "require": {
+        "types": "./dist/headless.d.ts",
+        "default": "./dist/headless.cjs"
+      }
+    },
     "./style.css": "./dist/style.css"
   },
   "files": [
@@ -72,13 +82,18 @@
   "size-limit": [
     {
       "name": "index.js (ESM)",
-      "path": "dist/index.js",
+      "path": ["dist/index.js", "dist/headless-*.js"],
       "limit": "20 kB"
     },
     {
       "name": "index.cjs (CJS)",
-      "path": "dist/index.cjs",
+      "path": ["dist/index.cjs", "dist/headless-*.cjs"],
       "limit": "19 kB"
+    },
+    {
+      "name": "headless.js (ESM)",
+      "path": ["dist/headless.js", "dist/headless-*.js"],
+      "limit": "9 kB"
     },
     {
       "name": "style.css",

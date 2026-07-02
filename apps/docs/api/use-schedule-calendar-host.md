@@ -2,6 +2,8 @@
 
 `ScheduleCalendar`의 emit-only 아키텍처를 위한 핵심 composable입니다. 뷰 상태를 소비자가 소유하고 컴포넌트와 연결합니다.
 
+> Vue 컴포넌트 없이 로직만 필요하다면 `@vuepkg/calendar/headless`에서 동일하게 import할 수 있습니다.
+
 ## 시그니처
 
 ```ts

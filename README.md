@@ -279,6 +279,23 @@ const schedule: Schedule = {
 
 ---
 
+## Headless 서브패스
+
+`ScheduleCalendar`/`ScheduleFormModal` Vue 컴포넌트 없이 composable·타입·일정 CRUD 유틸만 필요하다면 `@vuepkg/calendar/headless`를 사용하세요. 스타일드 컴포넌트를 전혀 import하지 않아 커스텀 UI 위에 캘린더 로직만 재사용하고 싶을 때 유용합니다.
+
+```ts
+import {
+  useCalendar,
+  useTimeSlotSelection,
+  useScheduleDrag,
+  usePublicHolidays,
+  expandRecurringSchedules,
+  buildScheduleFromDraft,
+} from '@vuepkg/calendar/headless'
+```
+
+---
+
 ## 커스텀 일정 타입
 
 ```ts

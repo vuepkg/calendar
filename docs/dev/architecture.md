@@ -7,7 +7,7 @@
 | 스택      | Vue 3 (Composition API) + TypeScript + Vite 8                                     |
 | 빌드      | pnpm workspace + Turborepo (모노레포)                                             |
 | UI        | 커스텀 HTML/CSS — PrimeVue 의존성 없음 (List 뷰 포함 전체 네이티브 구현)          |
-| 테스트    | Vitest 3.x (calendar 279건 + ui 76건 + core 74건 = 429건), Playwright E2E 150건 (기능 142 + 시각 회귀 8) |
+| 테스트    | Vitest 3.x (calendar 290건 + ui 76건 + core 74건 = 440건), Playwright E2E 150건 (기능 142 + 시각 회귀 8) |
 | CI        | GitHub Actions **Node 24** — lint → typecheck → vitest → build → `test:e2e:ci`(142, F3-5 `accessibility.spec.ts` 포함). 시각 회귀 8건은 [visual-regression.yml](../../.github/workflows/visual-regression.yml) 수동 실행 |
 | Git hooks | Husky `pre-push` → `pnpm verify:push` (lint + typecheck + vitest) |
 | 진입점    | `ScheduleCalendar.vue`                                                            |
@@ -90,7 +90,8 @@ packages/calendar/src/
 │   │   ├── WeekView.vue         # startHour/endHour prop 전달 (IMP-03)
 │   │   ├── DayView.vue          # startHour/endHour prop 전달 (IMP-03)
 │   │   └── ListView.vue         # async (defineAsyncComponent), @vuepkg/ui DataTable 소비
-│   └── index.ts                 # 컴포넌트·타입·유틸 barrel export
+│   └── index.ts                 # 컴포넌트(Vue SFC) + `export * from '@/headless'` (재export)
+├── headless.ts                  # 헤드리스 서브패스(`@vuepkg/calendar/headless`) 단일 출처 — composable·유틸·타입만, Vue SFC 없음 (SRV-P2-11)
 ├── composables/
 │   ├── useCalendar.ts           # 파생 데이터·표시 상태 (내부)
 │   ├── usePublicHolidays.ts     # 공공데이터포털 공휴일 조회·연도 캐시, TTL 재시도 (SRV-P2-02)
@@ -464,7 +465,7 @@ type ViewScope = 'my' | 'company'
 
 ## 10. 테스트 구조
 
-### 단위·컴포넌트 (Vitest — calendar 279건 + ui 76건 + core 74건 = 429건)
+### 단위·컴포넌트 (Vitest — calendar 290건 + ui 76건 + core 74건 = 440건)
 
 | 스펙                              | 검증                                                |
 | --------------------------------- | --------------------------------------------------- |
@@ -558,7 +559,7 @@ pnpm dev           # packages/calendar dev 서버 — http://localhost:6565
 | ---- | ---- |
 | `pnpm verify:push` | push 전 로컬 검증 (lint + typecheck + vitest) — Husky `pre-push`와 동일 |
 | `pnpm turbo run typecheck` | 전체 타입 검사 |
-| `pnpm turbo run test` | Vitest 단위 테스트 — calendar 279건 + ui 76건 + core 74건 |
+| `pnpm turbo run test` | Vitest 단위 테스트 — calendar 290건 + ui 76건 + core 74건 |
 | `pnpm turbo run build:lib` | core + ui + calendar 라이브러리 빌드 |
 | `pnpm test:e2e:ci` | Playwright 기능 E2E 142건 (CI와 동일) |
 | `pnpm test:e2e:visual` | Playwright 시각 회귀 8건 (UI/CSS 변경 시) |
@@ -581,6 +582,10 @@ pnpm --filter @vuepkg/core run build:lib
 
 > 라이브러리 빌드(`vite.lib.config.ts`) 시에도 동일 alias 적용 — core가 calendar에 번들링됩니다.
 
+### 빌드 엔트리 (SRV-P2-11, 2026-07-02)
+
+`vite.lib.config.ts`의 `build.lib.entry`는 두 개다: `index`(`src/components/calendar/index.ts`, Vue SFC 포함) / `headless`(`src/headless.ts`, composable·유틸·타입만). Rollup이 두 엔트리의 공통 코드를 공유 청크(`dist/headless-*.js`)로 자동 분리하므로, `@vuepkg/calendar/headless`만 import하면 스타일드 컴포넌트 없이 로직 청크만 로드된다. `src/headless.ts`가 export의 단일 출처이고 메인 엔트리는 `export * from '@/headless'`로 재export — 새 headless-eligible export를 추가할 때는 `headless.ts`에만 추가하면 된다. `vite.lib.config.ts`의 `dts({ include })` 배열에 `src/headless.ts`를 반드시 포함해야 `dist/headless.d.ts`가 생성된다(빠뜨리면 조용히 타입 없는 subpath가 된다).
+
 ### 수정 위치 가이드
 
 | 작업 | 수정 파일 |
@@ -599,7 +604,7 @@ pnpm --filter @vuepkg/core run build:lib
 
 | 영역   | 핵심 항목                                                               |
 | ------ | ----------------------------------------------------------------------- |
-| API    | Timeline/리소스 뷰 (F4-6) — `locale`(F3-3)/`weekdayLabels`(IMP-02)/`startHour`·`endHour`(IMP-03)는 완료 |
-| UX     | 번들 budget 상향 완료(SRV-P1-04) — F4-6 착수 여유 확보                   |
-| 테스트 | 시각 회귀 스냅샷 8종 재생성 필요(SRV-P2-12, F3-5 색상 변경 후속) — a11y 자동 점검(F3-5)·roving tabindex(SRV-P2-09)는 완료 |
-| 운영   | `@vuepkg/calendar/headless` 서브패스(SRV-P2-11) — 공휴일 API 실패 UI(EXT-01)·프록시 가이드는 완료 |
+| API    | Timeline/리소스 뷰 (F4-6, 유일한 미착수 로드맵 최우선순위) — `locale`(F3-3)/`weekdayLabels`(IMP-02)/`startHour`·`endHour`(IMP-03)는 완료 |
+| UX     | 번들 budget 상향 완료(SRV-P1-04, 20/19/8KB) — `@vuepkg/calendar/headless` 도입(SRV-P2-11)으로 index.js 예산 소진율이 78%→92%로 늘어 F4-6은 번들 크기에 각별히 주의 필요 |
+| 테스트 | 시각 회귀 스냅샷 8종 재생성 필요(SRV-P2-12, F3-5 색상 변경 후속) — a11y 자동 점검(F3-5)·roving tabindex(SRV-P2-09)·flaky E2E 수정(SRV-P2-13)은 완료 |
+| 운영   | `@vuepkg/calendar/headless` 서브패스(SRV-P2-11) 완료 — 공휴일 API 실패 UI(EXT-01)·프록시 가이드도 완료 |

@@ -21,6 +21,7 @@ export default defineConfig({
     dts({
       tsconfigPath: './tsconfig.app.json',
       include: [
+        'src/headless.ts',
         'src/components/calendar/**',
         'src/composables/**',
         'src/types/**',
@@ -37,9 +38,12 @@ export default defineConfig({
   ],
   build: {
     lib: {
-      entry: path.resolve(projectRoot, 'src/components/calendar/index.ts'),
+      entry: {
+        index: path.resolve(projectRoot, 'src/components/calendar/index.ts'),
+        headless: path.resolve(projectRoot, 'src/headless.ts'),
+      },
       name: 'Vue3Calendar',
-      fileName: (format) => (format === 'cjs' ? 'index.cjs' : 'index.js'),
+      fileName: (format, entryName) => (format === 'cjs' ? `${entryName}.cjs` : `${entryName}.js`),
       formats: ['es', 'cjs'],
     },
     rollupOptions: {

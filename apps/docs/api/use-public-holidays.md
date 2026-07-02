@@ -4,6 +4,8 @@
 
 > `ScheduleCalendar`에서 `fetchPublicHolidays` prop을 사용하면 이 composable이 내부적으로 호출됩니다. 직접 사용하면 공휴일 데이터를 커스텀 표시 로직에 활용할 수 있습니다.
 
+> Vue 컴포넌트 없이 로직만 필요하다면 `@vuepkg/calendar/headless`에서 동일하게 import할 수 있습니다.
+
 ## 시그니처
 
 ```ts

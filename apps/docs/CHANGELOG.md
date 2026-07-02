@@ -1,5 +1,13 @@
 # @vuepkg/docs
 
+## 0.0.6
+
+### Patch Changes
+
+- 6cd00a3: chore: verify release pipeline end-to-end (version bump, npm publish, docs redeploy). No functional changes to any package.
+- Updated dependencies [6cd00a3]
+  - @vuepkg/calendar@0.6.1
+
 ## 0.0.5
 
 ### Patch Changes

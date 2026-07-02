@@ -1,5 +1,9 @@
+import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitepress'
+
+const require = createRequire(import.meta.url)
+const { version: calendarVersion } = require('../../../packages/calendar/package.json')
 
 export default defineConfig({
   title: '@vuepkg/calendar',
@@ -20,6 +24,11 @@ export default defineConfig({
 
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/calendar/favicon.svg' }],
+    ['link', { rel: 'icon', type: 'image/x-icon', href: '/calendar/favicon.ico' }],
+    [
+      'link',
+      { rel: 'icon', type: 'image/png', sizes: '192x192', href: '/calendar/web-app-manifest-192x192.png' },
+    ],
     ['meta', { name: 'og:type', content: 'website' }],
     ['meta', { name: 'og:title', content: '@vuepkg/calendar' }],
     [
@@ -29,17 +38,18 @@ export default defineConfig({
         content: 'Vue 3 Modern Calendar Engine — zero dependencies, CSS-variable theming.',
       },
     ],
+    ['meta', { name: 'og:image', content: '/calendar/web-app-manifest-512x512.png' }],
   ],
 
   themeConfig: {
-    logo: '/logo.svg',
+    logo: '/favicon.svg',
 
     nav: [
       { text: '가이드', link: '/guide/getting-started', activeMatch: '/guide/' },
       { text: 'API', link: '/api/schedule-calendar', activeMatch: '/api/' },
       { text: 'CHANGELOG', link: '/changelog' },
       {
-        text: '0.1.3',
+        text: `v${calendarVersion}`,
         items: [
           {
             text: 'npm',

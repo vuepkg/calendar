@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 질문 / 사용법 문의
+    url: https://github.com/vuepkg/calendar/discussions
+    about: 버그·기능 제안이 아닌 질문은 GitHub Discussions를 이용해주세요
+  - name: 문서 사이트
+    url: https://vuepkg.github.io/calendar/
+    about: 가이드·API 레퍼런스는 문서 사이트에서 먼저 확인해주세요

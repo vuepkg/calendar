@@ -183,10 +183,10 @@ Phase 0~2(2026-06-30 완료)에서 calendar 내부의 재사용 가능한 primit
 
 **Tier 2 — 문서/텍스트 작성 (로직 변경 없음)**
 
-- [ ] GR-02 Use Case 섹션 — README
-- [ ] GR-03 비교표(FullCalendar/vue-cal) — README
-- [ ] 자체 RRULE 한계 문서화 (DST/윤년/BYSETPOS 미지원 명시)
-- [ ] 이슈 템플릿·GitHub Discussions 정비 — `.github/ISSUE_TEMPLATE/*.md`
+- [x] GR-02 Use Case 섹션 — README (Admin Dashboard / Booking / Groupware / Task Management)
+- [x] GR-03 비교표(FullCalendar/vue-cal) — README, FullCalendar Premium 경계는 공식 pricing/premium 문서로 검증 후 반영
+- [x] 자체 RRULE 한계 문서화 — `apps/docs/guide/recurring-events.md § 알려진 제약`(월말 롤오버 확인됨: `addMonths`가 `setMonth` 표준 동작으로 1/31+1개월→3/3, BYSETPOS 미지원, 단일 회차 예외 미지원), README 양쪽에 링크 추가. [vue3-reviewer-backlog.md](../vue3-reviewer-backlog.md) High 항목의 "엣지 케이스 문서화" 조치 완료 처리(나머지 두 조치는 미착수)
+- [x] 이슈 템플릿 정비 — `.github/ISSUE_TEMPLATE/{bug_report.md,feature_request.md,config.yml}`. **GitHub Discussions 활성화는 저장소 설정(Settings → Features → Discussions)에서 별도로 켜야 함 — 파일로는 불가, 수동 조치 필요**
 
 **Tier 3 — 명령 실행/설정형**
 

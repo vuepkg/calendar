@@ -60,7 +60,7 @@
 - [ ] **자체 RRULE 서브셋 유지보수 리스크**
   - `recurrence.ts`가 monthly 31일→28일, DST, 윤년, BYSETPOS 등 미지원.
   - iCal 호환 기대 사용자에게 breaking surprise. 장기적으로 `rrule` peer optional 또는 어댑터 레이어 필요.
-  - **조치:** 엣지 케이스 문서화(한계 명시), 단일 회차 예외(exceptions) API 안정화, 1.x에서 RRULE import 옵션 RFC.
+  - **조치:** ~~엣지 케이스 문서화(한계 명시)~~ ✅ 완료(2026-07-02, [recurring-events.md § 알려진 제약](../apps/docs/guide/recurring-events.md)), 단일 회차 예외(exceptions) API 안정화, 1.x에서 RRULE import 옵션 RFC — 나머지 두 조치 미착수.
 
 - [ ] **번들 budget 92% 포화 — F4-6(Timeline) 착수 전 아키텍처 분리 필요**
   - 현재 `index.js` 18.4KB / 20KB limit (brotli). headless 7.33KB / 9KB.

@@ -80,6 +80,33 @@ For full API docs → [vuepkg.github.io/calendar](https://vuepkg.github.io/calen
 
 ---
 
+## 적합한 사용처
+
+- **Admin Dashboard** — 내부 운영 도구의 일정 관리 패널
+- **Booking / Reservation** — 예약 시스템의 시간대 배정 UI
+- **Company Groupware** — 팀 일정 공유 캘린더
+- **Task Management** — 마감일 기반 작업 트래킹
+
+---
+
+## 다른 라이브러리와 비교
+
+| 기능 | `@vuepkg/calendar` | FullCalendar | vue-cal |
+| ---- | :---: | :---: | :---: |
+| Vue 3 Composition API 네이티브 | ✅ | ⚠️ 프레임워크 어댑터(`@fullcalendar/vue3`) | ⚠️ props/emit 중심 |
+| TypeScript | ✅ | ✅ | ✅ |
+| Zero dependency | ✅ (`vue` peer만) | ⚠️ core + 플러그인 다중 조합 | ✅ |
+| Headless (컴포넌트 없이 로직만) | ✅ [`/headless`](#headless-서브패스) | ⚠️ | ❌ |
+| Slot 커스터마이징 | ✅ `toolbar`/`day-cell`/`event`/`month-overflow-item` | ⚠️ | ✅ |
+| Drag & Drop 이동·리사이즈 | ✅ | ✅ | ✅ |
+| 반복 일정 | ✅ 무료 | ✅ RRule 플러그인, 무료 | ❌ |
+| Timeline / Resource 뷰 | 🚧 계획 ([F4-6](../../docs/dev/roadmap.md)) | ✅ **Premium 유료** | ❌ |
+| 번들 사이즈 | 18.4KB (brotli, [size-limit](https://bundlephobia.com/package/@vuepkg/calendar) CI 게이트) | core+플러그인 조합 — [bundlephobia](https://bundlephobia.com/package/@fullcalendar/core)에서 직접 비교 | [bundlephobia](https://bundlephobia.com/package/vue-cal)에서 직접 비교 |
+
+> FullCalendar Premium 여부는 2026-07-02 [공식 pricing](https://fullcalendar.io/pricing)·[premium 문서](https://fullcalendar.io/docs/premium) 기준. 각 라이브러리의 최신 조건은 공식 문서를 확인하세요.
+
+---
+
 ## 설치
 
 ```bash
@@ -294,6 +321,8 @@ const schedule: Schedule = {
 - 각 회차는 `id: "${마스터id}::YYYY-MM-DD"`, `recurrenceId`, `isRecurrenceInstance: true`를 가진 파생 객체입니다.
 - `ScheduleFormModal`은 반복 없음/매일/매주/매월/매년 선택 UI를 내장합니다.
 - 반복 일정 칩에는 ⟳ 아이콘이 표시됩니다.
+
+> **알려진 제약**: 자체 RRULE 서브셋으로 iCal 전체 사양과 호환되지 않습니다(BYSETPOS 미지원, 월말 기준일 롤오버 등) — 상세: [반복 일정 가이드 § 알려진 제약](https://vuepkg.github.io/calendar/guide/recurring-events.html#알려진-제약)
 
 ---
 

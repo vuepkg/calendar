@@ -1,5 +1,13 @@
 # @vuepkg/ui
 
+## 0.2.1
+
+### Patch Changes
+
+- 6cd00a3: chore: verify release pipeline end-to-end (version bump, npm publish, docs redeploy). No functional changes to any package.
+- Updated dependencies [6cd00a3]
+  - @vuepkg/core@0.1.2
+
 ## 0.2.0
 
 ### Minor Changes

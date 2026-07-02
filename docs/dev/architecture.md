@@ -601,11 +601,14 @@ pnpm --filter @vuepkg/core run build:lib
 
 ## 12. 향후 개선
 
-상세·우선순위: [`roadmap.md`](roadmap.md)
+**달성률·다음 착수 순서:** [`roadmap-progress.md`](roadmap-progress.md) (정본) · [`roadmap.md`](roadmap.md)
 
-| 영역   | 핵심 항목                                                               |
-| ------ | ----------------------------------------------------------------------- |
-| API    | Timeline/리소스 뷰 (F4-6, 유일한 미착수 로드맵 최우선순위) — `locale`(F3-3)/`weekdayLabels`(IMP-02)/`startHour`·`endHour`(IMP-03)는 완료 |
-| UX     | 번들 budget 상향 완료(SRV-P1-04, 20/19/8KB) — `@vuepkg/calendar/headless` 도입(SRV-P2-11)으로 index.js 예산 소진율이 78%→92%로 늘어 F4-6은 번들 크기에 각별히 주의 필요 |
-| 테스트 | 시각 회귀 스냅샷 8종 재생성 필요(SRV-P2-12, F3-5 색상 변경 후속) — a11y 자동 점검(F3-5)·roving tabindex(SRV-P2-09)·flaky E2E 수정(SRV-P2-13)은 완료 |
-| 운영   | `@vuepkg/calendar/headless` 서브패스(SRV-P2-11) 완료 — 공휴일 API 실패 UI(EXT-01)·프록시 가이드도 완료 |
+| 영역 | 핵심 항목 (2026-07-02) |
+| ---- | ---------------------- |
+| **1.0.0 게이트 (Phase A)** | REV-A1 slot API · REV-A2 `Schedule` 모델 · F3-2 API 문서 자동화 |
+| API | F4-6 Timeline → **Phase C로 연기** (서브패스·RFC 후) |
+| DX | Tailwind 가이드 완료 — slot API 후 문서 재갱신 |
+| 성능 | F4-7 virtualization · dateKey 인덱스 |
+| 생태계 | F3-4 Nuxt/SSR · F3-7 StackBlitz |
+| 테스트 | SRV-P2-12 / F1-7 시각 회귀 Linux baseline 8종 |
+| 번들 | index.js 18.4KB/20KB (92%) — F4-6 전 서브패스 분리 권장 |

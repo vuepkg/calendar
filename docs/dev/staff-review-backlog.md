@@ -25,11 +25,11 @@
 
 | 항목 | 값 |
 | ---- | -- |
-| 최종 판정 | **CHANGES REQUIRED** (0.2.x 배포·운영은 가능, **1.0.0 / F4-6 착수 전** 정리 필요) |
+| 최종 판정 | **CHANGES REQUIRED** (0.4.x 배포·운영 가능, **1.0.0 전** Phase A 정리 필요) |
 | 품질 점수 | **7 / 10** |
-| 리뷰 커버리지 | **심층:** `ScheduleCalendar`·`useCalendar`·`useScheduleDrag`·`recurrence`·`ScheduleFormModal`·`Dialog`·CI/Husky·size-limit · **스캔:** VitePress docs·Changesets·playground 데모 |
+| 로드맵 달성률 | Phase 0~4 **82%** · SRV **95%** — [roadmap-progress.md](./roadmap-progress.md) |
 
-**한 줄 요약:** P0·대부분 P1/P2·Phase 4 핵심(F4-1~5, F4-9~11, F3-1)이 완료되어 엔진 토대가 실제 제품 수준으로 올라왔다. 남은 리스크는 **번들 budget 96% 포화**, **TimedGrid DnD 후 재팽창**, **dts alias 부채(SRV-P1-02)** 3축이며 F4-6(Timeline) 착수 전 반드시 해소·완화해야 한다.
+**한 줄 요약:** P0·P1·P2(12/13) 완료. OSS 리뷰 REV 항목은 Phase A/B로 로드맵 흡수. **다음 1순위: REV-A1 slot API.**
 
 ---
 

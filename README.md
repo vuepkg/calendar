@@ -279,6 +279,14 @@ const schedule: Schedule = {
 
 ---
 
+## 테마 · Tailwind
+
+- **기본:** `import '@vuepkg/calendar/style.css'` 후 CSS 변수(`--vp-*`)로 테마 — [문서 사이트 테마 가이드](https://vuepkg.github.io/calendar/guide/theming.html)
+- **Tailwind:** 유틸리티 class를 컴포넌트에 직접 붙여 내부 UI를 바꾸는 방식은 **미지원**. CSS 변수 연동 또는 [`@vuepkg/calendar/headless`](#headless-서브패스) 사용 — [Tailwind §](https://vuepkg.github.io/calendar/guide/theming.html#tailwind-css-프로젝트에서-사용하기)
+- **로드맵·달성률:** [docs/dev/roadmap-progress.md](./docs/dev/roadmap-progress.md)
+
+---
+
 ## Headless 서브패스
 
 `ScheduleCalendar`/`ScheduleFormModal` Vue 컴포넌트 없이 composable·타입·일정 CRUD 유틸만 필요하다면 `@vuepkg/calendar/headless`를 사용하세요. 스타일드 컴포넌트를 전혀 import하지 않아 커스텀 UI 위에 캘린더 로직만 재사용하고 싶을 때 유용합니다.

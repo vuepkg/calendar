@@ -1,25 +1,51 @@
 # Roadmap — @vuepkg/calendar
 
-> 최종 갱신: 2026-07-02 (F3-1, F4-11, IMP-02, IMP-03, F3-3, SRV-P1-04, SRV-P2-09, SRV-P2-10, EXT-01, SRV-P2-08, SRV-P1-05, F3-5, SRV-P2-13, SRV-P2-11, SRV-P1-02 완료 반영)
+> 최종 갱신: 2026-07-02 (로드맵 달성률 대시보드·Phase A/B/C·OSS 리뷰 흡수)
+
+**달성률 정본:** [roadmap-progress.md](./roadmap-progress.md) — Phase·SRV·REV 수치, 1.0.0 준비도, 다음 착수 순서.
+
+---
+
+## 달성률 요약 (2026-07-02)
+
+| 범주 | 달성률 |
+| ---- | -----: |
+| Phase 0~4 (전체) | **82%** (32/39) |
+| Phase 4 도메인 기능 | **67%** (8/12) |
+| Staff Review (SRV) | **95%** (19/20) |
+| 1.0.0 게이트 (Phase A) | **0%** (0/4) |
+| **1.0.0 준비도 (추정)** | **58%** |
 
 ---
 
 ## 다음 개발 추천 (2026-07-02 기준)
 
-> **현재 상태**: `@vuepkg/calendar@0.4.0` 배포 완료. F4-1~5 주요 기능, F3-1 문서 사이트, F4-11 자동 릴리즈, IMP-02/03/F3-3 소형 API, SRV-P1-04 번들 budget 상향, P1 백로그 전량(P1-02/03/04/05), P2 백로그 대부분(P2-08/09/10/11/13, EXT-01), F3-5 axe a11y 감사까지 완료. **staff-review-backlog.md 기준 P0/P1 항목 전량 완료 — 남은 것은 P2-12(시각회귀 스냅샷 재생성, Docker+사람 리뷰 필요) 1건뿐.**
+> **전략 변경:** F4-6 Timeline **즉시 착수 보류**. OSS 리뷰·제품 관점에서 **1.0.0 API 게이트(Phase A)** 를 먼저 닫는다.
 
-### 🥇 1순위 — F4-6 Timeline 뷰 (난이도 🔴, 예상 1주+)
+### Phase A — 1.0.0 게이트 (최우선)
 
-**가장 큰 차별화 기능. 단, SRV-P2-11(headless 서브패스) 도입 시 entry 분리 오버헤드로 번들 여유가 78%→92%(20KB 예산)로 줄어 있어 F4-6은 번들 크기를 각별히 주의해서 설계해야 함.**
+| 순위 | ID | 작업 | 난이도 |
+| ---: | -- | ---- | ------ |
+| 1 | REV-A1 | scoped slot API (`event`, `day-cell`, `toolbar` …) | 🔴 |
+| 2 | REV-A2 | `Schedule` 이벤트 모델 일반화 | 🟡 |
+| 3 | F3-2 | `vue-component-meta` API 표 자동화 | 🟡 |
+| 4 | DOC-A1 | README·introduction 테마/Tailwind 정합 | 🟢 |
 
-- **작업**: 다중 리소스(인원/장소) × 시간 타임라인 뷰. FullCalendar Premium 영역과 직접 겹침(§4.1 수익화 시사점 참고)
-- `useTimeSlotSelection`(F4-1)·`useScheduleDrag`(F4-4)·`expandRecurringSchedules`(F4-5) 인프라 재사용 가능
-- **영향 파일**: 신규 `TimelineView.vue`, `ScheduleCalendar.vue` 뷰 라우팅, `calendarView.ts` 상수
-- 새 뷰 설계(리소스 데이터 모델, 레이아웃)가 필요한 대형 기능이라 별도 설계 논의 후 착수 권장
+상세: [roadmap-progress.md § 앞으로의 개발 방향](./roadmap-progress.md#앞으로의-개발-방향-2026-07-02-확정)
+
+### Phase B — 엔터프라이즈 신뢰
+
+F3-4 (Nuxt/SSR) · F4-7 (Virtualization) · SRV-P2-12 (시각 회귀 baseline)
+
+### Phase C — 차별화 (1.0.0 이후)
+
+F4-6 Timeline (서브패스 분리 권장) · F4-12 커뮤니티 · F3-7 StackBlitz
 
 ---
 
-**추천 착수 순서**: ~~`IMP-02/03`~~ (완료) → ~~`F3-3 i18n`~~ (완료) → ~~번들 budget 상향`~~ (완료) → ~~P1/P2 백로그(P2-08/09/10, EXT-01, P1-05)~~ (완료) → ~~`F3-5` a11y 감사~~ (완료) → ~~SRV-P2-13 flaky 테스트~~ (완료) → ~~SRV-P2-11 headless 서브패스~~ (완료) → ~~SRV-P1-02 dts/CSS alias 분리~~ (완료) → `F4-6 Timeline` (설계 논의 필요, 번들 budget 92% 소진 상태 재검토 필요)
+### ~~이전 1순위~~ F4-6 Timeline — Phase C로 이동
+
+**보류 사유:** 번들 92% 포화, slot API·이벤트 모델 미정리 상태에서 Timeline 추가 시 API breaking·유지보수 비용 증가. 설계 RFC는 Phase C 착수 시 진행.
 
 ---
 
@@ -162,7 +188,10 @@
 
 ## 참고 문서
 
+- [roadmap-progress.md](./roadmap-progress.md) — **달성률·1.0.0 준비도·Phase A/B/C** (개발 시작 시 1순위)
+- [framework-roadmap.md](./framework-roadmap.md) — Phase 정의·전략·KPI
 - [architecture.md](./architecture.md) — 컴포넌트 구조·API
-- [staff-review-backlog.md](./staff-review-backlog.md) — Staff Review 추적 원장 (P0~P2, 에이전트 점검용)
+- [staff-review-backlog.md](./staff-review-backlog.md) — Staff Review 추적 원장 (P0~P2)
+- [vue3-reviewer-backlog.md](../vue3-reviewer-backlog.md) — OSS 리뷰·REV 항목
 - [npm-publish-guide.md](./npm-publish-guide.md) — 배포 전 체크리스트
 - [CHANGELOG.md](../../CHANGELOG.md) — 변경 이력

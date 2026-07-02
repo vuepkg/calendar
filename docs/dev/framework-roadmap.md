@@ -1,6 +1,6 @@
 # Calendar Engine Roadmap — `@vuepkg/calendar` 고도화
 
-> 작성: 2026-06-29 · **대대적 개편: 2026-06-30** · **최종 갱신: 2026-07-01**
+> 작성: 2026-06-29 · **대대적 개편: 2026-06-30** · **최종 갱신: 2026-07-02**
 > 목표: 단일 `@vuepkg/calendar` 컴포넌트 → **Vue 3 전용 Modern Calendar Engine**
 > **전략 결정 (2026-06-30, 방향 전환)**: 범용 Vue 3 디자인 시스템(PrimeVue/Vuetify식 풀세트) 방향을 폐기하고 **calendar 도메인 고도화에 집중**한다. `core`/`ui`/`theme`는 폐기가 아니라 **calendar를 지탱하는 내부 인프라로 스코프를 고정** — `ui`를 외부에 독립 판매하는 범용 컴포넌트 라이브러리로 키우는 것은 더 이상 목표가 아니다.
 > **이전 방향 (2026-06-29, 폐기)**: ~~실제 npm 배포 "범용 UI 프레임워크"로 채택을 노린다~~ — PrimeVue/Vuetify(풀세트)·shadcn-vue/Radix Vue(headless+Tailwind) 모두 이미 강자가 있는 레드오션이라는 경쟁 분석 결과 방향 전환. 반면 Vue 캘린더 생태계(FullCalendar/v-calendar/vue-cal)는 modern DX·headless 구조·DnD/Timeline/Recurring 지원이 빈 공간으로 확인됨.
@@ -43,6 +43,23 @@
 | **Headless-friendly** | 로직(composable) / 표현(styled) 분리 가능 | ⚠️ 부분 (`@vuepkg/calendar/headless` 공개, slot API는 미구현) |
 | **Tailwind / shadcn-style class** | 소비자가 `class`로 내부 UI 커스터마이즈 | ❌ 미지원 — CSS 변수·headless가 현재 경로. 가이드: `apps/docs/guide/theming.md` § Tailwind. slot API는 1.0.0 전 과제 (`docs/vue3-reviewer-backlog.md`) |
 | **A11y by default** | role/aria/keyboard 기본 제공 | ✅ `@vuepkg/ui` 6종 모두 키보드·aria 완비 (`Popover`는 focus trap·Esc·외부클릭, `DataTable`은 row Enter/Space + aria-label) |
+
+### 0.4 로드맵 달성률 (2026-07-02)
+
+> **정본:** [roadmap-progress.md](./roadmap-progress.md) — 항목 완료 시 양쪽 동시 갱신.
+
+| Phase | 달성률 | 핵심 잔여 |
+| ----- | -----: | --------- |
+| 0 Monorepo | 100% | — |
+| 1 테마 | 86% | F1-7 시각 회귀 |
+| 2 ui primitive | 100% | — |
+| 3 DX | 57% | F3-2·F3-4·F3-7 |
+| 4 도메인 | 67% | F4-6·F4-7·F4-12 |
+| **전체 (0~4)** | **82%** | Phase A(1.0.0 게이트) 우선 |
+
+**1.0.0 준비도 추정: 58%** — npm·CI·핵심 기능은 충족, API 일반화(slot·Schedule)·SSR·virtualization 미완.
+
+**다음 착수 (확정):** Phase A → REV-A1 slot API, REV-A2 이벤트 모델, F3-2. F4-6 Timeline은 Phase C로 연기.
 
 ---
 
@@ -203,7 +220,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | F3-2 | `vue-component-meta`로 props/emits/slots API 표 자동 생성 | 🟡 | 수동 문서 drift 방지 |
 | F3-3 | **i18n/locale 시스템** — 백로그 `weekdayLabels`(IMP-02)를 범용 locale로 일반화 | 🟡 | ✅ **완료 (2026-07-01)** — `locale?: string` prop, `@vuepkg/core`의 `formatWeekdayLabels`/`formatTimedGridDayLabel(date, locale)` |
 | F3-4 | SSR / Nuxt 호환 검증 + `@vuepkg/nuxt` 모듈 (auto-import) | 🔴 | hydration·CSS 주입 |
-| F3-5 | 접근성 감사 — 전 컴포넌트 키보드·스크린리더 점검 (axe) | 🟡 | a11y 배지 |
+| F3-5 | 접근성 감사 — 전 컴포넌트 키보드·스크린리더 점검 (axe) | 🟡 | ✅ **완료 (2026-07-02)** — `e2e/accessibility.spec.ts`, CI 편입. DnD 키보드 대안은 REV-B2로 분리 |
 | F3-6 | 마이그레이션 가이드 (`@vuepkg/calendar` 0.0.x → 신 버전) | 🟢 | ✅ **완료 (2026-07-01)** — `apps/docs/guide/migration.md` 작성 완료 |
 | F3-7 | 시작 템플릿 (Vite/Nuxt starter) + StackBlitz 데모 링크 | 🟢 | 예약/일정관리 앱 시나리오로 데모 구성 — 범용 UI 데모 아님 |
 
@@ -353,7 +370,26 @@ component     --vp-chip-bg: var(--vp-color-surface);
 3. ~~F2-1 `Button` 추출 PoC~~ ✅ (2026-06-29)
 4. ~~Phase 2 전체 (F2-1~F2-5, F2-8)~~ ✅ (2026-06-30) — `@vuepkg/ui` 6종 추출, calendar 전체가 ui 소비로 전환 완료
 
-### 다음 단계 — Phase 4 진행 현황 (2026-07-01 갱신)
+### 다음 단계 — Phase A/B/C (2026-07-02 갱신)
+
+> **이전 (2026-07-01):** F4-1~5·F3-1·F4-11 완료. SRV P0/P1 전량·P2 대부분 완료.  
+> **현재:** OSS 리뷰([vue3-reviewer-backlog.md](../vue3-reviewer-backlog.md)) 반영 — **F4-6 즉시 착수 보류**, 1.0.0 게이트 우선.
+
+| Phase | ID | 작업 | 상태 |
+| ----- | -- | ---- | ---- |
+| **A** | REV-A1 | scoped slot API | ⏳ 1순위 |
+| **A** | REV-A2 | `Schedule` 모델 일반화 | ⏳ |
+| **A** | F3-2 | `vue-component-meta` | ⏳ |
+| **B** | F3-4 | Nuxt / SSR | ⏳ |
+| **B** | F4-7 | Virtualization | ⏳ |
+| **B** | SRV-P2-12 / F1-7 | 시각 회귀 baseline | ⏳ |
+| **C** | F4-6 | Timeline (서브패스 분리) | ⏳ |
+| **C** | F4-12 | 커뮤니티 노출 | ⏳ |
+| **C** | F3-7 | StackBlitz 데모 | ⏳ |
+
+상세 달성률·수치: [roadmap-progress.md](./roadmap-progress.md)
+
+### 이전 진행 이력 — Phase 4 (2026-07-01까지)
 
 > **진행 현황 (2026-07-01)**: SRV-P1-01/P1-03 완료 → F4-1(드래그 슬롯 선택) 완료 → SRV-P2 부채 전량 처리 완료 (P2-01~07 + NIT-01) → F4-4(DnD 이동·리사이즈) 완료 → F4-2(2/3주 월간 뷰) 완료 → F4-9(size-limit 게이트)·F4-10(CONTRIBUTING) 완료 → F4-3(일정 CRUD 모달)·F2-7(`Dialog`) 완료 → F4-5(반복 일정) 완료 → **F3-1(VitePress 문서 사이트 + GitHub Pages 배포) 완료** → **F4-11(Changesets 자동 릴리즈) 완료** → `@vuepkg/calendar@0.2.1` npm 배포 완료(homepage → 문서 사이트 URL 반영). `useTimeSlotSelection`의 pointer event 인프라가 F4-4 `useScheduleDrag`로 재사용됨. F4-3 구현 중 F4-4의 `setPointerCapture`가 실브라우저에서 기존 event 클릭을 무효화하던 회귀를 발견·수정(CHANGELOG Fixed 참고). 남은 항목은 전부 🔴 고난이도(F4-6/F4-7/F4-8) 또는 §1.5 잔여 기술부채.
 
@@ -371,17 +407,19 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | F4-6 | Timeline / Resource Scheduler 뷰 | 🔴 | **다음 작업 후보** — FullCalendar Premium 영역과 겹침(§4.1 수익화 시사점 참고). 착수 전 번들 budget 상향 또는 코드 분할 먼저 검토 필요 |
 | F3-2 | `vue-component-meta` API 표 자동 생성 | 🟡 | 수동 문서 drift 방지 |
 | ~~F3-3~~ | ~~i18n/locale 시스템~~ | ~~🟡~~ | ✅ 완료 (2026-07-01) — `locale` prop, `weekdayLabels` 하드코딩 해소 |
-| F3-5 | 접근성 감사 (axe) | 🟡 | a11y 배지 |
+| ~~F3-5~~ | ~~접근성 감사 (axe)~~ | ~~🟡~~ | ✅ 완료 (2026-07-02) |
 | ~~—~~ | ~~§1.5 잔여 항목 (`vite-plugin-dts` 상대경로 누수) 설계 검토~~ | ~~🟡~~ | → ✅ 완료 (2026-07-02, SRV-P1-02) |
 | ~~—~~ | ~~[staff-review-backlog.md](./staff-review-backlog.md) P2~~ | ~~🟡~🔴~~ | ~~SRV-P2-01~P2-07 — 1.0.0 전 처리 필요~~ → ✅ 완료 (2026-07-01) |
 
-F4-6(Timeline)은 F4-4/F4-5로 다져진 pointer-event·recurrence 인프라 위에서 착수하되, calendar 번들이 이미 budget의 96%(15.35KB/16KB)까지 찬 상태라 착수 전 budget 조정 또는 코드 분할(동적 import)을 먼저 검토해야 한다.
+F4-6(Timeline)은 Phase C로 연기. 착수 전 REV-A1(slot)·번들 서브패스·RFC 설계 필요. (이전: budget 96% — 2026-07-02 budget 20KB·현재 18.4KB = 92%)
 
 ---
 
 ## 7. 참고 (기존 문서 연결)
 
-- [staff-review-backlog.md](./staff-review-backlog.md) — Phase 0~2 Staff Review 추적 원장 (P0 완료, P1~ 에이전트 점검)
+- [roadmap-progress.md](./roadmap-progress.md) — **달성률 수치·Phase A/B/C** (개발 시작 1순위)
+- [staff-review-backlog.md](./staff-review-backlog.md) — Phase 0~4 Staff Review 추적 원장 (SRV-*)
+- [vue3-reviewer-backlog.md](../vue3-reviewer-backlog.md) — OSS 리뷰·REV-*·Tailwind 가이드
 - [roadmap.md](./roadmap.md) — calendar 단일 컴포넌트 기능 백로그 (IMP-02~08). 본 문서의 Phase 4(`F4-1`/`F4-2`/`F4-4`/`F4-8`)에 흡수.
 - [componentization-backlog.md](./componentization-backlog.md) — CMP-01~11 내부 분리. Phase 2 primitive 추출과 연계(특히 CMP-09 `MonthWeekdayHeader` → i18n).
 - [architecture.md](./architecture.md) — 현 단일 패키지 구조. Phase 0 이후 패키지별로 분할 갱신 필요.

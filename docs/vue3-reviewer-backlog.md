@@ -1,6 +1,6 @@
 # Vue3 Calendar Library Review Backlog
 
-> **리뷰 일자:** 2026-07-02 · **갱신:** 2026-07-02 (Tailwind·문서 정리)  
+> **리뷰 일자:** 2026-07-02 · **갱신:** 2026-07-02 (로드맵 달성률·Phase A/B/C 흡수)  
 > **리뷰어:** vue3-oss-reviewer (심층 코드·아키텍처·OSS 채택성 점검)  
 > **대상:** `@vuepkg/calendar@0.4.0` 모노레포 전체  
 > **기준:** `.cursor/rules/vue3-oss-reviewer.mdc`, `docs/dev/staff-review-backlog.md` (리뷰 #2 이후 delta)
@@ -9,47 +9,45 @@
 
 ## 다음 로드맵 개선 세션 — 문서 점검 체크리스트
 
-다음 개발 사이클에서 **전체 문서를 읽고 로드맵을 갱신**할 때 아래를 함께 검토한다.
+> **2026-07-02 갱신 완료** — [roadmap-progress.md](./dev/roadmap-progress.md)에 달성률·Phase A/B/C 반영됨.
 
-| 문서 | 역할 | 갱신 필요 포인트 |
-| ---- | ---- | ---------------- |
-| `docs/dev/framework-roadmap.md` | 전략·Phase | §0.1 "Tailwind/shadcn 친화적" 문구 vs **현재 slot 0건** 현실 정합 |
-| `docs/dev/roadmap.md` | 기능 백로그 | slot API·Tailwind DX를 1.0.0 게이트에 명시 |
-| `docs/vue3-reviewer-backlog.md` | OSS 리뷰 원장 | 본 문서 |
-| `docs/dev/staff-review-backlog.md` | 코드 결함 원장 | SRV-* 와 리뷰 백로그 중복·우선순위 통합 |
-| `apps/docs/guide/theming.md` | **소비자 정본** (VitePress) | Tailwind § 추가됨 (2026-07-02) |
-| `docs/guide/theming.md` | 내부 테마 가이드 | Tailwind 요약 § 추가됨 — VitePress와 주기적 동기화 |
-| `README.md` | npm 첫인상 | headless·테마 링크, Tailwind 한 줄 안내 |
-| `apps/docs/guide/introduction.md` | 포지셔닝 | "Tailwind 친화" 주장과 한계 명시 |
+| 문서 | 역할 | 상태 |
+| ---- | ---- | ---- |
+| `docs/dev/roadmap-progress.md` | **달성률 정본** | ✅ 신규 (2026-07-02) |
+| `docs/dev/framework-roadmap.md` | 전략·Phase | ✅ §0.4 달성률·Phase A/B/C |
+| `docs/dev/roadmap.md` | 기능 백로그 | ✅ 대시보드·우선순위 갱신 |
+| `docs/vue3-reviewer-backlog.md` | OSS 리뷰 원장 | ✅ 본 문서 |
+| `docs/dev/staff-review-backlog.md` | 코드 결함 원장 | ⏳ REV-A* 로드맵 흡수 후 중복 정리 |
+| `apps/docs/guide/theming.md` | 소비자 정본 | ✅ Tailwind § |
+| `docs/guide/theming.md` | 내부 테마 | ✅ 요약 동기화 |
+| `README.md` | npm 첫인상 | ✅ 테마 링크 (2026-07-02) |
+| `apps/docs/guide/introduction.md` | 포지셔닝 | ✅ 스타일·로드맵 링크 (2026-07-02) |
 
-**로드맵 개선 시 권장 우선순위 (리뷰 #3 기준):**
-
-1. **Phase A (1.0.0 게이트):** scoped slot API → Tailwind·shadcn adopters
-2. **Phase A:** `Schedule` 이벤트 모델 일반화
-3. **Phase B:** Nuxt/SSR (F3-4), virtualization (F4-7)
-4. **Phase C:** Timeline (F4-6) — 번들 서브패스 분리 후 착수
+**로드맵 Phase A/B/C (확정):** [roadmap-progress.md § 앞으로의 개발 방향](./dev/roadmap-progress.md#앞으로의-개발-방향-2026-07-02-확정)
 
 ---
 
 ## Critical
 
-- [ ] **`ScheduleCalendar`에 slot API 부재 — 커스터마이징 확장의 구조적 병목**
+> **로드맵 ID:** REV-A1 ~ REV-A4 → [roadmap-progress.md Phase A/B](./dev/roadmap-progress.md)
+
+- [ ] **REV-A1 / `ScheduleCalendar` slot API 부재**
   - `packages/calendar/src/components/calendar/**` 전체에 `<slot>`이 0건. 이벤트 칩·툴바·셀·All Day 바·List 행 렌더링을 소비자가 교체할 수 없음.
   - shadcn-vue / Radix 철학(표현 분리)과 정면 충돌. CSS 변수만으로는 브랜드·도메인 UI 요구를 충족하기 어려움.
   - **조치:** 최소 `event`, `day-cell`, `toolbar`, `month-overflow-item` scoped slot + slot props(`schedule`, `date`, `getTypeStyle`) 설계. 1.0.0 전 breaking 없이 optional slot으로 도입.
 
-- [ ] **`Schedule` 도메인 모델이 HR/사내 일정에 과결합**
+- [ ] **REV-A2 / `Schedule` 도메인 모델 HR 과결합**
   - `participantId`·`participantName` 필수, `ViewScope: 'my' | 'company'`, List 컬럼이 Participant 고정.
   - 범용 이벤트 캘린더(회의실·의료·교육·예약 SaaS) 채택 시 매핑 레이어가 필수 → DX 저하.
   - **조치:** `Schedule`을 제네릭 `CalendarEvent<TMeta>`로 점진 전환하거나, `participant*`를 optional + `meta?: Record<string, unknown>` 추가. `viewScope`/`scheduleTypes` 필터를 composable로 분리해 컴포넌트 prop에서 제거 검토.
 
-- [ ] **대량 일정·반복 전개 시 성능 상한 미검증 (virtualization 없음)**
+- [ ] **REV-B3 / 대량 일정·반복 전개 성능 (F4-7)**
   - `useCalendar`의 `schedules` computed가 뷰 전환·월 이동마다 `expandRecurringSchedules` 전체 실행.
   - `monthCells` computed가 42셀 × `getSchedulesForDay` O(n) — 일정 1k+ 시 월 네비게이션마다 rerender cascade.
   - F4-7 미착수. 엔터프라이즈 스케줄러 시나리오에서 채택 차단 요인.
   - **조치:** visible range 기반 인덱스(Map by dateKey), 반복 전개 memoization, List/Month virtualization POC + 벤치마크(1k/10k events) CI 게이트.
 
-- [ ] **SSR / Nuxt 호환성 미검증**
+- [ ] **REV-B2 / SSR · Nuxt (F3-4)**
   - `publicHolidaysApi.ts`의 `window.location`, Popover/Dialog `Teleport`, `onMounted` 기반 `query-change` init.
   - Nuxt 3 사용자(상당수 Vue 엔터프라이즈) 채택 전 검증 필수. F3-4 미착수.
   - **조치:** `import.meta.client` 가드, `useId` 안정화, Nuxt minimal reproduction + hydration 테스트, `@vuepkg/nuxt` 스텁 모듈.
@@ -114,10 +112,7 @@
   - 문서 사이트는 있으나 즉시 fork 가능한 데모 부재. 전환율 저하.
   - **조치:** Vite + `@vuepkg/calendar` 최소 StackBlitz, 예약 SaaS 시나리오.
 
-- [x] **Tailwind 연동 가이드 문서 부재**
-  - 로드맵에는 "Tailwind/shadcn 친화적"이라 쓰여 있으나, 소비자 문서에 **class 직접 적용 한계**·CSS 변수 연동·headless 대안이 없었음.
-  - **조치 (2026-07-02):** `apps/docs/guide/theming.md` § Tailwind 추가, `docs/guide/theming.md` 요약 동기화.
-  - **잔여:** `introduction.md`·README 한 줄 링크, slot API 구현 후 문서 재갱신.
+- [x] **DOC-01 / Tailwind 연동 가이드** — `apps/docs/guide/theming.md` § Tailwind (2026-07-02). 로드맵: [roadmap-progress.md](./dev/roadmap-progress.md)
 
 ---
 

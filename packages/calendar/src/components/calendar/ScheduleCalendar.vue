@@ -328,6 +328,7 @@ function handleScheduleResize(payload: CalendarScheduleResizePayload) {
 
 <style>
 @import '@vuepkg/theme/index.css';
+@import '@vuepkg/ui/style.css';
 </style>
 
 <style scoped>

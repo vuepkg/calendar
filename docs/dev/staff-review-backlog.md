@@ -56,7 +56,7 @@
 | ID | Severity | 카테고리 | 요약 | 상태 | 담당/비고 |
 | -- | -------- | -------- | ---- | ---- | --------- |
 | [SRV-P1-01](#srv-p1-01-month-cell-키보드-a11y) | MAJOR | 접근성 | `MonthView` 날짜 셀이 `<div @click>`만 — 키보드 불가 | **완료** | `MonthCell.vue` 분리 + `role="gridcell"` + `tabindex="0"` + Enter/Space (2026-07-01). roving tabindex는 [SRV-P2-09](#srv-p2-09-month-cell-roving-tabindex)로 분리 |
-| [SRV-P1-02](#srv-p1-02-dtscss-alias-분리) | MAJOR | 타입/빌드 | `vite-plugin-dts` 깨진 상대경로 — CSS alias와 결합 | **미착수** | [framework-roadmap.md §1.5](./framework-roadmap.md) BLOCKED — F3-2 전 설계 필요 |
+| [SRV-P1-02](#srv-p1-02-dtscss-alias-분리) | MAJOR | 타입/빌드 | `vite-plugin-dts` 깨진 상대경로 — CSS alias와 결합 | **완료** | alias 제거 + `@vuepkg/ui/style.css` 명시적 import로 재진단·해결 (2026-07-02) |
 | [SRV-P1-03](#srv-p1-03-대형-뷰-컴포넌트-분리) | MAJOR | 아키텍처 | `TimedGrid`(614줄)·`MonthView`(482줄) — Phase 4 DnD 병목 | **완료** | Header/AllDay/`useTimeSlotSelection`/`MonthCell` 분리 (2026-07-01). F4-4 이후 TimedGrid 재팽창 → [SRV-P1-05](#srv-p1-05-timedgrid-dnd-후-재팽창) |
 | [SRV-P1-04](#srv-p1-04-번들-budget-포화) | MAJOR | 아키텍처/성능 | `index.js` 15.57KB / 16KB limit (**97%**, IMP-02/03/F3-3 반영 후) — F4-6 추가 시 초과 확실 | **완료** | budget 상향 20KB/19KB/8KB (2026-07-02) — F4-6 착수 여유 확보 |
 | [SRV-P1-05](#srv-p1-05-timedgrid-dnd-후-재팽창) | MAJOR | 아키텍처 | F4-4 DnD 통합 후 `TimedGrid.vue` 303→495줄(IMP-03 prop 반영 후) 재팽창 | **완료** | `TimedGridDayColumn.vue` 분리 — 495→336줄 (2026-07-02) |
@@ -127,13 +127,17 @@
 
 ### SRV-P1-02: dts/CSS alias 분리
 
-**위치:** `packages/calendar/vite.lib.config.ts`, [framework-roadmap.md §1.5](./framework-roadmap.md)
+**위치:** `packages/calendar/vite.lib.config.ts`, `packages/calendar/vite.config.ts`, `turbo.json`, [framework-roadmap.md §1.5](./framework-roadmap.md)
 
-**문제:** alias 제거 시 ui CSS가 `style.css`에서 빠짐. dts에 `'../../../../core/src'` 누수.
+**문제:** `vite.lib.config.ts`의 `@vuepkg/core`/`@vuepkg/ui` alias가 원시 소스(`../core/src`, `../ui/src`)를 직접 가리켜, `vite-plugin-dts`가 일부 비공개 컴포넌트 `.d.ts`(예: `MonthOverflowPopover.vue.d.ts`)에 `'../../../../core/src'` 같은 깨진 상대경로를 남겼다.
 
-**수정 방향:** ui CSS 주입용 별도 vite/postcss 단계 설계 후 alias 분리.
+**재진단:** 이전 시도가 "alias 제거 → `@vuepkg/ui` 컴포넌트 CSS가 `style.css`에서 통째로 빠지는 회귀"로 되돌려졌던 기록이 있었으나, 실제로는 `@vuepkg/ui`가 이미 자체 `build:lib`으로 `dist/style.css`(모든 ui 컴포넌트 스타일 포함)와 `exports["./style.css"]`를 갖추고 있었다. 이전 시도는 alias만 제거하고 그 CSS를 명시적으로 import하지 않아서 회귀가 난 것으로 확인됨 — CSS 누락은 alias 제거 자체의 근본적 한계가 아니었다.
 
-**검증:** 미착수. 공개 엔트리 타입 그래프 밖이라 0.2.x 소비자 영향 낮음.
+**수정:** `vite.lib.config.ts`·`vite.config.ts`(데모) 양쪽에서 `@vuepkg/core`/`@vuepkg/ui` alias를 제거(원래 있던 `@vuepkg/theme` alias는 유지 — 그건 순수 CSS라 별도 빌드 산출물이 없음). `ScheduleCalendar.vue`의 기존 `@import '@vuepkg/theme/index.css'` 바로 뒤에 `@import '@vuepkg/ui/style.css'`를 추가해 ui 컴포넌트 CSS를 명시적으로 끌어온다. alias 제거로 `@vuepkg/core`/`@vuepkg/ui`는 workspace symlink(node_modules) 경유로 해석되며, 이는 `vue-tsc`가 이미 쓰던 것과 동일한 해석 경로다(`tsconfig.app.json`의 `paths`에는 애초에 이 두 패키지가 없었음 — alias는 vite/rollup 빌드에만 영향을 줬음).
+
+**파이프라인 트레이드오프:** alias 제거로 calendar의 lib/demo 빌드가 `@vuepkg/core`/`@vuepkg/ui`의 `dist/`가 미리 빌드되어 있어야 동작한다. `pnpm turbo run build:lib`(CI 방식)은 `dependsOn: ["^build:lib"]`로 이미 순서를 보장하지만, 루트 `dev` task는 그렇지 않아서 `turbo.json`의 `dev`에 `dependsOn: ["^build:lib"]`을 추가함 — `pnpm dev` 실행 시 ui/core가 먼저 빌드된다.
+
+**검증:** ✅ `MonthOverflowPopover.vue.d.ts`가 `import { RectBounds } from '@vuepkg/core'`(정상 bare specifier)로 출력됨을 확인. `dist/style.css`에 `.vp-button`/`.vp-chip`/`.vp-popover`/`.vp-segmented-control`/`.vp-data-table`/`.vp-dialog` 전부 포함(33.63KB, 변경 전과 동일). Vitest 290건, typecheck, lint(기존 baseline 경고 3건 외 신규 없음), size-limit(18.4/20KB — 변화 없음), 데모 `build`/`dev` 서버 정상 부팅, Playwright 기능 E2E 142건 전체 통과 (2026-07-02).
 
 ---
 

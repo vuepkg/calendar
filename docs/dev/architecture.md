@@ -577,10 +577,11 @@ pnpm --filter @vuepkg/core run build:lib
 
 | alias | 해석 경로 | 적용 범위 |
 | ----- | --------- | --------- |
-| `@/` | `packages/calendar/src/` | calendar 내부 |
-| `@vuepkg/core` | `packages/core/src/` (dev/test alias) | calendar dev·test |
+| `@/` | `packages/calendar/src/` | calendar 내부 — dev/test/lib 빌드 전체 |
+| `@vuepkg/core` / `@vuepkg/ui` | `packages/core/src/` / `packages/ui/src/` (원시 소스, dev·test 전용) | `vitest.config.ts`에만 존재 — 빌드 없이 즉시 테스트하기 위함 |
+| `@vuepkg/theme` | `packages/theme/` (순수 CSS, 별도 빌드 불필요) | dev/test/lib 빌드 전체 |
 
-> 라이브러리 빌드(`vite.lib.config.ts`) 시에도 동일 alias 적용 — core가 calendar에 번들링됩니다.
+> **SRV-P1-02 (2026-07-02)**: `vite.lib.config.ts`(라이브러리 빌드)와 `vite.config.ts`(데모 앱)는 `@vuepkg/core`/`@vuepkg/ui` alias가 **없다** — workspace symlink(node_modules) 경유로 실제 `dist/`를 참조한다. `vue-tsc`가 원래 쓰던 것과 동일한 해석 경로라 dts가 깨끗해진다. 단, 이 두 빌드는 `packages/core/dist`·`packages/ui/dist`가 미리 존재해야 하며, `pnpm turbo run build:lib`/`dev`(둘 다 `turbo.json`에서 `dependsOn: ["^build:lib"]`)가 순서를 보장한다. `@vuepkg/ui`의 컴포넌트 CSS(`dist/style.css`)는 alias로 자동 추출되지 않으므로 `ScheduleCalendar.vue`가 `@import '@vuepkg/ui/style.css'`로 명시적으로 가져온다.
 
 ### 빌드 엔트리 (SRV-P2-11, 2026-07-02)
 

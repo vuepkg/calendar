@@ -1,7 +1,7 @@
 {
   "name": "@vuepkg/calendar",
   "private": false,
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Vue 3 schedule calendar — Month / Week / Day / List views, zero extra dependencies",
   "keywords": [
     "vue",
@@ -82,17 +82,26 @@
   "size-limit": [
     {
       "name": "index.js (ESM)",
-      "path": ["dist/index.js", "dist/headless-*.js"],
+      "path": [
+        "dist/index.js",
+        "dist/headless-*.js"
+      ],
       "limit": "20 kB"
     },
     {
       "name": "index.cjs (CJS)",
-      "path": ["dist/index.cjs", "dist/headless-*.cjs"],
+      "path": [
+        "dist/index.cjs",
+        "dist/headless-*.cjs"
+      ],
       "limit": "19 kB"
     },
     {
       "name": "headless.js (ESM)",
-      "path": ["dist/headless.js", "dist/headless-*.js"],
+      "path": [
+        "dist/headless.js",
+        "dist/headless-*.js"
+      ],
       "limit": "9 kB"
     },
     {

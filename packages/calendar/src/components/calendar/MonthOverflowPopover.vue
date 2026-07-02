@@ -3,8 +3,13 @@ import { computed } from 'vue'
 import type { RectBounds } from '@vuepkg/core'
 import { Popover } from '@vuepkg/ui'
 import type { Schedule } from '@/types/schedule'
+import type { MonthOverflowItemSlotProps } from '@/types/slots'
 import { toDateKey } from '@/utils/date'
 import { formatOverflowScheduleLabel } from '@/utils/month'
+
+defineSlots<{
+  'month-overflow-item'?: (props: MonthOverflowItemSlotProps) => unknown
+}>()
 
 const props = defineProps<{
   open: boolean
@@ -57,7 +62,14 @@ function isHighlighted(schedule: Schedule): boolean {
           :class="{ highlighted: isHighlighted(schedule) }"
           @click="emit('schedule-click', schedule)"
         >
-          {{ formatOverflowScheduleLabel(schedule) }}
+          <slot
+            name="month-overflow-item"
+            :schedule="schedule"
+            :is-highlighted="isHighlighted(schedule)"
+            :on-select="() => emit('schedule-click', schedule)"
+          >
+            {{ formatOverflowScheduleLabel(schedule) }}
+          </slot>
         </button>
       </li>
     </ul>

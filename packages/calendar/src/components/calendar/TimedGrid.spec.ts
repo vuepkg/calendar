@@ -384,3 +384,93 @@ describe('TimedGrid — locale (F3-3)', () => {
     expect(wrapper.get('.day-label').text()).toBe('수요일')
   })
 })
+
+describe('TimedGrid — event slot (REV-A1)', () => {
+  function makeTimedSchedule(overrides?: Partial<Schedule>): Schedule {
+    return {
+      id: 'evt-timed',
+      title: 'Timed Event',
+      participantId: 'user-1',
+      participantName: 'User One',
+      start: new Date(2026, 3, 22, 10, 0, 0, 0),
+      end: new Date(2026, 3, 22, 11, 0, 0, 0),
+      type: 'company',
+      ...overrides,
+    }
+  }
+
+  function makeAllDaySchedule(overrides?: Partial<Schedule>): Schedule {
+    return {
+      id: 'evt-allday',
+      title: 'All Day Event',
+      participantId: 'user-2',
+      participantName: 'User Two',
+      start: new Date(2026, 3, 22),
+      end: new Date(2026, 3, 22),
+      type: 'company',
+      allDay: true,
+      ...overrides,
+    }
+  }
+
+  it('renders custom content for a timed event block without breaking the DnD wrapper', () => {
+    const day = startOfDay(new Date(2026, 3, 22))
+    const wrapper = mount(TimedGrid, {
+      props: { days: [day], schedules: [makeTimedSchedule()], getTypeStyle },
+      slots: {
+        event: `
+          <template #event="{ schedule, source }">
+            <div class="custom-event-marker" :data-source="source">{{ schedule.title }}</div>
+          </template>
+        `,
+      },
+    })
+
+    expect(wrapper.find('.event-chip').exists()).toBe(false)
+    const marker = wrapper.find('.custom-event-marker')
+    expect(marker.exists()).toBe(true)
+    expect(marker.attributes('data-source')).toBe('week-timed')
+    // the pointerdown/resize wrapper stays intact regardless of slot content (design principle)
+    expect(wrapper.find('.timed-event').exists()).toBe(true)
+    expect(wrapper.find('.resize-handle').exists()).toBe(true)
+  })
+
+  it('renders custom content for an all-day bar and wires onSelect to schedule-click', async () => {
+    const day = startOfDay(new Date(2026, 3, 22))
+    const wrapper = mount(TimedGrid, {
+      props: { days: [day], schedules: [makeAllDaySchedule()], getTypeStyle },
+      slots: {
+        event: `
+          <template #event="{ schedule, source, onSelect }">
+            <button type="button" class="custom-all-day-marker" :data-source="source" @click="onSelect">{{ schedule.title }}</button>
+          </template>
+        `,
+      },
+    })
+
+    expect(wrapper.find('.all-day-bar-chip').exists()).toBe(false)
+    const marker = wrapper.find('.custom-all-day-marker')
+    expect(marker.exists()).toBe(true)
+    expect(marker.attributes('data-source')).toBe('week-all-day-bar')
+
+    await marker.trigger('click')
+    expect(wrapper.emitted('schedule-click')?.[0]?.[0]).toMatchObject({
+      source: 'week-all-day-bar',
+      schedule: expect.objectContaining({ id: 'evt-allday' }),
+    })
+  })
+
+  it('renders default chip/bar content unchanged when the event slot is not used', () => {
+    const day = startOfDay(new Date(2026, 3, 22))
+    const wrapper = mount(TimedGrid, {
+      props: {
+        days: [day],
+        schedules: [makeTimedSchedule(), makeAllDaySchedule({ id: 'evt-allday-2' })],
+        getTypeStyle,
+      },
+    })
+
+    expect(wrapper.find('.event-chip').exists()).toBe(true)
+    expect(wrapper.find('.all-day-bar-chip').exists()).toBe(true)
+  })
+})

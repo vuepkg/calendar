@@ -202,6 +202,29 @@ useCalendar → 뷰 리렌더
 | `time-slot-select` source | `week-timed-slot` \| `day-timed-slot`                                                                                       |
 | `navigate` action         | `today` \| `prev-day` \| `next-day` \| `prev-week` \| `next-week` \| `prev-month` \| `next-month`                           |
 
+### Scoped Slots (REV-A1, 2026-07-02)
+
+> 설계 배경: [rfc/REV-A1-slot-api.md](rfc/REV-A1-slot-api.md). 4개 슬롯 모두 **미사용 시 기존 마크업과 100% 동일**하게 렌더되는 non-breaking 추가입니다. 슬롯은 클릭/DnD/키보드 인터랙션 래퍼 **안쪽**의 표현 콘텐츠만 교체하며, 래퍼 자체(포인터 핸들러·`role="gridcell"` 등)는 항상 라이브러리가 소유합니다.
+
+| 슬롯 | slot props | 교체 범위 |
+| ---- | ---------- | -------- |
+| `toolbar` | `{ currentView, views, onSelect }` | 뷰 전환 UI 전체 |
+| `day-cell` | `{ cell, getTypeStyle, onScheduleClick, onOpenOverflow }` | 월간 셀 내부 콘텐츠(날짜 숫자·이벤트 목록) — `role="gridcell"` 셸은 유지 |
+| `event` | `{ schedule, source, typeStyle, compact?, showParticipant?, onSelect? }` | 칩·All Day 바·시간 그리드 블록의 표현 콘텐츠. `source`는 `schedule-click`과 동일한 `ScheduleClickSource`(`month-chip`\|`month-all-day-bar`\|`week-all-day-bar`\|`day-all-day-bar`\|`week-timed`\|`day-timed`). `week-timed`/`day-timed`는 포인터 드래그 래퍼가 클릭을 처리하므로 `onSelect`가 없음 |
+| `month-overflow-item` | `{ schedule, isHighlighted, onSelect }` | `+N` 팝오버 목록 항목 콘텐츠 |
+
+`List` 행(`list-row`)은 `event` 슬롯 범위 밖 — `DataTable`의 `cell-*` 슬롯을 통한 별도 확장 후보(RFC §4 대안 참고).
+
+```vue
+<ScheduleCalendar v-model:view="view" v-model:date="date" :schedules="schedules">
+  <template #event="{ schedule, source, typeStyle, onSelect }">
+    <button class="my-chip" :style="typeStyle" @click="onSelect?.()">
+      {{ schedule.title }}
+    </button>
+  </template>
+</ScheduleCalendar>
+```
+
 ---
 
 ## 4. Composable API

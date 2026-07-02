@@ -6,9 +6,15 @@ import type {
 } from '@/types/calendarEvents'
 import type { MonthWeekCell } from '@/types/layout'
 import type { Schedule } from '@/types/schedule'
+import type { DayCellSlotProps, EventSlotProps } from '@/types/slots'
 import { toRectBounds } from '@vuepkg/core'
 import HolidayChip from './HolidayChip.vue'
 import ScheduleEventChip from './ScheduleEventChip.vue'
+
+defineSlots<{
+  'day-cell'?: (props: DayCellSlotProps) => unknown
+  event?: (props: EventSlotProps) => unknown
+}>()
 
 const props = withDefaults(
   defineProps<{
@@ -86,39 +92,56 @@ defineExpose({
     @keydown.enter.prevent="onCellActivate"
     @keydown.space.prevent="onCellActivate"
   >
-    <div class="cell-date">{{ cell.date.getDate() }}</div>
-    <div
-      v-if="cell.spanningBarRows > 0"
-      class="cell-bar-spacer"
-      :style="{ height: `calc(${cell.spanningBarRows} * var(--month-bar-row-height))` }"
-    />
-    <div class="cell-events">
-      <div v-for="holiday in cell.holidays" :key="holiday.id" class="cell-holiday-chip">
-        <HolidayChip :name="holiday.name" />
-      </div>
+    <slot
+      name="day-cell"
+      :cell="cell"
+      :get-type-style="getTypeStyle"
+      :on-schedule-click="onScheduleClick"
+      :on-open-overflow="onOpenOverflow"
+    >
+      <div class="cell-date">{{ cell.date.getDate() }}</div>
       <div
-        v-for="schedule in cell.chipVisible"
-        :key="schedule.id"
-        class="cell-event-chip"
-        @click.stop
-      >
-        <ScheduleEventChip
-          :schedule="schedule"
-          v-bind="getTypeStyle(schedule.type)"
-          compact
-          @click="onScheduleClick(schedule)"
-        />
+        v-if="cell.spanningBarRows > 0"
+        class="cell-bar-spacer"
+        :style="{ height: `calc(${cell.spanningBarRows} * var(--month-bar-row-height))` }"
+      />
+      <div class="cell-events">
+        <div v-for="holiday in cell.holidays" :key="holiday.id" class="cell-holiday-chip">
+          <HolidayChip :name="holiday.name" />
+        </div>
+        <div
+          v-for="schedule in cell.chipVisible"
+          :key="schedule.id"
+          class="cell-event-chip"
+          @click.stop
+        >
+          <slot
+            name="event"
+            :schedule="schedule"
+            :source="'month-chip' as const"
+            :type-style="getTypeStyle(schedule.type)"
+            :compact="true"
+            :on-select="() => onScheduleClick(schedule)"
+          >
+            <ScheduleEventChip
+              :schedule="schedule"
+              v-bind="getTypeStyle(schedule.type)"
+              compact
+              @click="onScheduleClick(schedule)"
+            />
+          </slot>
+        </div>
+        <button
+          v-if="cell.hiddenScheduleCount > 0"
+          type="button"
+          class="more-events"
+          :title="`${cell.hiddenScheduleCount}개 일정 더 보기`"
+          @click.stop="onOpenOverflow($event)"
+        >
+          +{{ cell.hiddenScheduleCount }}
+        </button>
       </div>
-      <button
-        v-if="cell.hiddenScheduleCount > 0"
-        type="button"
-        class="more-events"
-        :title="`${cell.hiddenScheduleCount}개 일정 더 보기`"
-        @click.stop="onOpenOverflow($event)"
-      >
-        +{{ cell.hiddenScheduleCount }}
-      </button>
-    </div>
+    </slot>
   </div>
 </template>
 

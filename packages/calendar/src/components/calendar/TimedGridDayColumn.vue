@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import type { CSSProperties } from 'vue'
 import type { TimeSlotSelection } from '@/composables/useTimeSlotSelection'
+import type { ScheduleClickSource } from '@/types/calendarEvents'
 import type { CurrentTimeIndicator, TimedLayoutItem } from '@/types/layout'
 import type { Schedule } from '@/types/schedule'
+import type { EventSlotProps } from '@/types/slots'
 import { formatTime } from '@/utils/date'
 import ScheduleEventChip from './ScheduleEventChip.vue'
+
+defineSlots<{
+  event?: (props: EventSlotProps) => unknown
+}>()
 
 interface GhostInfo {
   schedule: Schedule
@@ -29,6 +35,8 @@ defineProps<{
   isEventDragging: boolean
   showParticipant: boolean
   getTypeStyle: (type: Schedule['type']) => { color: string; backgroundColor: string }
+  /** `event` slot 노출용 — 실제 클릭 emit은 부모(TimedGrid)의 pointerup 로직이 처리 (REV-A1) */
+  timedScheduleSource: ScheduleClickSource
 }>()
 
 const emit = defineEmits<{
@@ -99,11 +107,19 @@ const emit = defineEmits<{
       @pointerdown.stop="emit('move-pointerdown', $event, item.schedule)"
       @click.stop
     >
-      <ScheduleEventChip
+      <slot
+        name="event"
         :schedule="item.schedule"
-        v-bind="getTypeStyle(item.schedule.type)"
+        :source="timedScheduleSource"
+        :type-style="getTypeStyle(item.schedule.type)"
         :show-participant="showParticipant"
-      />
+      >
+        <ScheduleEventChip
+          :schedule="item.schedule"
+          v-bind="getTypeStyle(item.schedule.type)"
+          :show-participant="showParticipant"
+        />
+      </slot>
       <span class="inline-time">
         {{ formatTime(item.schedule.start) }} ~ {{ formatTime(item.schedule.end) }}
       </span>

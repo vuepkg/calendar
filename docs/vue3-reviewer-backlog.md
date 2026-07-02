@@ -30,10 +30,10 @@
 
 > **로드맵 ID:** REV-A1·REV-A2(Phase A) · REV-B2·REV-B3(Phase B, severity는 Critical) → [roadmap.md Phase A/B](./dev/roadmap.md#2-phase-abc--다음-개발-방향-2026-07-02-확정)
 
-- [ ] **REV-A1 / `ScheduleCalendar` slot API 부재**
-  - `packages/calendar/src/components/calendar/**` 전체에 `<slot>`이 0건. 이벤트 칩·툴바·셀·All Day 바·List 행 렌더링을 소비자가 교체할 수 없음.
-  - shadcn-vue / Radix 철학(표현 분리)과 정면 충돌. CSS 변수만으로는 브랜드·도메인 UI 요구를 충족하기 어려움.
-  - **조치:** 최소 `event`, `day-cell`, `toolbar`, `month-overflow-item` scoped slot + slot props(`schedule`, `date`, `getTypeStyle`) 설계. 1.0.0 전 breaking 없이 optional slot으로 도입.
+- [x] **REV-A1 / `ScheduleCalendar` slot API 부재** — ✅ **완료 (2026-07-02)**
+  - `toolbar`/`day-cell`/`event`/`month-overflow-item` scoped slot 4종 구현. `event`는 month-chip/month-all-day-bar/week·day-all-day-bar/week·day-timed 6개 컨텍스트 공용, `source`는 기존 `ScheduleClickSource` 재사용.
+  - List 행(`list-row`)은 v1 범위 밖 — `DataTable`의 `cell-*` slot 재노출로 별도 처리 예정.
+  - non-breaking(미사용 시 기존 마크업 100% 동일), `src/types/slots.ts` 타입 4종 + `ScheduleCalendar`에 `defineSlots`. 상세: [RFC](./dev/rfc/REV-A1-slot-api.md), [architecture.md § Scoped Slots](./dev/architecture.md#scoped-slots-rev-a1-2026-07-02).
 
 - [ ] **REV-A2 / `Schedule` 도메인 모델 HR 과결합**
   - `participantId`·`participantName` 필수, `ViewScope: 'my' | 'company'`, List 컬럼이 Participant 고정.
@@ -165,10 +165,10 @@
 
 - **설계:** CSS 변수(`--vp-*`) + scoped SFC 스타일. 라이브러리 내부에 Tailwind 없음.
 - **루트 class fallthrough:** `ScheduleCalendar` 단일 루트 → Vue 기본 `inheritAttrs`로 외부 `class` 합쳐짐. 단 scoped `.schedule-calendar`와 **동일 속성 충돌** (border-radius, border, background 등).
-- **내부 요소:** slot 0건 → Tailwind utility를 prop으로 넘길 경로 없음. `scheduleTypeOptions`는 **인라인 color/backgroundColor**.
-- **Tailwind 프로젝트 정석:** `@theme` 또는 팔레트 hex → `:root { --vp-* }` 매핑. 문서화됨 (`apps/docs/guide/theming.md`).
+- **내부 요소:** `toolbar`/`day-cell`/`event`/`month-overflow-item` scoped slot(REV-A1, 2026-07-02)로 Tailwind 마크업 직접 렌더 가능. List 행만 잔여. `scheduleTypeOptions`는 여전히 **인라인 color/backgroundColor**.
+- **Tailwind 프로젝트 정석:** `@theme` 또는 팔레트 hex → `:root { --vp-* }` 매핑, 또는 slot으로 마크업 자체를 Tailwind로 재작성. 문서화됨 (`apps/docs/guide/theming.md`).
 - **완전 Tailwind UI:** `@vuepkg/calendar/headless` + 소비자 마크업.
-- **로드맵 정합:** `roadmap.md` §1.1 "Tailwind/shadcn 친화적"은 **목표 상태** — slot API 완료 전까지는 "CSS 변수 친화 + headless"로 문구 조정 권장.
+- **로드맵 정합:** `roadmap.md` §1.1 "Tailwind/shadcn 친화적" — REV-A1 완료로 slot 경로 확보됨. List 행 slot화 전까지는 "CSS 변수 + slot(List 제외) + headless"로 정확.
 
 ---
 

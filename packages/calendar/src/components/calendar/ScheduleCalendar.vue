@@ -2,6 +2,7 @@
 import { computed, defineAsyncComponent, onMounted, ref, toRef, useAttrs, watch } from 'vue'
 import { useCalendar } from '@/composables/useCalendar'
 import { usePublicHolidays } from '@/composables/usePublicHolidays'
+import { CALENDAR_VIEWS } from '@/constants/calendarView'
 import type {
   CalendarDateSelectPayload,
   CalendarNavigateAction,
@@ -24,6 +25,12 @@ import type {
   ScheduleTypeOption,
   ViewScope,
 } from '@/types/schedule'
+import type {
+  DayCellSlotProps,
+  EventSlotProps,
+  MonthOverflowItemSlotProps,
+  ToolbarSlotProps,
+} from '@/types/slots'
 import { startOfDay } from '@/utils/date'
 import { mergeHolidays } from '@/utils/holiday'
 import { resolveCalendarNavigateDate } from '@/utils/date'
@@ -92,6 +99,13 @@ const props = withDefaults(
 
 const emit = defineEmits<ScheduleCalendarEmits>()
 const attrs = useAttrs()
+
+defineSlots<{
+  toolbar?: (props: ToolbarSlotProps) => unknown
+  'day-cell'?: (props: DayCellSlotProps) => unknown
+  event?: (props: EventSlotProps) => unknown
+  'month-overflow-item'?: (props: MonthOverflowItemSlotProps) => unknown
+}>()
 
 const view = defineModel<CalendarView>('view', {
   default: 'month',
@@ -273,7 +287,15 @@ function handleScheduleResize(payload: CalendarScheduleResizePayload) {
       </button>
     </div>
 
-    <CalendarToolbar v-if="!hideToolbar" :calendar="calendar" @view-change="handleViewChange" />
+    <slot
+      v-if="!hideToolbar"
+      name="toolbar"
+      :current-view="currentView"
+      :views="CALENDAR_VIEWS"
+      :on-select="handleViewChange"
+    >
+      <CalendarToolbar :calendar="calendar" @view-change="handleViewChange" />
+    </slot>
 
     <section
       class="calendar-content"
@@ -289,7 +311,17 @@ function handleScheduleResize(payload: CalendarScheduleResizePayload) {
         @overflow-click="handleOverflowClick"
         @schedule-click="handleScheduleClick"
         @navigate="handleNavigate"
-      />
+      >
+        <template v-if="$slots['day-cell']" #day-cell="slotProps">
+          <slot name="day-cell" v-bind="slotProps" />
+        </template>
+        <template v-if="$slots.event" #event="slotProps">
+          <slot name="event" v-bind="slotProps" />
+        </template>
+        <template v-if="$slots['month-overflow-item']" #month-overflow-item="slotProps">
+          <slot name="month-overflow-item" v-bind="slotProps" />
+        </template>
+      </MonthView>
       <WeekView
         v-else-if="currentView === 'week'"
         :calendar="calendar"
@@ -302,7 +334,11 @@ function handleScheduleResize(payload: CalendarScheduleResizePayload) {
         @schedule-move="handleScheduleMove"
         @schedule-resize="handleScheduleResize"
         @navigate="handleNavigate"
-      />
+      >
+        <template v-if="$slots.event" #event="slotProps">
+          <slot name="event" v-bind="slotProps" />
+        </template>
+      </WeekView>
       <DayView
         v-else-if="currentView === 'day'"
         :calendar="calendar"
@@ -314,7 +350,11 @@ function handleScheduleResize(payload: CalendarScheduleResizePayload) {
         @schedule-move="handleScheduleMove"
         @schedule-resize="handleScheduleResize"
         @navigate="handleNavigate"
-      />
+      >
+        <template v-if="$slots.event" #event="slotProps">
+          <slot name="event" v-bind="slotProps" />
+        </template>
+      </DayView>
       <ListView
         v-else
         :calendar="calendar"

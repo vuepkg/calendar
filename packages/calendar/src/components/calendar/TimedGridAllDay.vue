@@ -3,10 +3,15 @@ import { computed } from 'vue'
 import type { CalendarScheduleClickPayload, ScheduleClickSource } from '@/types/calendarEvents'
 import type { AllDayBarLayout } from '@/types/layout'
 import type { Holiday, Schedule } from '@/types/schedule'
+import type { EventSlotProps } from '@/types/slots'
 import { toDateKey } from '@/utils/date'
 import { getHolidaysForDateKey, groupHolidaysByDateKey } from '@/utils/holiday'
 import AllDayBar from './AllDayBar.vue'
 import HolidayChip from './HolidayChip.vue'
+
+defineSlots<{
+  event?: (props: EventSlotProps) => unknown
+}>()
 
 const props = withDefaults(
   defineProps<{
@@ -39,6 +44,14 @@ const dayHolidays = computed(() =>
     holidays: getHolidaysForDateKey(holidaysByDate.value, toDateKey(day)),
   })),
 )
+
+function onBarSelect(bar: AllDayBarLayout) {
+  emit('schedule-click', {
+    schedule: bar.schedule,
+    source: props.allDayScheduleSource,
+    date: props.days[bar.startColumn],
+  })
+}
 </script>
 
 <template>
@@ -80,19 +93,22 @@ const dayHolidays = computed(() =>
               gridRow: bar.row + 1,
             }"
           >
-            <AllDayBar
+            <slot
+              name="event"
               :schedule="bar.schedule"
-              :span="bar.span"
-              v-bind="getTypeStyle(bar.schedule.type)"
+              :source="allDayScheduleSource"
+              :type-style="getTypeStyle(bar.schedule.type)"
               :show-participant="showParticipant"
-              @click="
-                emit('schedule-click', {
-                  schedule: bar.schedule,
-                  source: allDayScheduleSource,
-                  date: days[bar.startColumn],
-                })
-              "
-            />
+              :on-select="() => onBarSelect(bar)"
+            >
+              <AllDayBar
+                :schedule="bar.schedule"
+                :span="bar.span"
+                v-bind="getTypeStyle(bar.schedule.type)"
+                :show-participant="showParticipant"
+                @click="onBarSelect(bar)"
+              />
+            </slot>
           </div>
         </div>
       </div>

@@ -66,7 +66,11 @@ const periodLabel = computed(() => props.calendar.monthLabel.value)
         @time-slot-select="emit('time-slot-select', $event)"
         @schedule-move="emit('schedule-move', $event)"
         @schedule-resize="emit('schedule-resize', $event)"
-      />
+      >
+        <template v-if="$slots.event" #event="slotProps">
+          <slot name="event" v-bind="slotProps" />
+        </template>
+      </TimedGrid>
     </div>
   </div>
 </template>

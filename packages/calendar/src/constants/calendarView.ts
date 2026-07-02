@@ -1,4 +1,8 @@
-import type { ScheduleTypeOption } from '@/types/schedule'
+import type { CalendarView, ScheduleTypeOption } from '@/types/schedule'
+
+// ── Views ─────────────────────────────────────────────────────────────
+/** 툴바 뷰 전환 순서 — `toolbar` slot props(`views`)에서 재사용 (REV-A1) */
+export const CALENDAR_VIEWS: readonly CalendarView[] = ['month', 'week', 'day', 'list']
 
 // ── Schedule Types ────────────────────────────────────────────────────
 // color는 각 backgroundColor 대비 WCAG AA(4.5:1) 이상 확보 — 참가자 라벨의 opacity 0.85 dimming 후에도 통과 (F3-5)

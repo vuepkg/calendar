@@ -64,3 +64,11 @@ export type {
 
 /** 팝오버 위치 계산 경계 타입 — `@vuepkg/core`에서 재노출 */
 export type { RectBounds } from '@vuepkg/core'
+
+/** scoped slot props (REV-A1) */
+export type {
+  DayCellSlotProps,
+  EventSlotProps,
+  MonthOverflowItemSlotProps,
+  ToolbarSlotProps,
+} from './slots'

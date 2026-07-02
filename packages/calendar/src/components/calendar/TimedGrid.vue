@@ -230,7 +230,11 @@ onUnmounted(() => {
       :show-participant="showParticipant"
       :all-day-schedule-source="allDayScheduleSource"
       @schedule-click="emit('schedule-click', $event)"
-    />
+    >
+      <template v-if="$slots.event" #event="slotProps">
+        <slot name="event" v-bind="slotProps" />
+      </template>
+    </TimedGridAllDay>
 
     <div class="timed-grid-scroll calendar-scroll">
       <div class="calendar-grid-row timed-body">
@@ -257,6 +261,7 @@ onUnmounted(() => {
             :is-event-dragging="schedDrag.isDragging.value"
             :show-participant="showParticipant"
             :get-type-style="getTypeStyle"
+            :timed-schedule-source="timedScheduleSource"
             @pointerdown="handlePointerDown($event, column.day)"
             @pointermove="handlePointerMove($event)"
             @pointerup="handlePointerUp($event)"
@@ -267,7 +272,11 @@ onUnmounted(() => {
             @resize-pointerdown="
               (event, schedule) => handleResizePointerDown(event, schedule, column.day)
             "
-          />
+          >
+            <template v-if="$slots.event" #event="slotProps">
+              <slot name="event" v-bind="slotProps" />
+            </template>
+          </TimedGridDayColumn>
         </div>
       </div>
     </div>

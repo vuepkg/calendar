@@ -31,6 +31,7 @@ function mountScheduleCalendar(options?: {
   date?: Date
   fetchPublicHolidays?: boolean
   holidays?: []
+  slots?: Record<string, string>
 }) {
   const view = options?.view ?? 'month'
   const date = options?.date ?? startOfDay(new Date(2026, 3, 22))
@@ -43,6 +44,7 @@ function mountScheduleCalendar(options?: {
       fetchPublicHolidays: options?.fetchPublicHolidays ?? false,
       holidays: options?.holidays,
     },
+    slots: options?.slots,
     global: {
       stubs: {
         DataTable: { template: '<div class="data-table-stub" />' },
@@ -843,5 +845,83 @@ describe('ScheduleCalendar public holiday fetching', () => {
 
       expect(wrapper.find('.holiday-fetch-error').exists()).toBe(false)
     })
+  })
+})
+
+describe('ScheduleCalendar scoped slots (REV-A1)', () => {
+  it('renders custom toolbar content and keeps default view-change behavior', async () => {
+    const wrapper = mountScheduleCalendar({
+      view: 'month',
+      slots: {
+        toolbar: `
+          <template #toolbar="{ currentView, views, onSelect }">
+            <div class="custom-toolbar">
+              <span class="custom-toolbar-current">{{ currentView }}</span>
+              <button
+                v-for="v in views"
+                :key="v"
+                type="button"
+                class="custom-toolbar-btn"
+                :data-view="v"
+                @click="onSelect(v)"
+              >{{ v }}</button>
+            </div>
+          </template>
+        `,
+      },
+    })
+
+    expect(wrapper.find('.calendar-toolbar').exists()).toBe(false)
+    expect(wrapper.find('.custom-toolbar').exists()).toBe(true)
+    expect(wrapper.find('.custom-toolbar-current').text()).toBe('month')
+
+    await wrapper.find('.custom-toolbar-btn[data-view="week"]').trigger('click')
+
+    const emitted = wrapper.emitted('view-change')?.[0]?.[0] as CalendarViewChangePayload
+    expect(emitted).toEqual({ view: 'week', previousView: 'month' })
+  })
+
+  it('renders default toolbar unchanged when the slot is not used', () => {
+    const wrapper = mountScheduleCalendar({ view: 'month' })
+    expect(wrapper.find('.calendar-toolbar').exists()).toBe(true)
+  })
+
+  it('forwards a custom event slot through MonthView down to the month chip', () => {
+    const wrapper = mountScheduleCalendar({
+      view: 'month',
+      date: startOfDay(new Date(2026, 3, 22)),
+      slots: {
+        event: `
+          <template #event="{ schedule, source }">
+            <div class="custom-event-marker" :data-source="source">{{ schedule.title }}</div>
+          </template>
+        `,
+      },
+    })
+
+    expect(wrapper.find('.event-chip').exists()).toBe(false)
+    const marker = wrapper.find('.custom-event-marker')
+    expect(marker.exists()).toBe(true)
+    expect(marker.attributes('data-source')).toBe('month-chip')
+  })
+
+  it('forwards a custom day-cell slot while preserving the gridcell a11y wrapper', () => {
+    const wrapper = mountScheduleCalendar({
+      view: 'month',
+      date: startOfDay(new Date(2026, 3, 22)),
+      slots: {
+        'day-cell': `
+          <template #day-cell="{ cell }">
+            <div class="custom-day-cell">{{ cell.date.getDate() }}</div>
+          </template>
+        `,
+      },
+    })
+
+    const cells = wrapper.findAll('.month-cell')
+    expect(cells.length).toBeGreaterThan(0)
+    expect(cells[0]!.attributes('role')).toBe('gridcell')
+    expect(wrapper.find('.custom-day-cell').exists()).toBe(true)
+    expect(wrapper.find('.cell-date').exists()).toBe(false)
   })
 })

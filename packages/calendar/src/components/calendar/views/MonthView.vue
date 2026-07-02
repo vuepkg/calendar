@@ -15,6 +15,7 @@ import type {
   CalendarScheduleClickPayload,
 } from '@/types/calendarEvents'
 import type { MonthWeekCount, Schedule } from '@/types/schedule'
+import type { AllDayBarLayout } from '@/types/layout'
 import {
   layoutMonthWeeks,
   sliceMonthCellsForWeekCount,
@@ -92,6 +93,10 @@ function onOpenOverflow(
     schedules: payload.schedules,
     visibleSchedules: payload.visibleSchedules,
   })
+}
+
+function onAllDayBarSelect(bar: AllDayBarLayout, date: Date | undefined) {
+  emit('schedule-click', { schedule: bar.schedule, source: 'month-all-day-bar', date })
 }
 
 function onOverflowScheduleClick(schedule: Schedule) {
@@ -254,7 +259,14 @@ function onGridKeydown(event: KeyboardEvent) {
             @date-select="onCellDateSelect($event)"
             @schedule-click="emit('schedule-click', $event)"
             @open-overflow="onOpenOverflow($event)"
-          />
+          >
+            <template v-if="$slots['day-cell']" #day-cell="slotProps">
+              <slot name="day-cell" v-bind="slotProps" />
+            </template>
+            <template v-if="$slots.event" #event="slotProps">
+              <slot name="event" v-bind="slotProps" />
+            </template>
+          </MonthCell>
 
           <div
             v-if="week.barRowCount > 0"
@@ -276,18 +288,20 @@ function onGridKeydown(event: KeyboardEvent) {
               }"
             >
               <div class="month-week-bar-click" @click.stop>
-                <AllDayBar
+                <slot
+                  name="event"
                   :schedule="bar.schedule"
-                  :span="bar.span"
-                  v-bind="calendar.getTypeStyle(bar.schedule.type)"
-                  @click="
-                    emit('schedule-click', {
-                      schedule: bar.schedule,
-                      source: 'month-all-day-bar',
-                      date: week.cells[bar.startColumn]?.date,
-                    })
-                  "
-                />
+                  :source="'month-all-day-bar' as const"
+                  :type-style="calendar.getTypeStyle(bar.schedule.type)"
+                  :on-select="() => onAllDayBarSelect(bar, week.cells[bar.startColumn]?.date)"
+                >
+                  <AllDayBar
+                    :schedule="bar.schedule"
+                    :span="bar.span"
+                    v-bind="calendar.getTypeStyle(bar.schedule.type)"
+                    @click="onAllDayBarSelect(bar, week.cells[bar.startColumn]?.date)"
+                  />
+                </slot>
               </div>
             </div>
           </div>
@@ -306,7 +320,11 @@ function onGridKeydown(event: KeyboardEvent) {
       :container-bounds="overflowPopover?.containerBounds"
       @close="closeOverflowPopover"
       @schedule-click="onOverflowScheduleClick"
-    />
+    >
+      <template v-if="$slots['month-overflow-item']" #month-overflow-item="slotProps">
+        <slot name="month-overflow-item" v-bind="slotProps" />
+      </template>
+    </MonthOverflowPopover>
   </div>
 </template>
 

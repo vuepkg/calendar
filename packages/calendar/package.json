@@ -95,17 +95,19 @@
       "name": "index.js (ESM)",
       "path": [
         "dist/index.js",
-        "dist/headless-*.js"
+        "dist/headless-*.js",
+        "dist/CalendarMonthNav-*.js"
       ],
-      "limit": "20 kB"
+      "limit": "24 kB"
     },
     {
       "name": "index.cjs (CJS)",
       "path": [
         "dist/index.cjs",
-        "dist/headless-*.cjs"
+        "dist/headless-*.cjs",
+        "dist/CalendarMonthNav-*.cjs"
       ],
-      "limit": "19 kB"
+      "limit": "22 kB"
     },
     {
       "name": "headless.js (ESM)",

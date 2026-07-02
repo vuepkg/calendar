@@ -21,6 +21,9 @@
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.esm.js",
   "types": "./dist/index.d.ts",
+  "sideEffects": [
+    "*.css"
+  ],
   "exports": {
     ".": {
       "import": {
@@ -30,6 +33,16 @@
       "require": {
         "types": "./dist/index.d.ts",
         "default": "./dist/index.cjs.js"
+      }
+    },
+    "./DataTable": {
+      "import": {
+        "types": "./dist/DataTable.d.ts",
+        "default": "./dist/DataTable.esm.js"
+      },
+      "require": {
+        "types": "./dist/DataTable.d.ts",
+        "default": "./dist/DataTable.cjs.js"
       }
     },
     "./style.css": "./dist/style.css"

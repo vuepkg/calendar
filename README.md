@@ -47,9 +47,9 @@ Tailwind/shadcn friendly — customize part of the UI with scoped slots, or skip
 | Drag & drop move/resize | ✅ | ✅ | ✅ |
 | Recurring events | ✅ free | ✅ RRule plugin, free | ❌ |
 | Timeline / Resource view | 🚧 planned ([F4-6](./docs/dev/roadmap.md)) | ✅ **paid Premium** | ❌ |
-| Bundle size | 18.4KB (brotli, [size-limit](https://bundlephobia.com/package/@vuepkg/calendar) CI gate) | core + plugin combo — compare directly on [bundlephobia](https://bundlephobia.com/package/@fullcalendar/core) | compare directly on [bundlephobia](https://bundlephobia.com/package/vue-cal) |
+| Bundle size | 22.38KB (brotli, [size-limit](https://bundlephobia.com/package/@vuepkg/calendar) CI gate) | core + plugin combo — compare directly on [bundlephobia](https://bundlephobia.com/package/@fullcalendar/core) | compare directly on [bundlephobia](https://bundlephobia.com/package/vue-cal) |
 
-> FullCalendar Premium boundaries verified against the official [pricing](https://fullcalendar.io/pricing) and [premium docs](https://fullcalendar.io/docs/premium) as of 2026-07-02. Check each library's official docs for the latest terms.
+> FullCalendar Premium boundaries verified against the official [pricing](https://fullcalendar.io/pricing) and [premium docs](https://fullcalendar.io/docs/premium) as of 2026-07-02. Check each library's official docs for the latest terms. Our own bundle size is measured including the eagerly-loaded shared UI chunk (previously undercounted — see [roadmap.md](./docs/dev/roadmap.md)).
 
 ---
 

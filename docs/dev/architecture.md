@@ -633,6 +633,6 @@ pnpm --filter @vuepkg/core run build:lib
 | API | F4-6 Timeline → **Phase C로 연기** (서브패스·RFC 후) |
 | DX | Tailwind 가이드 완료 — slot API 후 문서 재갱신 |
 | 성능 | F4-7 virtualization · dateKey 인덱스 |
-| 생태계 | F3-4 Nuxt/SSR · F3-7 StackBlitz |
-| 테스트 | SRV-P2-12 / F1-7 시각 회귀 Linux baseline 8종 |
-| 번들 | index.js 18.4KB/20KB (92%) — F4-6 전 서브패스 분리 권장 |
+| 생태계 | F3-4 Nuxt/SSR 잔여 · F3-7 StackBlitz ✅ 완료(2026-07-02) |
+| 테스트 | SRV-P2-12 / F1-7 시각 회귀 Linux baseline 8종 ✅ 완료(2026-07-02) |
+| 번들 | index.js 22.38KB/24KB (93%, eager 공유 청크 포함 — 2026-07-02 측정 보정) — F4-6은 서브패스 분리 필수 |

@@ -62,14 +62,13 @@
   - iCal 호환 기대 사용자에게 breaking surprise. 장기적으로 `rrule` peer optional 또는 어댑터 레이어 필요.
   - **조치:** ~~엣지 케이스 문서화(한계 명시)~~ ✅ 완료(2026-07-02, [recurring-events.md § 알려진 제약](../apps/docs/guide/recurring-events.md)), 단일 회차 예외(exceptions) API 안정화, 1.x에서 RRULE import 옵션 RFC — 나머지 두 조치 미착수.
 
-- [ ] **번들 budget 92% 포화 — F4-6(Timeline) 착수 전 아키텍처 분리 필요**
-  - 현재 `index.js` 18.4KB / 20KB limit (brotli). headless 7.33KB / 9KB.
-  - Timeline/Resource 뷰는 동적 import 없이는 budget 초과 확실.
-  - **조치:** 뷰별 lazy chunk 강화, Timeline을 `@vuepkg/calendar/timeline` 서브패스로 분리, 또는 F4-6 전용 budget tier.
+- [x] **번들 budget 92% 포화 — 측정 결함 발견·수정 (2026-07-02), F4-6 서브패스 분리는 원칙으로 확정**
+  - **측정 결함 발견**: `size-limit`의 `index.js (ESM)` glob이 `dist/index.js`·`dist/headless-*.js`만 포함하고, Month 뷰 기본값이라 사실상 항상 eager 로드되는 `dist/CalendarMonthNav-*.js` 공유 청크는 처음부터 측정에서 빠져 있었음. 지금까지 기록된 18.4~19.09KB(92~95%)는 전부 과소 측정치.
+  - **조치 완료**: glob에 `CalendarMonthNav-*.js`/`.cjs` 추가해 측정 보정 → 실측 22.38KB/20.39KB 확인. `@vuepkg/ui`에서 DataTable만 정밀 분리(barrel에서 제거, `@vuepkg/ui/DataTable` subpath 신설)해 List 뷰 전용 코드를 진짜 lazy 청크로 이동. budget을 실측치에 맞춰 20→24KB(index.js)·19→22KB(index.cjs)로 현실화.
+  - **원칙 확정**: Timeline(F4-6) 등 향후 대형 기능은 코어 budget을 더 올리는 대신 `@vuepkg/calendar/<feature>` 서브패스 + 자체 size-limit 항목으로 분리(`headless`가 선례) — [roadmap.md §6.4](./dev/roadmap.md#64-리스크--완화) 참고.
 
-- [ ] **`package.json`에 `sideEffects: false` 미선언**
-  - tree-shaking 힌트 부재. Vite/Rollup은 대체로 동작하나 webpack 소비자에서 CSS side-effect 처리 불명확.
-  - **조치:** `"sideEffects": ["*.css", "**/*.css"]` 또는 `false` + style import 문서 강화.
+- [x] **`package.json`에 `sideEffects: false` 미선언** — ✅ 완료 (calendar: 2026-07-02 Tier 1 / ui·core: 2026-07-02)
+  - `packages/calendar/package.json`에 `"sideEffects": ["*.css"]`, `packages/ui/package.json`에 동일, `packages/core/package.json`(CSS 없음)에 `"sideEffects": false` 선언.
 
 - [x] **문서 drift — `vue-component-meta` 미도입 (F3-2)** — ✅ **완료 (2026-07-02)**
   - `packages/calendar/scripts/generate-api-docs.mjs`가 `ScheduleCalendar.vue`에서 props/v-model/emits/slots를 추출해 `apps/docs/api/_generated/schedule-calendar-api.md`로 생성, `apps/docs/api/schedule-calendar.md`가 VitePress `@include`로 끌어옴. `apps/docs` `build`/`dev` 스크립트가 항상 재생성 후 빌드.
@@ -118,10 +117,11 @@
 
 ## Low Priority
 
-- [ ] **`CalendarMonthNav` 청크 비대화 (14.44KB cjs gzip 3.95KB)** — 원인 규명됨(2026-07-02), 조치는 보류
-  - 근본 원인: `@vuepkg/ui`가 단일 파일(`index.esm.js`)로 빌드돼 eager(CalendarMonthNav)·lazy(ListView) 양쪽에서 참조되는 순간 7개 primitive 전체가 하나의 공유 청크로 묶임.
-  - `@vuepkg/core`와 동일한 멀티 엔트리 패턴으로 `ui`도 분리 시도 → DataTable(3.25KB)은 진짜 lazy 분리 성공했으나, `index.js` brotli가 19.09KB→20.51KB로 늘어 size-limit(20KB) 초과 확인 후 **롤백**. Popover/SegmentedControl/Chip/Button/Dialog는 대부분 eager 경로에서만 쓰여 분리 이득이 없고, 공유 청크가 깨지며 압축 효율만 나빠짐(중복 증가).
-  - **재시도 조건:** `manualChunks`로 공유 여부를 명시적으로 제어하는 설계가 선행돼야 함. 그전까지는 손대지 않는 게 현재보다 나음 — Tier 5+ 후보.
+- [x] **`CalendarMonthNav` 청크 비대화** — ✅ **부분 해결 (2026-07-02)**, 상세는 High Priority "번들 budget" 항목 참고
+  - 근본 원인(재확인): `@vuepkg/ui`가 단일 파일(`index.esm.js`)로 빌드돼 eager(CalendarMonthNav)·lazy(ListView) 양쪽에서 참조되는 순간 7개 primitive 전체가 하나의 공유 청크로 묶임.
+  - 1차 시도(7종 전부 분리)는 `index.js` brotli 19.09KB→20.51KB로 늘어 size-limit 초과 → 롤백.
+  - 2차 시도(DataTable만 정밀 분리, barrel에서 완전 제거) — **성공**: `CalendarMonthNav` 청크 15.23KB→12.70KB, `index.js` 무변화. 나머지 6종(Popover/SegmentedControl/Chip/Button/Dialog/IconButton)은 대부분 eager 전용이라 분리 이득이 없어 그대로 barrel에 유지 — 의도적 결정.
+  - 제네릭 SFC(`generic="T"`)를 lib entry로 직접 쓰면 `vite-plugin-dts`가 `.d.ts`를 못 만드는 것도 함께 확인 — `.ts` re-export wrapper로 우회.
 - [ ] **Node 24 engines 제약**
   - CI는 Node 24. 소비자·기여자 진입장벽. LTS 22 병행 검토.
 - [ ] **`ListView` defineAsyncComponent — loading/error UI 없음**

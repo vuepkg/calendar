@@ -101,9 +101,9 @@ For full API docs → [vuepkg.github.io/calendar](https://vuepkg.github.io/calen
 | Drag & Drop 이동·리사이즈 | ✅ | ✅ | ✅ |
 | 반복 일정 | ✅ 무료 | ✅ RRule 플러그인, 무료 | ❌ |
 | Timeline / Resource 뷰 | 🚧 계획 ([F4-6](../../docs/dev/roadmap.md)) | ✅ **Premium 유료** | ❌ |
-| 번들 사이즈 | 18.4KB (brotli, [size-limit](https://bundlephobia.com/package/@vuepkg/calendar) CI 게이트) | core+플러그인 조합 — [bundlephobia](https://bundlephobia.com/package/@fullcalendar/core)에서 직접 비교 | [bundlephobia](https://bundlephobia.com/package/vue-cal)에서 직접 비교 |
+| 번들 사이즈 | 22.38KB (brotli, [size-limit](https://bundlephobia.com/package/@vuepkg/calendar) CI 게이트) | core+플러그인 조합 — [bundlephobia](https://bundlephobia.com/package/@fullcalendar/core)에서 직접 비교 | [bundlephobia](https://bundlephobia.com/package/vue-cal)에서 직접 비교 |
 
-> FullCalendar Premium 여부는 2026-07-02 [공식 pricing](https://fullcalendar.io/pricing)·[premium 문서](https://fullcalendar.io/docs/premium) 기준. 각 라이브러리의 최신 조건은 공식 문서를 확인하세요.
+> FullCalendar Premium 여부는 2026-07-02 [공식 pricing](https://fullcalendar.io/pricing)·[premium 문서](https://fullcalendar.io/docs/premium) 기준. 각 라이브러리의 최신 조건은 공식 문서를 확인하세요. 자체 번들 사이즈는 eager 로드되는 공유 UI 청크까지 포함해 측정한 수치입니다(과거 측정에서 누락돼 있었음 — [roadmap.md](../../docs/dev/roadmap.md) 참고).
 
 ---
 

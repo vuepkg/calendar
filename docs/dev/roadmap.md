@@ -49,7 +49,7 @@
 | Vitest | **440** (calendar 290 + ui 76 + core 74) |
 | Playwright E2E (CI) | **142** |
 | Playwright 시각 회귀 | 8 (수동 workflow) |
-| 번들 `index.js` (brotli) | **18.4 KB / 20 KB** (92%) |
+| 번들 `index.js` (brotli, eager 공유 청크 포함) | **22.38 KB / 24 KB** (93%) — 측정 범위 보정(2026-07-02, 아래 참고) |
 | npm 버전 | **0.6.2** |
 | 문서 사이트 | https://vuepkg.github.io/calendar/ |
 
@@ -121,7 +121,7 @@ Phase 0~2(2026-06-30 완료)에서 calendar 내부의 재사용 가능한 primit
 
 | ID | 항목 | 출처 | 난이도 |
 | -- | ---- | ---- | ------ |
-| F4-6 | Timeline / Resource (`@vuepkg/calendar/timeline` 서브패스 권장) | F4 | 🔴 |
+| F4-6 | Timeline / Resource (`@vuepkg/calendar/timeline` 서브패스 **필수** — 코어 budget 24KB 중 22.38KB 이미 사용, §6.4 리스크 참고) | F4 | 🔴 |
 | F4-12 | awesome-vue·니치 커뮤니티 | F4 | 🟢 |
 | ~~F3-7~~ | ~~StackBlitz 예약 SaaS 데모~~ — ✅ 완료(2026-07-02, Tier 3) | F3 | 🟢 |
 | F4-8 | 타임존 | F4 | 🔴 (보류) |
@@ -149,7 +149,7 @@ Phase 0~2(2026-06-30 완료)에서 calendar 내부의 재사용 가능한 primit
 | -- | ---- | --- | -------- |
 | GR-01 | `keywords` 보강 | npm 검색 유입은 keywords 의존도가 큼. 현재 `typescript`/`drag-drop`/`event-calendar`/`planner` 등 핵심어 누락 | `packages/calendar/package.json` keywords에 `typescript`, `drag-drop`, `event-calendar`, `weekly-calendar`, `monthly-calendar`, `recurring-events` 추가. `timeline`은 F4-6 완료 전까지 **보류** — 미구현 기능 키워드 등록은 허위 유입 |
 | GR-02 | Use Case 목록 섹션 | 저비용·고효과, 구매자 페르소나 명확화 + SEO. 코드 변경 없음 | README에 "적합한 사용처" 섹션 추가 — Admin Dashboard / Booking System / Company Groupware / Task Management. Hospital Scheduler·Resource Planning은 Timeline 없이는 과장이므로 **제외** |
-| GR-03 | 비교표(FullCalendar/vue-cal) | 전환율에 큰 영향이라는 의견은 타당하나, 미구현 기능은 정직하게 표기해야 리뷰어 원칙(과장 금지)에 부합 | README에 비교표 추가. `Timeline/Scheduler` 행은 "🚧 계획(F4-6)"으로 명시, `Lightweight`는 정성 표현 대신 실측치(`18.4KB brotli / 20KB budget`) 병기 |
+| GR-03 | 비교표(FullCalendar/vue-cal) | 전환율에 큰 영향이라는 의견은 타당하나, 미구현 기능은 정직하게 표기해야 리뷰어 원칙(과장 금지)에 부합 | README에 비교표 추가. `Timeline/Scheduler` 행은 "🚧 계획(F4-6)"으로 명시, `Lightweight`는 정성 표현 대신 실측치(`22.38KB brotli / 24KB budget`, 2026-07-02 측정 보정 반영) 병기 |
 | GR-04 | headless subpath 노출 강화 | OSS 리뷰 DX 항목에서 이미 "문서에서 더 전면 배치 권장"으로 지적됨([vue3-reviewer-backlog.md](../vue3-reviewer-backlog.md) DX 절) — 이번 의견의 "Slot 강조"와 방향 일치, 신규 항목 아닌 기존 지적과 통합 | README Hero 직후 "shadcn/Tailwind 친화" 문구에 `@vuepkg/calendar/headless` 링크 추가 |
 
 **채택 — 기존 Phase C 항목과 통합(신규 항목 아님, 우선순위만 재확인)**
@@ -196,7 +196,11 @@ Phase 0~2(2026-06-30 완료)에서 calendar 내부의 재사용 가능한 primit
 **Tier 4 — 단일 컴포넌트/모듈 단위 수정 (테스트 동반)**
 
 - [x] ListView loading/error UI 추가 — `defineAsyncComponent({ loadingComponent, errorComponent, delay: 200, timeout: 10000 })`, `ScheduleCalendar.list-async.spec.ts` 신규(에러 상태 검증, 로더 mock rejection 격리)
-- [x] CalendarMonthNav 청크 비대화 / core·ui tree-shake 순도 검증 — **조사 결과 원인 규명, 코드 수정은 롤백**. 근본 원인: `@vuepkg/ui`가 단일 파일(`index.esm.js`)로만 빌드되어 CalendarMonthNav(eager)·ListView(lazy) 양쪽에서 참조되는 순간 전체 ui 번들(Button/Chip/DataTable/Dialog/IconButton/Popover/SegmentedControl 전부)이 "CalendarMonthNav" 청크 이름으로 뭉쳐 eager 로드됨 — `@vuepkg/core`(이미 멀티 엔트리 사례 존재)와 동일 패턴으로 `ui`도 컴포넌트별 entry 분리 시도 → DataTable(3.25KB)이 진짜 lazy 청크로 분리되는 것까지 확인했으나, **`index.js` brotli 실측이 19.09KB→20.51KB로 늘어 size-limit(20KB) 초과** — Popover/SegmentedControl/Chip/Button/Dialog가 기존엔 하나의 공유 청크로 합쳐져 있어 압축 효율이 좋았는데, 분리 후 각각 `index.js`에 인라인되며 총 전송 바이트가 오히려 증가(중복 발생). **원복 완료**, `@vuepkg/core`에는 안전한 부분만 유지: `sideEffects: false` 추가(무해함 확인, `pnpm run size` 19.09KB로 원상태). 향후 재시도 시 `manualChunks`로 공유 여부를 명시적으로 제어하는 설계가 선행되어야 함 — Tier 5+ 후보로 하향
+- [x] CalendarMonthNav 청크 비대화 / core·ui tree-shake 순도 검증 — **조사 결과 원인 규명, 전체 분리는 롤백**. 근본 원인: `@vuepkg/ui`가 단일 파일(`index.esm.js`)로만 빌드되어 CalendarMonthNav(eager)·ListView(lazy) 양쪽에서 참조되는 순간 전체 ui 번들(Button/Chip/DataTable/Dialog/IconButton/Popover/SegmentedControl 전부)이 "CalendarMonthNav" 청크 이름으로 뭉쳐 eager 로드됨 — 7종 전부를 별도 entry로 분리 시도했더니 `index.js` brotli 실측이 19.09KB→20.51KB로 늘어 size-limit(20KB) 초과(Popover/SegmentedControl/Chip/Button/Dialog가 공유 청크 압축 효율을 잃고 각각 `index.js`에 인라인되며 총 전송 바이트 증가) → **원복**. `@vuepkg/core`에는 안전한 부분만 유지: `sideEffects: false` 추가
+- [x] **DataTable만 정밀 분리(재시도) + size-limit 측정 범위 자체의 결함 발견·수정** — 사용자 요청으로 재시도(2026-07-02). 이번엔 DataTable만 `@vuepkg/ui`의 별도 entry로 분리(barrel `index.ts`에서 DataTable export 완전 제거, 나머지 6종은 그대로 barrel 유지)하고 `ListView.vue`만 `@vuepkg/ui/DataTable` subpath로 전환 — **성공**: `CalendarMonthNav` 공유 청크 15.23KB→12.70KB, `index.js` 자체는 무변화(회귀 없음, Vitest 306건 전체 통과). 제네릭 컴포넌트(`DataTable.vue`의 `generic="T"`)를 직접 lib entry로 쓰면 `vite-plugin-dts`가 `.d.ts`를 생성하지 못하는 문제 발견 — `src/DataTable.ts`(`export { default, type DataTableColumn } from './DataTable.vue'`) 얇은 wrapper를 entry로 우회.
+  - **더 큰 발견**: `pnpm run size`(size-limit CI 게이트)의 `index.js (ESM)` 측정 glob이 `dist/index.js`·`dist/headless-*.js`만 포함하고 **`dist/CalendarMonthNav-*.js`(Month 뷰 기본값이라 사실상 항상 eager 로드되는 공유 청크)는 애초부터 측정 대상에서 빠져 있었음**. 지금까지 로드맵에 기록된 18.4KB~19.09KB(92~95%) 수치는 전부 이 청크를 빼고 잰 과소 측정치. glob에 `dist/CalendarMonthNav-*.js`/`.cjs`를 추가해 측정을 바로잡자 **`index.js` 브otli 실측이 22.38KB로 확인됨(기존 20KB 한도 초과)**.
+  - **budget 조정**: 사용자와 논의 후 "코어는 타이트하게 유지하되, 새로 추가되는 대형 기능(Timeline 등)은 처음부터 서브패스로 설계"하는 방향에 합의. 측정 결함을 바로잡은 실측치(22.38/20.39KB)에 맞춰 `index.js` 20→24KB, `index.cjs` 19→22KB로 상향(§0·§6.5 대시보드 갱신). `headless.js`(9KB)·`style.css`(8KB)는 무변경.
+  - **원칙 확정** (Phase C/F4-6 이후 적용): 앞으로 추가되는 대형 기능은 이 코어 budget과 별개로 자체 subpath(예: `@vuepkg/calendar/timeline`)와 자체 size-limit 항목을 갖는다 — `headless` 서브패스가 이미 선례. 코어 budget을 계속 올리는 대신, 무거운 신규 기능은 opt-in 서브패스로 분리해 "가볍다"는 포지셔닝을 지킨다.
 - [x] F4-12 Awesome Vue 등록 — **PR 제출은 보류, 사전 준비만 완료**. 등재 조건(`​.github/contributing.md`) 검토 중 2개 발견: (1) "documentation is in English" — 루트 README.md가 전체 한국어였음 → **영어로 전면 재작성 완료**(`packages/calendar/README.md`는 npm 대상, 한국어 유지, 이번 범위 아님). (2) AI 에이전트 프로젝트는 "최초~최신 릴리즈 간 최소 1개월, 3회 이상 업데이트" 증명 필요 — npm registry 실측 결과 최초 배포 2026-06-26, 최신 2026-07-02로 **6일**만 경과, 미충족. 등재 entry 문구는 준비 완료(§5.4 참고), 2026-07-26 이후 재개
 
 **Tier 5 — 리팩터링급 (여러 파일, API 표면 영향)**
@@ -454,9 +458,10 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | 단일 메인테이너 부담 | 범위 대비 인력 부족 → 정체 | Phase 독립 출시 설계, "calendar가 쓰는 것만" 우선순위 |
 | Scope creep (범용 프레임워크 회귀 유혹) | 방향이 재차 흔들림 | 2026-06-30 결정 고정: `ui`는 calendar 내부 전용으로 동결 |
 | 추상화 비용 > 이득 | primitive 일반화가 오히려 복잡 | 2회 이상 재사용 전엔 추출 보류 (§5.1 CMP-X 기준) |
-| 시각 회귀 | 토큰 전환 중 UI 깨짐 | F1-7 baseline 필요 (Phase B) |
+| 시각 회귀 | 토큰 전환 중 UI 깨짐 | ✅ F1-7 baseline 완료 (2026-07-02, Tier 3) |
 | SSR/hydration 이슈 | Nuxt 사용자 이탈 | F3-4에서 명시적 검증 |
 | 캘린더 niche 시장 규모 한계 | 범용 UI 라이브러리 대비 TAM이 작음 | B2B 임베딩·고급 뷰 유료화(§3 Phase 4 수익화 시사점)로 단가 보전 |
+| 코어 번들 budget 압박 (대형 기능 추가 시) | budget을 계속 올리면 "가볍다" 포지셔닝(§1.3) 희석 | **원칙(2026-07-02 확정):** 코어(`index.js`)는 24KB 선에서 타이트하게 유지. Timeline(F4-6) 등 신규 대형 기능은 처음부터 `@vuepkg/calendar/<feature>` 서브패스 + 자체 size-limit 항목으로 분리 (`headless`가 선례) |
 
 ### 6.5 성공 지표 (KPI)
 
@@ -465,7 +470,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | 패키지 수 | 4 (core/theme/ui/calendar) — `ui`는 calendar 전용으로 동결, 더 늘리지 않음 |
 | `ui` primitive 수 | 7종 (Button/IconButton/SegmentedControl/Chip/Popover/DataTable/Dialog) — 동결 |
 | 캘린더 도메인 기능 커버리지 | month/week/day/list 뷰, 공휴일, overflow popover, 드래그 시간 슬롯 선택, DnD, CRUD 모달, 반복 일정 |
-| calendar 번들 사이즈 (brotli) | index.js 18.4KB / 20KB (92%) — F4-6 전 서브패스 분리 권장 |
+| calendar 번들 사이즈 (brotli) | index.js 22.38KB / 24KB (93%, eager 공유 청크 포함 — 2026-07-02 측정 보정) — F4-6 전 서브패스 분리 권장 |
 | a11y | `@vuepkg/ui` 7종 키보드·aria 완비, axe CI 통과 |
 | 테스트 | Vitest 440 / E2E 기능 142(CI) + 시각 8(수동) |
 
@@ -482,6 +487,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | 2026-07-02 | **Phase C-1 신설** — 외부 README/홍보 전략 의견을 리뷰어·전략 에이전트 관점으로 교차 검증, GR-01~04 Quick Win 채택 + Timeline 조기 홍보·다국어 README·다채널 동시 홍보 거부 |
 | 2026-07-02 | **Tier 1~3 실행 완료** — keywords·sideEffects·headless 노출(GR-01/04/REV-B1), Use Case·비교표·RRULE 한계 문서화·이슈 템플릿(GR-02/03), 시각 회귀 Linux baseline 재캡처(SRV-P2-12/F1-7)·StackBlitz Playground(F3-7). Phase 1 100%, Phase 3 86%, SRV 100% 달성, 전체 로드맵 85%→90% |
 | 2026-07-02 | **Tier 4 실행** — ListView 로딩/에러 UI 추가. `@vuepkg/ui` 멀티 엔트리 분리를 시도했으나 size-limit 초과로 롤백(원인은 규명해 문서화, `@vuepkg/core`의 `sideEffects: false`만 유지). 루트 README.md 영어 전면 재작성(Awesome Vue "documentation is in English" 조건 충족 목적). F4-12 Awesome Vue PR은 릴리즈 이력 조건(최초 배포 후 1개월) 미충족으로 2026-07-26 이후로 연기, entry 문구는 §5.4에 준비 완료 |
+| 2026-07-02 | **번들 측정 보정** — DataTable만 정밀 분리 재시도(성공, `index.js` 회귀 없음). 그 과정에서 `size-limit`의 `index.js (ESM)` glob이 항상 eager 로드되는 `CalendarMonthNav-*.js` 공유 청크를 측정 대상에서 빠뜨려온 결함 발견 — 지금까지 기록된 18.4~19.09KB(92~95%) 수치는 전부 과소 측정치였음. glob 수정 후 실측 22.38KB로 확인, budget을 20→24KB(index.js)·19→22KB(index.cjs)로 현실화. §0·§6.4·§6.5의 번들 수치 전체 갱신. "코어는 타이트하게, 신규 대형 기능은 서브패스로" 원칙을 §6.4에 명문화 |
 
 ---
 

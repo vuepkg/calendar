@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { DataTable, type DataTableColumn } from '@vuepkg/ui'
+import DataTable, { type DataTableColumn } from '@vuepkg/ui/DataTable'
 import CalendarMonthNav from '../CalendarMonthNav.vue'
 import type {
   CalendarContext,

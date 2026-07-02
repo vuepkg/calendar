@@ -474,3 +474,28 @@ describe('TimedGrid — event slot (REV-A1)', () => {
     expect(wrapper.find('.all-day-bar-chip').exists()).toBe(true)
   })
 })
+
+describe('TimedGrid — optional participant fields (REV-A2)', () => {
+  it('renders an all-day bar without a participant and omits it from the title', () => {
+    const day = startOfDay(new Date(2026, 3, 22))
+    const roomBooking: Schedule = {
+      id: 'room-1',
+      title: 'Conference Room A',
+      type: 'room_booking',
+      start: day,
+      end: day,
+      allDay: true,
+      meta: { roomId: 'room-3f-a' },
+    }
+
+    const wrapper = mount(TimedGrid, {
+      props: { days: [day], schedules: [roomBooking], getTypeStyle, showParticipant: true },
+    })
+
+    const bar = wrapper.find('.all-day-bar-chip')
+    expect(bar.exists()).toBe(true)
+    expect(bar.attributes('title')).toBe('Conference Room A')
+    expect(bar.attributes('title')).not.toContain('undefined')
+    expect(bar.find('.event-participant').text()).toBe('')
+  })
+})

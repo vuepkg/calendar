@@ -264,6 +264,27 @@ describe('scheduleFilter', () => {
     expect(filterSchedulesByScope(mockSchedules, 'my')).toEqual([])
   })
 
+  it('excludes participant-less schedules from "my" scope without throwing (REV-A2)', () => {
+    const roomBooking: Schedule = {
+      id: 'room-booking-scope-test',
+      title: 'Conference Room A',
+      type: 'room_booking',
+      start: new Date(2026, 4, 15, 9, 0),
+      end: new Date(2026, 4, 15, 10, 0),
+      meta: { roomId: 'room-3f-a' },
+    }
+
+    const mine = filterSchedulesByScope([...mockSchedules, roomBooking], 'my', CURRENT_USER_ID)
+    expect(mine.some((schedule) => schedule.id === roomBooking.id)).toBe(false)
+
+    const company = filterSchedulesByScope(
+      [...mockSchedules, roomBooking],
+      'company',
+      CURRENT_USER_ID,
+    )
+    expect(company.some((schedule) => schedule.id === roomBooking.id)).toBe(true)
+  })
+
   it('filters list rows by selected date', () => {
     const date = startOfDay(new Date(2026, 4, 15))
     const filtered = filterSchedulesForListDate(mockSchedules, date)

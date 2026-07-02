@@ -35,10 +35,10 @@
   - List 행(`list-row`)은 v1 범위 밖 — `DataTable`의 `cell-*` slot 재노출로 별도 처리 예정.
   - non-breaking(미사용 시 기존 마크업 100% 동일), `src/types/slots.ts` 타입 4종 + `ScheduleCalendar`에 `defineSlots`. 상세: [RFC](./dev/rfc/REV-A1-slot-api.md), [architecture.md § Scoped Slots](./dev/architecture.md#scoped-slots-rev-a1-2026-07-02).
 
-- [ ] **REV-A2 / `Schedule` 도메인 모델 HR 과결합**
-  - `participantId`·`participantName` 필수, `ViewScope: 'my' | 'company'`, List 컬럼이 Participant 고정.
-  - 범용 이벤트 캘린더(회의실·의료·교육·예약 SaaS) 채택 시 매핑 레이어가 필수 → DX 저하.
-  - **조치:** `Schedule`을 제네릭 `CalendarEvent<TMeta>`로 점진 전환하거나, `participant*`를 optional + `meta?: Record<string, unknown>` 추가. `viewScope`/`scheduleTypes` 필터를 composable로 분리해 컴포넌트 prop에서 제거 검토.
+- [x] **REV-A2 / `Schedule` 도메인 모델 HR 과결합** — ✅ **완료 (2026-07-02)**
+  - `participantId`/`participantName`을 optional로 전환, `meta?: Record<string, unknown>` 추가 — 제네릭 `CalendarEvent<TMeta>` 전환 대신 채택(대안이었던 안, 마이그레이션 비용이 더 낮음).
+  - `filterSchedulesByScope`가 참가자 없는 일정을 "my" scope에서 안전하게 제외(에러 없음). 칩·바 `:title`이 참가자 부재 시 `"(undefined)"`를 출력하던 버그도 함께 수정.
+  - **범위 밖(유지):** `ScheduleDraft`/`ScheduleFormModal`(내장 CRUD 폼)은 참가자 선택 필수 그대로 — Medium 우선순위 "ScheduleFormModal 국제화·도메인 결합" 항목에서 별도 처리. `viewScope`/`scheduleTypes` 필터의 composable 분리도 이번엔 미착수(범위 밖).
 
 - [ ] **REV-B3 / 대량 일정·반복 전개 성능 (F4-7)**
   - `useCalendar`의 `schedules` computed가 뷰 전환·월 이동마다 `expandRecurringSchedules` 전체 실행.

@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { Chip } from '@vuepkg/ui'
 import type { Schedule } from '@/types/schedule'
 import { formatPeriod } from '@/utils/date'
 
-defineProps<{
+const props = defineProps<{
   schedule: Schedule
   color: string
   backgroundColor: string
@@ -14,6 +15,13 @@ defineProps<{
 const emit = defineEmits<{
   click: [schedule: Schedule]
 }>()
+
+const chipTitle = computed(() => {
+  const suffix = [props.schedule.participantName, props.schedule.recurrenceId ? '반복 일정' : null]
+    .filter(Boolean)
+    .join(', ')
+  return suffix ? `${props.schedule.title} (${suffix})` : props.schedule.title
+})
 </script>
 
 <template>
@@ -23,11 +31,7 @@ const emit = defineEmits<{
     clickable
     :color="color"
     :background-color="backgroundColor"
-    :title="
-      schedule.recurrenceId
-        ? `${schedule.title} (${schedule.participantName}, 반복 일정)`
-        : `${schedule.title} (${schedule.participantName})`
-    "
+    :title="chipTitle"
     @click="emit('click', schedule)"
   >
     <span class="event-title">

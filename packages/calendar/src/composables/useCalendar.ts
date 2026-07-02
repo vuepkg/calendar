@@ -142,7 +142,7 @@ export function useCalendar(options: UseCalendarOptions): CalendarContext {
         scheduleType:
           scheduleTypeOptions.find((option) => option.type === schedule.type)?.label ??
           schedule.type,
-        participant: schedule.participantName,
+        participant: schedule.participantName ?? '',
         period: formatPeriod(schedule.start, schedule.end),
         schedule,
       }))

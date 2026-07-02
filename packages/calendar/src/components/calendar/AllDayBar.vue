@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { Schedule } from '@/types/schedule'
 
-defineProps<{
+const props = defineProps<{
   schedule: Schedule
   color: string
   backgroundColor: string
@@ -12,13 +13,19 @@ defineProps<{
 const emit = defineEmits<{
   click: [schedule: Schedule]
 }>()
+
+const barTitle = computed(() =>
+  props.schedule.participantName
+    ? `${props.schedule.title} (${props.schedule.participantName})`
+    : props.schedule.title,
+)
 </script>
 
 <template>
   <div
     class="all-day-bar-chip"
     :style="{ color, backgroundColor, borderColor: color }"
-    :title="`${schedule.title} (${schedule.participantName})`"
+    :title="barTitle"
     role="button"
     tabindex="0"
     @click="emit('click', schedule)"

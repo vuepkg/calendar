@@ -413,8 +413,8 @@ interface Schedule {
   id: string
   title: string
   type: string // 임의 문자열 — 기본 제공 리터럴은 ScheduleType 참고
-  participantId: string
-  participantName: string
+  participantId?: string // HR형 일정 전용, My scope 필터 키 (REV-A2: optional)
+  participantName?: string // HR형 일정 전용, 칩·바 타이틀·showParticipant 표시 (REV-A2: optional)
   start: Date
   end: Date
   remarks?: string // 부가 설명
@@ -422,6 +422,7 @@ interface Schedule {
   recurrence?: RecurrenceRule // 반복 규칙 — expandRecurringSchedules가 표시 기간 내 회차 생성 (F4-5)
   recurrenceId?: string // @internal — 전개된 가상 회차의 마스터 id (시리즈 전체 수정/삭제 시 사용)
   isRecurrenceInstance?: boolean // @internal — 전개된 가상 회차 여부
+  meta?: Record<string, unknown> // 소비자 도메인 데이터 — 참가자 대신 회의실·환자·예약 정보 등 (REV-A2)
 }
 
 // 기본 제공 일정 유형 리터럴 (편의용 — string이므로 확장 가능)

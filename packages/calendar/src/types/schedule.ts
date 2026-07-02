@@ -53,6 +53,8 @@ export interface Participant {
 /**
  * 캘린더에 표시할 일정 한 건.
  * `start`·`end`는 로컬 `Date`(시간 포함). 종일은 `allDay: true` 권장.
+ * `participantId`/`participantName`은 HR형 일정(내 일정/회사 일정) 전용 — 회의실·의료·예약 등
+ * 참가자 개념이 없는 도메인에서는 생략하고 `meta`에 도메인 데이터를 담으세요 (REV-A2).
  *
  * @example
  * {
@@ -65,6 +67,16 @@ export interface Participant {
  *   end: new Date(2026, 3, 21, 18, 0),
  *   remarks: '현장 점검',
  * }
+ *
+ * @example 참가자 없는 도메인 (회의실 예약)
+ * {
+ *   id: 'r-101',
+ *   title: '대회의실 예약',
+ *   type: 'room_booking',
+ *   start: new Date(2026, 3, 21, 14, 0),
+ *   end: new Date(2026, 3, 21, 15, 0),
+ *   meta: { roomId: 'room-3f-a', capacity: 12 },
+ * }
  */
 export interface Schedule {
   id: string
@@ -74,9 +86,10 @@ export interface Schedule {
    * 커스텀 타입은 `ScheduleCalendar`의 `scheduleTypeOptions` prop으로 색상을 등록하세요.
    */
   type: string
-  /** `Participant.id` — My scope 필터 키 */
-  participantId: string
-  participantName: string
+  /** `Participant.id` — My scope 필터(`filterSchedulesByScope`) 키. 참가자 개념이 없으면 생략 — `filterSchedulesByScope`는 미지정 일정을 "my" scope에서 자동 제외합니다 */
+  participantId?: string
+  /** 칩·바 타이틀 툴팁·`showParticipant` 표시에 사용. 미지정 시 참가자 표기를 생략합니다 */
+  participantName?: string
   start: Date
   end: Date
   /** List Period 컬럼·부가 설명 */
@@ -92,6 +105,11 @@ export interface Schedule {
   recurrenceId?: string
   /** @internal `expandRecurringSchedules`가 생성한 가상 회차 여부 */
   isRecurrenceInstance?: boolean
+  /**
+   * 소비자 도메인 데이터 — 라이브러리는 이 필드를 읽지 않고 그대로 통과시킵니다.
+   * 참가자 대신 회의실·환자·예약 정보 등을 담을 때 사용하세요 (REV-A2).
+   */
+  meta?: Record<string, unknown>
 }
 
 /** 일정 유형 선택지 — `SCHEDULE_TYPE_OPTIONS` 또는 소비자 커스텀 배열 */

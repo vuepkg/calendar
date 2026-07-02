@@ -76,7 +76,7 @@ function buildInitialForm(): FormState {
     return {
       title: props.schedule.title,
       type: props.schedule.type,
-      participantId: props.schedule.participantId,
+      participantId: props.schedule.participantId ?? props.participants[0]?.id ?? '',
       start: props.schedule.start,
       end: props.schedule.end,
       allDay: props.schedule.allDay ?? false,

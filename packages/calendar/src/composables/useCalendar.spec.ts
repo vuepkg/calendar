@@ -393,6 +393,25 @@ describe('useCalendar requirements', () => {
       expect(calendar.listRows.value[0]!.period).toBe(formatPeriod(start, end))
       expect(calendar.listRows.value[0]!.period).not.toBe(schedule.remarks)
     })
+
+    it('defaults the participant column to an empty string for participant-less schedules (REV-A2)', () => {
+      const schedule = {
+        id: 'room-booking-test',
+        title: 'Conference Room A',
+        type: 'room_booking',
+        start: new Date(2026, 4, 7, 9, 0),
+        end: new Date(2026, 4, 7, 10, 0),
+        meta: { roomId: 'room-3f-a' },
+      }
+
+      const calendar = useCalendar({
+        schedules: [schedule],
+        initialDate: new Date(2026, 4, 1),
+      })
+
+      expect(calendar.listRows.value).toHaveLength(1)
+      expect(calendar.listRows.value[0]!.participant).toBe('')
+    })
   })
 
   describe('navigation and filtering data', () => {

@@ -75,4 +75,56 @@ describe('ScheduleEventChip', () => {
 
     expect(wrapper.find('.event-recurrence-icon').exists()).toBe(false)
   })
+
+  describe('optional participant fields (REV-A2)', () => {
+    const scheduleWithoutParticipant = {
+      ...schedule,
+      participantId: undefined,
+      participantName: undefined,
+    }
+
+    it('omits the participant parenthetical from the title when participantName is absent', () => {
+      const wrapper = mount(ScheduleEventChip, {
+        props: {
+          schedule: scheduleWithoutParticipant,
+          color: '#1565c0',
+          backgroundColor: '#e3f2fd',
+        },
+      })
+
+      expect(wrapper.attributes('title')).toBe(schedule!.title)
+      expect(wrapper.attributes('title')).not.toContain('undefined')
+    })
+
+    it('still shows the recurrence hint without a participant', () => {
+      const recurringNoParticipant = {
+        ...scheduleWithoutParticipant,
+        id: `${schedule!.id}::2026-05-07`,
+        recurrenceId: schedule!.id,
+      }
+      const wrapper = mount(ScheduleEventChip, {
+        props: {
+          schedule: recurringNoParticipant,
+          color: '#1565c0',
+          backgroundColor: '#e3f2fd',
+        },
+      })
+
+      expect(wrapper.attributes('title')).toBe(`${schedule!.title} (반복 일정)`)
+      expect(wrapper.attributes('title')).not.toContain('undefined')
+    })
+
+    it('does not render the participant span when showParticipant is true but participantName is absent', () => {
+      const wrapper = mount(ScheduleEventChip, {
+        props: {
+          schedule: scheduleWithoutParticipant,
+          color: '#1565c0',
+          backgroundColor: '#e3f2fd',
+          showParticipant: true,
+        },
+      })
+
+      expect(wrapper.find('.event-participant').text()).toBe('')
+    })
+  })
 })

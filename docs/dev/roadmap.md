@@ -190,7 +190,7 @@ Phase 0~2(2026-06-30 완료)에서 calendar 내부의 재사용 가능한 primit
 
 **Tier 3 — 명령 실행/설정형**
 
-- [ ] SRV-P2-12 / F1-7 시각 회귀 Linux baseline 재캡처
+- [x] SRV-P2-12 / F1-7 시각 회귀 Linux baseline 재캡처 — `pnpm test:e2e:update-snapshots:linux`(Docker) 실행, 8종 전부 diff 발생(F3-5 색상 대비 토큰 상향 반영 확인, 예상대로 stale였음)
 - [ ] F3-7 StackBlitz Playground 최소 예제 구성
 
 **Tier 4 — 단일 컴포넌트/모듈 단위 수정 (테스트 동반)**

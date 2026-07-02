@@ -102,9 +102,8 @@
   - headless만 쓰는 경우에도 shared chunk에 UI 로직 일부 잔존 가능.
   - **조치:** 빌드 리포트로 headless 청크 순도 주기적 검증.
 
-- [ ] **시각 회귀 스냅샷 미갱신 (SRV-P2-12)**
-  - F3-5 토큰 변경 후 Linux baseline 8종 stale.
-  - **조치:** `test:e2e:update-snapshots:linux` 실행 + Visual Regression workflow.
+- [x] **시각 회귀 스냅샷 미갱신 (SRV-P2-12)** — ✅ **완료 (2026-07-02)**
+  - F3-5 토큰 변경 후 Linux baseline 8종 stale였던 것을 `test:e2e:update-snapshots:linux`(Docker) 실행으로 확인·재생성. 8종 전부 diff 발생 — 예상대로였음.
 
 - [ ] **패키지 네이밍·브랜드 혼선**
   - repo `vue3-calendar`, npm `@vuepkg/calendar`, org `vuepkg` — 검색·SEO 분산.

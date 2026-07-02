@@ -109,9 +109,8 @@
   - repo `vue3-calendar`, npm `@vuepkg/calendar`, org `vuepkg` — 검색·SEO 분산.
   - **조치:** keywords·npm scope 일관성, awesome-vue 등록 시 동의어 정리.
 
-- [ ] **Playground / StackBlitz 미구축 (F3-7)**
-  - 문서 사이트는 있으나 즉시 fork 가능한 데모 부재. 전환율 저하.
-  - **조치:** Vite + `@vuepkg/calendar` 최소 StackBlitz, 예약 SaaS 시나리오.
+- [x] **Playground / StackBlitz 미구축 (F3-7)** — ✅ **완료 (2026-07-02)**
+  - `examples/stackblitz-demo` — pnpm workspace 제외, npm 배포본 설치, 예약 시나리오. 로컬 install/build/preview 검증 통과, README 양쪽에 링크. StackBlitz WebContainer 실제 부팅은 브라우저 필요해 미검증.
 
 - [x] **DOC-01 / Tailwind 연동 가이드** — `apps/docs/guide/theming.md` § Tailwind (2026-07-02). 로드맵: [roadmap.md](./dev/roadmap.md)
 

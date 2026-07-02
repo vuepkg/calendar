@@ -13,6 +13,7 @@ dist
 dist-ssr
 e2e-dist
 *.local
+*.tsbuildinfo
 
 # Environment variables (API keys)
 .env.local

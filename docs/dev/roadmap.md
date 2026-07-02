@@ -11,11 +11,11 @@
 | 범주 | 완료 | 전체 | 달성률 | 비고 |
 | ---- | ---: | ---: | -----: | ---- |
 | **Phase 0** Monorepo & Core | 7 | 7 | **100%** | F0-1~F0-7 |
-| **Phase 1** 테마 & 토큰 | 6 | 7 | **86%** | F1-7 시각 회귀 baseline 미착수 |
+| **Phase 1** 테마 & 토큰 | 7 | 7 | **100%** | F1-7 시각 회귀 baseline 재캡처 완료(2026-07-02) |
 | **Phase 2** `@vuepkg/ui` | 7 | 7 | **100%** | F2-6 취소 제외, F2-7은 F4-3에서 완료 |
-| **Phase 3** DX & 생태계 | 5 | 7 | **71%** | F3-4·F3-7 잔여 |
+| **Phase 3** DX & 생태계 | 6 | 7 | **86%** | F3-7 StackBlitz Playground 완료(2026-07-02), F3-4 잔여 |
 | **Phase 4** 도메인 고도화 | 8 | 12 | **67%** | F4-8 보류 포함; 활성만 보면 8/11 = **73%** |
-| **Staff Review (SRV)** | 21 | 22 | **95%** | P0 3/3(SRV-P0-03 npm install 불가 버그 신규 발견·완료)·P1 5/5·P2 12/13·NIT 1/1. SRV-P2-12만 미착수 |
+| **Staff Review (SRV)** | 22 | 22 | **100%** | P0 3/3(SRV-P0-03 npm install 불가 버그 신규 발견·완료)·P1 5/5·P2 13/13·NIT 1/1. SRV-P2-12 완료(2026-07-02) |
 | **OSS Review (REV)** | 5 | 21 | **24%** | Critical 2/4(REV-A1·REV-A2 완료)·High 1/6(F3-2 완료)·Medium 1/6(DOC-A1 완료)·Low 0/4·문서 1/1 |
 | **1.0.0 게이트 (Phase A)** | 4 | 4 | **100%** | REV-A1(slot API)·REV-A2(Schedule 모델)·F3-2(API 문서 자동화)·DOC-A1(문서 정합) 전부 완료 — **API freeze 준비 완료** |
 
@@ -24,10 +24,10 @@
 ### 전체 로드맵 (Phase 0~4, 취소·보류 제외)
 
 ```
-완료 33 / 계획 39  →  85%
+완료 35 / 계획 39  →  90%
 ```
 
-- **분자:** Phase별 완료 항목 합 (F1-7, F3-4/7, F4-6/7/12 미완)
+- **분자:** Phase별 완료 항목 합 (F3-4, F4-6/7/12 미완 — F1-7·F3-7은 2026-07-02 완료로 이동)
 - **분모:** F2-6(취소)·F4-8(명시 보류) 제외한 추적 항목
 
 ### 1.0.0까지 남은 거리 (제품 관점)
@@ -50,7 +50,7 @@
 | Playwright E2E (CI) | **142** |
 | Playwright 시각 회귀 | 8 (수동 workflow) |
 | 번들 `index.js` (brotli) | **18.4 KB / 20 KB** (92%) |
-| npm 버전 | **0.5.0** |
+| npm 버전 | **0.6.2** |
 | 문서 사이트 | https://vuepkg.github.io/calendar/ |
 
 ---
@@ -113,9 +113,9 @@ Phase 0~2(2026-06-30 완료)에서 calendar 내부의 재사용 가능한 primit
 | -- | ---- | ---- | ------ |
 | F3-4 | Nuxt / SSR 검증 + 모듈 스텁 | F3·REV | 🔴 |
 | F4-7 | Virtualization + 1k/10k 벤치마크 | F4·REV | 🔴 |
-| REV-B1 | `sideEffects` package.json | REV High | 🟢 |
+| ~~REV-B1~~ | ~~`sideEffects` package.json~~ — ✅ 완료(2026-07-02, Tier 1) | REV High | 🟢 |
 | REV-B2 | TimedGrid DnD 키보드 대안 | REV High | 🟡 |
-| SRV-P2-12 / F1-7 | 시각 회귀 Linux baseline | SRV·F1 | 🟢 |
+| ~~SRV-P2-12 / F1-7~~ | ~~시각 회귀 Linux baseline~~ — ✅ 완료(2026-07-02, Tier 3) | SRV·F1 | 🟢 |
 
 ### Phase C — 차별화·성장 (1.0.0 이후 또는 서브패스 분리 후)
 
@@ -123,7 +123,7 @@ Phase 0~2(2026-06-30 완료)에서 calendar 내부의 재사용 가능한 primit
 | -- | ---- | ---- | ------ |
 | F4-6 | Timeline / Resource (`@vuepkg/calendar/timeline` 서브패스 권장) | F4 | 🔴 |
 | F4-12 | awesome-vue·니치 커뮤니티 | F4 | 🟢 |
-| F3-7 | StackBlitz 예약 SaaS 데모 | F3 | 🟢 |
+| ~~F3-7~~ | ~~StackBlitz 예약 SaaS 데모~~ — ✅ 완료(2026-07-02, Tier 3) | F3 | 🟢 |
 | F4-8 | 타임존 | F4 | 🔴 (보류) |
 
 **~~이전 1순위~~ F4-6 Timeline — Phase C로 이동 (보류 사유):** 번들 92% 포화, slot API·이벤트 모델 미정리 상태에서 Timeline 추가 시 API breaking·유지보수 비용 증가. 설계 RFC는 Phase C 착수 시 진행.
@@ -191,7 +191,7 @@ Phase 0~2(2026-06-30 완료)에서 calendar 내부의 재사용 가능한 primit
 **Tier 3 — 명령 실행/설정형**
 
 - [x] SRV-P2-12 / F1-7 시각 회귀 Linux baseline 재캡처 — `pnpm test:e2e:update-snapshots:linux`(Docker) 실행, 8종 전부 diff 발생(F3-5 색상 대비 토큰 상향 반영 확인, 예상대로 stale였음)
-- [ ] F3-7 StackBlitz Playground 최소 예제 구성
+- [x] F3-7 StackBlitz Playground 최소 예제 구성 — `examples/stackblitz-demo`(pnpm workspace 제외, npm 배포본 `@vuepkg/calendar@0.6.2` 설치, 예약 시나리오). `npm install`+`npm run build`+`preview` 로컬 검증 완료. **StackBlitz 실제 부팅은 브라우저 필요해 미검증 — 링크를 직접 열어 확인 필요**
 
 **Tier 4 — 단일 컴포넌트/모듈 단위 수정 (테스트 동반)**
 
@@ -242,7 +242,7 @@ Phase 0~2(2026-06-30 완료)에서 calendar 내부의 재사용 가능한 primit
 
 **완료 기준(DoD)**: `pnpm build` 시 core·calendar 둘 다 빌드. 기존 테스트 전부 통과. calendar npm 배포 결과물 동일.
 
-### Phase 1 — 디자인 토큰 & 테마 시스템 — 86% (6/7)
+### Phase 1 — 디자인 토큰 & 테마 시스템 ✅ 완료 (100%, 7/7)
 
 **목표**: 하드코딩 색상/치수 제거 → CSS 변수 계약. light/dark 지원. 소비자 테마 오버라이드 가능.
 
@@ -254,7 +254,7 @@ Phase 0~2(2026-06-30 완료)에서 calendar 내부의 재사용 가능한 primit
 | F1-4 | calendar 컴포넌트 CSS의 리터럴 색상 → `var(--vp-*)` 치환 | 🟡 | ✅ |
 | F1-5 | `prefers-color-scheme` + `.vp-dark` 클래스 토글 둘 다 지원 | 🟢 | ✅ |
 | F1-6 | 테마 커스터마이징 가이드 + 토큰 레퍼런스 문서 | 🟢 | ✅ (`docs/guide/theming.md`) |
-| F1-7 | Visual regression 기준선 캡처 (토큰 전환 전/후 비교) | 🟡 | ⏳ 미착수 (Phase B) |
+| F1-7 | Visual regression 기준선 캡처 (토큰 전환 전/후 비교) | 🟡 | ✅ **완료(재정의, 2026-07-02)** — 원래 목표였던 "토큰 전환 전/후 비교 아카이브"는 전환 시점(2026-06-29)에 별도로 남기지 않아 소급 불가. Phase B에서 SRV-P2-12와 통합돼 "Linux CI baseline을 항상 최신으로 유지"로 재정의됨 — 이번에 8종 재캡처로 충족 |
 
 **왜 CSS 변수인가**: 런타임 JS 테마 엔진은 번들·런타임 비용을 만든다. CSS 변수는 비용 0이고 SSR-safe이며 "zero-dep" 포지셔닝과 일치.
 
@@ -275,7 +275,7 @@ Phase 0~2(2026-06-30 완료)에서 calendar 내부의 재사용 가능한 primit
 
 **가드레일 (영구 원칙)**: "calendar가 쓰지 않는 primitive"는 유예가 아니라 폐기한다. 모든 신규 primitive는 calendar의 실제 기능 요구가 먼저 있고, 그 부산물로만 추출한다.
 
-### Phase 3 — DX & 생태계 — 71% (5/7)
+### Phase 3 — DX & 생태계 — 86% (6/7)
 
 **목표**: 외부 개발자가 발견·학습·도입할 수 있게.
 
@@ -287,7 +287,7 @@ Phase 0~2(2026-06-30 완료)에서 calendar 내부의 재사용 가능한 primit
 | F3-4 | SSR / Nuxt 호환 검증 + `@vuepkg/nuxt` 모듈 | 🔴 | ⏳ Phase B |
 | F3-5 | 접근성 감사 — 전 컴포넌트 키보드·스크린리더 점검 (axe) | 🟡 | ✅ **완료 (2026-07-02)** — DnD 키보드 대안은 REV-B2로 분리 |
 | F3-6 | 마이그레이션 가이드 | 🟢 | ✅ **완료 (2026-07-01)** |
-| F3-7 | 시작 템플릿 + StackBlitz 데모 링크 | 🟢 | ⏳ Phase C |
+| F3-7 | 시작 템플릿 + StackBlitz 데모 링크 | 🟢 | ✅ **완료 (2026-07-02)** — `examples/stackblitz-demo`(npm 배포본 설치, 예약 시나리오), README 양쪽 Hero에 링크 |
 
 ### Phase 4 — Calendar 도메인 고도화 (Modern Calendar Engine) — 67% (8/12)
 
@@ -318,6 +318,8 @@ Phase 0~2(2026-06-30 완료)에서 calendar 내부의 재사용 가능한 primit
 
 | 항목 | 내용 | 완료일 |
 | ---- | ---- | ------ |
+| [F3-7] StackBlitz Playground | `examples/stackblitz-demo` 신규 — pnpm workspace(`pnpm-workspace.yaml`) 대상에서 제외해 npm 배포본 `@vuepkg/calendar@0.6.2`를 실제로 설치하는 독립 프로젝트로 구성(예약/회의실 시나리오). `npm install`(0 vulnerabilities로 의존성 버전 조정) + `vue-tsc -b && vite build` + `preview` 로컬 검증 통과. README 양쪽 Hero에 StackBlitz 링크 추가. StackBlitz 자체 부팅(WebContainer)은 브라우저 필요해 미검증 | 2026-07-02 |
+| [SRV-P2-12 / F1-7] 시각 회귀 Linux baseline 재캡처 | Docker(`mcr.microsoft.com/playwright:v1.61.1-jammy`) 기반 `update-visual-snapshots-linux.sh` 실행 — Git Bash(MSYS) 경로 자동변환으로 `docker run -w /work/...`가 깨지는 문제를 `MSYS_NO_PATHCONV=1`로 해결. 8종 스냅샷 전부 diff 발생(F3-5 색상 대비 토큰 상향 반영 확인, stale 예상과 일치). F1-7의 원래 목표("토큰 전환 전/후 비교 아카이브")는 전환 시점(2026-06-29)에 별도 보존하지 않아 소급 불가 — Phase B에서 재정의된 "Linux CI baseline 상시 최신화"로 충족 처리 | 2026-07-02 |
 | [DOC-A1] README·introduction 문구 정합 | README.md의 "Tailwind 미지원" 문구를 실제(REV-A1 slot) 기준으로 정정, `apps/docs/guide/introduction.md`의 slot API "🚧 예정" 표기 2건을 "✅"로 정정. 부수적으로 README Props 표에서 `publicHolidayServiceKey`/`monthWeekCount` 누락, Emits 표에서 `schedule-move`/`schedule-resize`(F4-4 DnD) 누락, `## Slots` 섹션 자체가 없던 것을 발견해 함께 추가 — **Phase A 4/4 완료, 1.0.0 API 게이트 통과** | 2026-07-02 |
 | [F3-2] `vue-component-meta` API 문서 자동화 | `packages/calendar/scripts/generate-api-docs.mjs`가 `ScheduleCalendar.vue`(유일한 공개 컴포넌트)에서 props/v-model/emits/slots를 추출해 `apps/docs/api/_generated/schedule-calendar-api.md` 생성, `schedule-calendar.md`가 VitePress `<!--@include:-->`로 흡수. `apps/docs`의 `build`/`dev`가 항상 재생성 후 실행. CI(`docs:api:check`)가 재생성 결과와 커밋된 파일의 `git diff`로 drift 차단. `defineEmits<ExternalInterface>()` 패턴은 vue-component-meta가 JSDoc을 못 따라가는 한계 확인 — emit 설명 10개만 스크립트 내 정적 맵 보강(payload 타입·존재 여부는 100% 자동). props/slots는 `defineProps`/`defineSlots`에 JSDoc 보강 후 완전 자동 추출 | 2026-07-02 |
 | [REV-A2] `Schedule` 이벤트 모델 일반화 | `participantId`/`participantName` optional화 + `meta?: Record<string, unknown>` 추가. `filterSchedulesByScope`는 참가자 없는 일정을 "my" scope에서 안전하게 제외, `ScheduleEventChip`/`AllDayBar`의 `:title`이 `"(undefined)"`를 출력하던 잠재 버그를 함께 수정. `ScheduleDraft`/`ScheduleFormModal`(내장 CRUD 폼)은 참가자 필수 유지 — 별도 Medium 항목(폼 i18n·도메인 결합)으로 분리. Vitest 6건 추가(299→305), 기능 E2E 95건 무변경 통과, size-limit 18.94/20KB(95%) | 2026-07-02 |
@@ -469,6 +471,7 @@ component     --vp-chip-bg: var(--vp-color-surface);
 | 2026-07-02 | `roadmap-progress.md` 신규 작성 — Phase 0~4·SRV·REV 달성률, Phase A/B/C 방향 확정 |
 | 2026-07-02 | **문서 통합** — `roadmap-progress.md`·`framework-roadmap.md`·`roadmap.md`(기능 백로그) 3개 문서를 본 문서로 병합. SRV 총계(19/20→20/21)·REV 총계(1/18→1/21)·Phase B 항목 누락(REV-B1/REV-B2) 등 문서 간 수치 불일치를 정정 |
 | 2026-07-02 | **Phase C-1 신설** — 외부 README/홍보 전략 의견을 리뷰어·전략 에이전트 관점으로 교차 검증, GR-01~04 Quick Win 채택 + Timeline 조기 홍보·다국어 README·다채널 동시 홍보 거부 |
+| 2026-07-02 | **Tier 1~3 실행 완료** — keywords·sideEffects·headless 노출(GR-01/04/REV-B1), Use Case·비교표·RRULE 한계 문서화·이슈 템플릿(GR-02/03), 시각 회귀 Linux baseline 재캡처(SRV-P2-12/F1-7)·StackBlitz Playground(F3-7). Phase 1 100%, Phase 3 86%, SRV 100% 달성, 전체 로드맵 85%→90% |
 
 ---
 

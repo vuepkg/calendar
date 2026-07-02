@@ -8,7 +8,7 @@ Vue 3 schedule calendar — Month / Week / Day / List views, **zero extra depend
 
 Tailwind/shadcn 친화적 — scoped slot으로 부분 커스터마이징하거나, 스타일드 컴포넌트 없이 로직만 쓰는 [`@vuepkg/calendar/headless`](#headless-서브패스)로 완전히 직접 그릴 수 있습니다.
 
-**[📖 문서 사이트](https://vuepkg.github.io/calendar/)** · **[🚀 시작하기](https://vuepkg.github.io/calendar/guide/getting-started.html)** · **[📦 npm](https://www.npmjs.com/package/@vuepkg/calendar)**
+**[📖 문서 사이트](https://vuepkg.github.io/calendar/)** · **[🚀 시작하기](https://vuepkg.github.io/calendar/guide/getting-started.html)** · **[📦 npm](https://www.npmjs.com/package/@vuepkg/calendar)** · **[⚡️ Playground](https://stackblitz.com/github/vuepkg/calendar/tree/main/examples/stackblitz-demo)**
 
 ---
 

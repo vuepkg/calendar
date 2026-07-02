@@ -69,9 +69,10 @@
   - tree-shaking 힌트 부재. Vite/Rollup은 대체로 동작하나 webpack 소비자에서 CSS side-effect 처리 불명확.
   - **조치:** `"sideEffects": ["*.css", "**/*.css"]` 또는 `false` + style import 문서 강화.
 
-- [ ] **문서 drift — `vue-component-meta` 미도입 (F3-2)**
-  - README·VitePress API 표가 수동 유지. prop/emit 추가 시 문서 불일치 이력 있음(타입 경로 버그 등).
-  - **조치:** CI에서 props/emits diff 검증 또는 VitePress에 자동 생성 파이프라인.
+- [x] **문서 drift — `vue-component-meta` 미도입 (F3-2)** — ✅ **완료 (2026-07-02)**
+  - `packages/calendar/scripts/generate-api-docs.mjs`가 `ScheduleCalendar.vue`에서 props/v-model/emits/slots를 추출해 `apps/docs/api/_generated/schedule-calendar-api.md`로 생성, `apps/docs/api/schedule-calendar.md`가 VitePress `@include`로 끌어옴. `apps/docs` `build`/`dev` 스크립트가 항상 재생성 후 빌드.
+  - CI(`ci.yml`)에 `docs:api:check`(재생성 후 `git diff --exit-code`) 게이트 추가 — prop/emit/slot 변경 후 재생성을 깜빡하면 CI가 막음.
+  - **알려진 한계:** `defineEmits<ScheduleCalendarEmits>()`처럼 외부 인터페이스로 선언된 emit은 vue-component-meta가 JSDoc을 못 따라감(inline literal인 props/slots는 정상 추출) — emit 설명 10개는 스크립트 내 정적 맵으로 보강, payload 타입·존재 여부는 100% 자동 추출이라 drift 위험 없음.
 
 - [ ] **접근성: TimedGrid DnD·드래그 슬롯 선택의 키보드 대안 없음**
   - axe CI는 정적 위반만 검출. pointer-only DnD는 WCAG 2.2 operable 요구와 충돌.

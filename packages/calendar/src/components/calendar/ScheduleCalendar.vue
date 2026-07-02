@@ -45,6 +45,7 @@ const ListView = defineAsyncComponent(() => import('./views/ListView.vue'))
 
 const props = withDefaults(
   defineProps<{
+    /** 표시할 일정 목록 (부모가 scope·CRUD 반영 후 전달) */
     schedules: Schedule[]
     /** 사내 기념일 등 — API 결과와 병합됩니다 */
     holidays?: Holiday[]
@@ -101,28 +102,37 @@ const emit = defineEmits<ScheduleCalendarEmits>()
 const attrs = useAttrs()
 
 defineSlots<{
+  /** 뷰 전환 UI 전체를 대체합니다. 기본 콘텐츠는 `CalendarToolbar`(Month/Week/Day/List 탭). */
   toolbar?: (props: ToolbarSlotProps) => unknown
+  /** 월간 셀 내부 콘텐츠(날짜 숫자·이벤트 목록)를 대체합니다. `role="gridcell"` 셸은 유지됩니다. */
   'day-cell'?: (props: DayCellSlotProps) => unknown
+  /** 칩·All Day 바·시간 그리드 블록의 표시 콘텐츠를 대체합니다. 클릭/DnD 인터랙션 래퍼는 유지됩니다. */
   event?: (props: EventSlotProps) => unknown
+  /** 월간 `+N` 팝오버 목록 항목의 콘텐츠를 대체합니다. */
   'month-overflow-item'?: (props: MonthOverflowItemSlotProps) => unknown
 }>()
 
+/** 현재 뷰 (Month/Week/Day/List) */
 const view = defineModel<CalendarView>('view', {
   default: 'month',
 })
 
+/** 현재 선택 날짜 */
 const date = defineModel<Date>('date', {
   default: () => startOfDay(new Date()),
 })
 
+/** List 뷰 날짜 필터 — `null`이면 필터 없음(선택 월 전체 표시) */
 const listFilterDate = defineModel<Date | null>('listFilterDate', {
   default: null,
 })
 
+/** View Option — My / Company 필터 */
 const viewScope = defineModel<ViewScope>('viewScope', {
   default: 'company',
 })
 
+/** 일정 유형 필터 — `null`이면 전체 유형, 빈 배열이면 결과 없음 */
 const scheduleTypes = defineModel<string[] | null>('scheduleTypes', {
   default: null,
 })

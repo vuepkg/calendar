@@ -13,21 +13,21 @@
 | **Phase 0** Monorepo & Core | 7 | 7 | **100%** | F0-1~F0-7 |
 | **Phase 1** 테마 & 토큰 | 6 | 7 | **86%** | F1-7 시각 회귀 baseline 미착수 |
 | **Phase 2** `@vuepkg/ui` | 7 | 7 | **100%** | F2-6 취소 제외, F2-7은 F4-3에서 완료 |
-| **Phase 3** DX & 생태계 | 4 | 7 | **57%** | F3-2·F3-4·F3-7 잔여 |
+| **Phase 3** DX & 생태계 | 5 | 7 | **71%** | F3-4·F3-7 잔여 |
 | **Phase 4** 도메인 고도화 | 8 | 12 | **67%** | F4-8 보류 포함; 활성만 보면 8/11 = **73%** |
 | **Staff Review (SRV)** | 20 | 21 | **95%** | P0 2/2·P1 5/5·P2 12/13·NIT 1/1. SRV-P2-12만 미착수 |
-| **OSS Review (REV)** | 3 | 21 | **14%** | Critical 2/4(REV-A1·REV-A2 완료)·High 0/6·Medium 0/6·Low 0/4·문서 1/1 |
-| **1.0.0 게이트 (Phase A)** | 2 | 4 | **50%** | REV-A1(slot API)·REV-A2(Schedule 모델) 완료 — F3-2·DOC-A1 잔여 |
+| **OSS Review (REV)** | 4 | 21 | **19%** | Critical 2/4(REV-A1·REV-A2 완료)·High 1/6(F3-2 완료)·Medium 0/6·Low 0/4·문서 1/1 |
+| **1.0.0 게이트 (Phase A)** | 3 | 4 | **75%** | REV-A1(slot API)·REV-A2(Schedule 모델)·F3-2(API 문서 자동화) 완료 — DOC-A1만 잔여 |
 
 > 이전 버전 문서들의 수치 불일치 기록: `roadmap-progress.md`는 SRV를 19/20, REV를 1/18로 표기했으나 각 문서 자체의 세부 표를 합산하면 20/21·1/21이 맞습니다(§7 갱신 이력 참고). 본 문서가 정정된 단일 수치입니다.
 
 ### 전체 로드맵 (Phase 0~4, 취소·보류 제외)
 
 ```
-완료 32 / 계획 39  →  82%
+완료 33 / 계획 39  →  85%
 ```
 
-- **분자:** Phase별 완료 항목 합 (F1-7, F3-2/4/7, F4-6/7/12 미완)
+- **분자:** Phase별 완료 항목 합 (F1-7, F3-4/7, F4-6/7/12 미완)
 - **분모:** F2-6(취소)·F4-8(명시 보류) 제외한 추적 항목
 
 ### 1.0.0까지 남은 거리 (제품 관점)
@@ -101,7 +101,7 @@ Phase 0~2(2026-06-30 완료)에서 calendar 내부의 재사용 가능한 primit
 | ---: | -- | ---- | ---- | ------ |
 | ~~1~~ | ~~REV-A1~~ | scoped **slot API** (`event`, `day-cell`, `toolbar`, `month-overflow-item`) — ✅ **완료 (2026-07-02)**, [RFC](./rfc/REV-A1-slot-api.md), `src/types/slots.ts` 4종, Vitest 9건 추가(299건), size-limit 18.9/20KB(94%) | REV Critical | ~~🔴~~ |
 | ~~2~~ | ~~REV-A2~~ | **`Schedule` 이벤트 모델 일반화** (`participant*` optional, `meta`) — ✅ **완료 (2026-07-02)**, `ScheduleDraft`/`ScheduleFormModal`은 변경 없음(참가자 필수 유지), Vitest 6건 추가(305건) | REV Critical | ~~🟡~~ |
-| 3 | F3-2 | `vue-component-meta` 문서 자동화 | F3 | 🟡 |
+| ~~3~~ | ~~F3-2~~ | `vue-component-meta` 문서 자동화 — ✅ **완료 (2026-07-02)**, `scripts/generate-api-docs.mjs` → `apps/docs/api/_generated/`, VitePress `@include`, CI `docs:api:check` drift 게이트 | F3 | ~~🟡~~ |
 | 4 | DOC-A1 | README·introduction Tailwind/headless 한 줄 정합 | REV Medium | 🟢 |
 
 **목표:** shadcn/Tailwind adopters가 "CSS 변수 또는 slot"으로 커스터마이즈 가능. API freeze 선언 전 필수.
@@ -188,14 +188,14 @@ Phase 0~2(2026-06-30 완료)에서 calendar 내부의 재사용 가능한 primit
 
 **가드레일 (영구 원칙)**: "calendar가 쓰지 않는 primitive"는 유예가 아니라 폐기한다. 모든 신규 primitive는 calendar의 실제 기능 요구가 먼저 있고, 그 부산물로만 추출한다.
 
-### Phase 3 — DX & 생태계 — 57% (4/7)
+### Phase 3 — DX & 생태계 — 71% (5/7)
 
 **목표**: 외부 개발자가 발견·학습·도입할 수 있게.
 
 | ID | 작업 | 난이도 | 상태 |
 | -- | ---- | ------ | ---- |
 | F3-1 | VitePress 문서 사이트 (`apps/docs`) + 라이브 플레이그라운드 | 🟡 | ✅ **완료 (2026-07-01)** — `https://vuepkg.github.io/calendar/` |
-| F3-2 | `vue-component-meta`로 props/emits/slots API 표 자동 생성 | 🟡 | ⏳ Phase A |
+| F3-2 | `vue-component-meta`로 props/emits/slots API 표 자동 생성 | 🟡 | ✅ **완료 (2026-07-02)** |
 | F3-3 | i18n/locale 시스템 (`weekdayLabels` → 범용 locale) | 🟡 | ✅ **완료 (2026-07-01)** — `locale?: string` prop |
 | F3-4 | SSR / Nuxt 호환 검증 + `@vuepkg/nuxt` 모듈 | 🔴 | ⏳ Phase B |
 | F3-5 | 접근성 감사 — 전 컴포넌트 키보드·스크린리더 점검 (axe) | 🟡 | ✅ **완료 (2026-07-02)** — DnD 키보드 대안은 REV-B2로 분리 |
@@ -231,6 +231,7 @@ Phase 0~2(2026-06-30 완료)에서 calendar 내부의 재사용 가능한 primit
 
 | 항목 | 내용 | 완료일 |
 | ---- | ---- | ------ |
+| [F3-2] `vue-component-meta` API 문서 자동화 | `packages/calendar/scripts/generate-api-docs.mjs`가 `ScheduleCalendar.vue`(유일한 공개 컴포넌트)에서 props/v-model/emits/slots를 추출해 `apps/docs/api/_generated/schedule-calendar-api.md` 생성, `schedule-calendar.md`가 VitePress `<!--@include:-->`로 흡수. `apps/docs`의 `build`/`dev`가 항상 재생성 후 실행. CI(`docs:api:check`)가 재생성 결과와 커밋된 파일의 `git diff`로 drift 차단. `defineEmits<ExternalInterface>()` 패턴은 vue-component-meta가 JSDoc을 못 따라가는 한계 확인 — emit 설명 10개만 스크립트 내 정적 맵 보강(payload 타입·존재 여부는 100% 자동). props/slots는 `defineProps`/`defineSlots`에 JSDoc 보강 후 완전 자동 추출 | 2026-07-02 |
 | [REV-A2] `Schedule` 이벤트 모델 일반화 | `participantId`/`participantName` optional화 + `meta?: Record<string, unknown>` 추가. `filterSchedulesByScope`는 참가자 없는 일정을 "my" scope에서 안전하게 제외, `ScheduleEventChip`/`AllDayBar`의 `:title`이 `"(undefined)"`를 출력하던 잠재 버그를 함께 수정. `ScheduleDraft`/`ScheduleFormModal`(내장 CRUD 폼)은 참가자 필수 유지 — 별도 Medium 항목(폼 i18n·도메인 결합)으로 분리. Vitest 6건 추가(299→305), 기능 E2E 95건 무변경 통과, size-limit 18.94/20KB(95%) | 2026-07-02 |
 | [REV-A1] scoped slot API | `toolbar`/`day-cell`/`event`/`month-overflow-item` 4개 slot. `ScheduleCalendar`가 유일한 공개 API 표면이라 `defineSlots`로 타입 노출, 나머지는 동적/명시적 forwarding으로 최대 4단계(`ScheduleCalendar→WeekView→TimedGrid→TimedGridDayColumn`) 전달. 클릭/DnD/키보드 인터랙션 래퍼는 항상 라이브러리가 소유하고 슬롯은 안쪽 표현 콘텐츠만 교체 — 미사용 시 기존 마크업과 100% 동일. Vitest 9건 추가(290→299), 기능 E2E 95건 무변경 통과, size-limit 18.4→18.9/20KB(92%→94%) | 2026-07-02 |
 | CalendarToolbar UI | SelectButton 비주얼 CSS 재현, `aria-pressed` 접근성 | 2026-06-16 |

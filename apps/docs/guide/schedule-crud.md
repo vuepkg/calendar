@@ -1,6 +1,6 @@
 # 일정 CRUD 모달
 
-`ScheduleFormModal`은 일정 생성·수정을 위한 Dialog 컴포넌트입니다.
+`ScheduleFormModal`은 일정 생성·수정을 위한 Dialog 컴포넌트입니다. draft → `Schedule` 변환(`buildScheduleFromDraft`)을 내부에서 처리하고, 완성된 `Schedule`을 `submit` emit으로 전달합니다 — 소비자는 `upsertSchedule`/`removeSchedule`로 목록만 갱신하면 됩니다.
 
 ## 기본 사용
 
@@ -11,16 +11,22 @@ import {
   ScheduleCalendar,
   ScheduleFormModal,
   useScheduleCalendarHost,
-  createScheduleId,
   upsertSchedule,
   removeSchedule,
 } from '@vuepkg/calendar'
-import type { Schedule, ScheduleDraft } from '@vuepkg/calendar'
+import type { Schedule, Participant } from '@vuepkg/calendar'
 
 const schedules = ref<Schedule[]>([])
-const editingSchedule = ref<Schedule | null>(null)
+const participants: Participant[] = [
+  { id: 'user-hong', name: '홍길동' },
+  { id: 'user-kim', name: '김민수' },
+]
+
 const modalOpen = ref(false)
-const defaultDraft = ref<Partial<ScheduleDraft>>({})
+const modalMode = ref<'create' | 'edit'>('create')
+const editingSchedule = ref<Schedule | null>(null)
+const initialStart = ref<Date | undefined>()
+const initialEnd = ref<Date | undefined>()
 
 const { view, date, calendarListeners } = useScheduleCalendarHost({
   onQueryChange(payload) {
@@ -28,27 +34,27 @@ const { view, date, calendarListeners } = useScheduleCalendarHost({
   },
   onScheduleClick({ schedule }) {
     // 클릭 → 수정 모달
+    modalMode.value = 'edit'
     editingSchedule.value = schedule
-    defaultDraft.value = {}
     modalOpen.value = true
   },
   onTimeSlotSelect({ start, end }) {
     // 빈 셀 클릭 → 생성 모달
+    modalMode.value = 'create'
     editingSchedule.value = null
-    defaultDraft.value = { start, end }
+    initialStart.value = start
+    initialEnd.value = end
     modalOpen.value = true
   },
 })
 
-function handleSave(draft: ScheduleDraft) {
-  schedules.value = upsertSchedule(schedules.value, draft, editingSchedule.value?.id)
+function handleSubmit(schedule: Schedule) {
+  schedules.value = upsertSchedule(schedules.value, schedule)
   modalOpen.value = false
 }
 
-function handleDelete() {
-  if (editingSchedule.value) {
-    schedules.value = removeSchedule(schedules.value, editingSchedule.value.id)
-  }
+function handleDelete(scheduleId: string) {
+  schedules.value = removeSchedule(schedules.value, scheduleId)
   modalOpen.value = false
 }
 </script>
@@ -64,66 +70,61 @@ function handleDelete() {
   </div>
 
   <ScheduleFormModal
-    v-model:open="modalOpen"
+    :open="modalOpen"
+    :mode="modalMode"
     :schedule="editingSchedule"
-    :default-draft="defaultDraft"
-    @save="handleSave"
+    :initial-start="initialStart"
+    :initial-end="initialEnd"
+    :participants="participants"
+    :existing-schedules="schedules"
+    @close="modalOpen = false"
+    @submit="handleSubmit"
     @delete="handleDelete"
-    @cancel="modalOpen = false"
   />
 </template>
 ```
 
 ## ScheduleDraft 타입
 
+`ScheduleFormModal`이 내부 폼 상태를 다룰 때 쓰는 타입입니다. `Schedule`과 달리 `participantId`가 필수입니다(내장 폼은 항상 참가자 선택을 요구).
+
 ```ts
 interface ScheduleDraft {
+  id?: string
   title: string
   type: string
   participantId: string
-  participantName: string
   start: Date
   end: Date
-  allDay?: boolean
-  remarks?: string
+  allDay: boolean
   recurrence?: RecurrenceRule
 }
 ```
 
 ## 헬퍼 함수
 
+`ScheduleFormModal`을 그대로 쓰면 `buildScheduleFromDraft`를 직접 호출할 필요가 없습니다(모달이 내부에서 처리). **헤드리스로 직접 폼을 구현할 때만** 사용하세요.
+
 ```ts
 import {
-  createScheduleId,  // UUID 생성
-  upsertSchedule,    // 생성/수정 (id 없으면 생성, 있으면 교체)
-  removeSchedule,    // id로 삭제
-  buildScheduleFromDraft, // ScheduleDraft → Schedule (id 자동 할당)
+  createScheduleId,       // 순차 id 생성 — 's-001', 's-002', ... (UUID 아님)
+  buildScheduleFromDraft, // (draft, participants, existing) => Schedule — id 자동 할당
+  upsertSchedule,         // (list, schedule) => Schedule[] — id 있으면 교체, 없으면 추가
+  removeSchedule,         // (list, scheduleId) => Schedule[]
 } from '@vuepkg/calendar'
 
-// 생성
-const newSchedule = buildScheduleFromDraft(draft)
-schedules.value = [...schedules.value, newSchedule]
-
-// 수정
-schedules.value = upsertSchedule(schedules.value, draft, existingId)
+// 헤드리스 생성 예 — 직접 만든 폼에서 draft를 받은 경우
+const schedule = buildScheduleFromDraft(draft, participants, schedules.value)
+schedules.value = upsertSchedule(schedules.value, schedule)
 
 // 삭제
 schedules.value = removeSchedule(schedules.value, id)
 ```
 
-## ScheduleFormModal Props
+## ScheduleFormModal API
 
-| prop | 타입 | 기본값 | 설명 |
-|------|------|--------|------|
-| `open` | `boolean` | — | v-model:open — 모달 열림 상태 |
-| `schedule` | `Schedule \| null` | — | 수정할 일정 (`null`이면 생성 모드) |
-| `defaultDraft` | `Partial<ScheduleDraft>` | `{}` | 생성 모드 초기값 (start/end 미리 채움) |
-| `scheduleTypeOptions` | `ScheduleTypeOption[]` | 기본 3종 | 일정 유형 선택 옵션 |
+전체 Props/Emits 표는 [ScheduleFormModal API 레퍼런스](/api/schedule-form-modal)를 참고하세요. 핵심만 요약하면:
 
-## ScheduleFormModal Emits
-
-| emit | payload | 설명 |
-|------|---------|------|
-| `save` | `ScheduleDraft` | 저장 버튼 클릭 |
-| `delete` | — | 삭제 버튼 클릭 (수정 모드에서만 표시) |
-| `cancel` | — | 취소/닫기 |
+- `open`은 v-model이 **아닙니다** — `open` prop을 직접 갱신하고 `@close`로 닫기 요청을 받습니다.
+- `participants`는 필수 prop입니다.
+- 저장 결과는 `@submit`으로 완성된 `Schedule`을 받습니다(`ScheduleDraft`가 아님).

@@ -122,6 +122,7 @@ RFC가 합의되면 `docs/dev/roadmap.md`(또는 해당 백로그 문서)에 항
 - [ ] 단위 테스트 추가/갱신 (Vitest)
 - [ ] 사용자 동작을 바꿨다면 E2E 추가/갱신 (Playwright)
 - [ ] 공개 API 변경 시 `CHANGELOG.md` + `pnpm changeset` 기록
+- [ ] `ScheduleCalendar`의 prop/emit/slot을 추가·변경했다면 `pnpm --filter @vuepkg/calendar run docs:api`로 API 문서 재생성 (CI `docs:api:check`가 drift를 막습니다 — F3-2)
 - [ ] a11y: 키보드 조작 가능? `aria-*` 속성 필요한가? (`aria-*`/`data-*`는 camelCase로 바인딩 — §2 참고)
 - [ ] CSS를 추가했다면 하드코딩 색상/치수 대신 `--vp-*` 토큰 사용 (없으면 `packages/theme`에 추가)
 - [ ] 관련 로드맵/백로그 문서(`docs/dev/*.md`) 상태 갱신

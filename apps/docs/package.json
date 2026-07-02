@@ -4,11 +4,11 @@
   "version": "0.0.4",
   "type": "module",
   "scripts": {
-    "dev": "vitepress dev",
-    "build": "vitepress build",
+    "dev": "node ../../packages/calendar/scripts/generate-api-docs.mjs && vitepress dev",
+    "build": "node ../../packages/calendar/scripts/generate-api-docs.mjs && vitepress build",
     "preview": "vitepress preview",
-    "docs:dev": "vitepress dev",
-    "docs:build": "vitepress build"
+    "docs:dev": "node ../../packages/calendar/scripts/generate-api-docs.mjs && vitepress dev",
+    "docs:build": "node ../../packages/calendar/scripts/generate-api-docs.mjs && vitepress build"
   },
   "dependencies": {
     "@vuepkg/calendar": "workspace:*"

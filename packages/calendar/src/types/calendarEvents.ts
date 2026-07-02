@@ -128,11 +128,17 @@ export interface CalendarNavigatePayload {
 
 /** `ScheduleCalendar` emit 시그니처 (Volar·문서용) */
 export interface ScheduleCalendarEmits {
+  /** Month/Week/Day/List 탭 클릭 */
   'view-change': [payload: CalendarViewChangePayload]
+  /** 월간 셀, Week 날짜 헤더 클릭 */
   'date-select': [payload: CalendarDateSelectPayload]
+  /** 월간 `+N` 클릭 */
   'overflow-click': [payload: CalendarOverflowClickPayload]
+  /** 칩·All Day 바·시간 일정·List 행 클릭 */
   'schedule-click': [payload: CalendarScheduleClickPayload]
+  /** Today·‹›(이전/다음) 버튼 클릭 — Month/Week/Day */
   navigate: [payload: CalendarNavigatePayload]
+  /** List 뷰 날짜 필터 바 Clear 클릭 */
   'list-filter-clear': []
   /** View Option·Schedule Type·기간 포함 — 부모 API 조회용 */
   'query-change': [payload: ScheduleQueryChangePayload]

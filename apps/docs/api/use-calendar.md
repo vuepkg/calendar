@@ -14,14 +14,18 @@ function useCalendar(options: UseCalendarOptions): CalendarContext
 
 ## 옵션
 
+`selectedDate`/`currentView`/`listFilterDate`를 생략하면 내부적으로 자체 `ref`를 만들고 `initialDate`/`initialView`로 초기화합니다 — 둘 다 생략 시 오늘 날짜·`'month'` 뷰가 기본값입니다.
+
 ```ts
 interface UseCalendarOptions {
-  schedules: Ref<Schedule[]>
-  holidays: Ref<Holiday[]>
-  selectedDate: Ref<Date>
-  currentView: Ref<CalendarView>
-  listFilterDate: Ref<Date | null>
-  scheduleTypeOptions?: ScheduleTypeOption[]
+  schedules: MaybeRefOrGetter<Schedule[]>
+  holidays?: MaybeRefOrGetter<Holiday[]>
+  selectedDate?: Ref<Date>
+  currentView?: Ref<CalendarView>
+  listFilterDate?: Ref<Date | null>
+  initialDate?: Date
+  initialView?: CalendarView
+  scheduleTypeOptions?: ScheduleTypeOption[] // 미지정 시 SCHEDULE_TYPE_OPTIONS
 }
 ```
 
@@ -30,17 +34,26 @@ interface UseCalendarOptions {
 ```ts
 interface CalendarContext {
   state: {
-    currentView: CalendarView
     selectedDate: Date
-    // ...
+    currentView: CalendarView
+    listFilterDate: Date | null
   }
-  weekDays: ComputedRef<Date[]>         // 현재 주 날짜 배열
-  monthLabel: ComputedRef<string>       // "2026-07" 형식
-  monthCells: ComputedRef<MonthWeekCell[]>  // 월간 뷰 셀
-  listRows: ComputedRef<CalendarListRow[]>  // List 뷰 행
-  schedules: ComputedRef<Schedule[]>    // 활성 일정 (필터 적용)
+  schedules: ComputedRef<Schedule[]>       // 반복 일정 전개 포함, 필터는 부모 책임
   holidays: ComputedRef<Holiday[]>
+  monthLabel: ComputedRef<string>          // "2026-07" 형식
+  monthCells: ComputedRef<MonthDayCell[]>  // 월간 42칸 원시 셀 (week 슬라이싱 전)
+  weekDays: ComputedRef<Date[]>            // 선택일 기준 7일
+  listRows: ComputedRef<CalendarListRow[]> // List 뷰 행
   getTypeStyle: (type: string) => { color: string; backgroundColor: string }
+  moveDay: (offset: number) => void
+  moveWeek: (offset: number) => void
+  moveMonth: (offset: number) => void
+  goToToday: () => void
+  // setView / selectDate / clearListFilter는 @internal — emit-only 연동에서는
+  // ScheduleCalendar의 v-model만 사용하고 이 메서드들을 직접 호출하지 마세요.
+  setView: (view: CalendarView) => void
+  selectDate: (date: Date) => void
+  clearListFilter: () => void
 }
 ```
 

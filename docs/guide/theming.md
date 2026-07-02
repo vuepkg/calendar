@@ -188,3 +188,36 @@ document.documentElement.classList.toggle('vp-dark')
   /* … 나머지 토큰 … */
 }
 ```
+
+## Tailwind CSS 프로젝트에서 사용하기
+
+> **공개 문서(VitePress)와 동일 내용:** `apps/docs/guide/theming.md` § Tailwind — 사이트 배포 시 그쪽이 정본입니다.
+
+Tailwind 앱과 **공존 가능**하지만, shadcn-vue처럼 `class="bg-blue-500"`를 컴포넌트에 붙여 **내부(칩·셀·툴바)까지** 바꾸는 구조는 **아닙니다.**
+
+| 시도 | 결과 |
+| ---- | ---- |
+| `<ScheduleCalendar class="m-4 shadow-xl" />` | 루트에 class 합쳐짐. margin·shadow 등은 보통 적용 |
+| `<ScheduleCalendar class="rounded-2xl" />` | 라이브러리 scoped CSS와 충돌 가능 |
+| 내부 요소에 Tailwind class | **불가** (slot·class prop 없음) |
+| `scheduleTypeOptions` 색상 | 인라인 style — Tailwind utility보다 우선 |
+
+**권장 패턴:** Tailwind `@theme` / 팔레트 값을 `:root`의 `--vp-*`에 매핑.
+
+```css
+@import "tailwindcss";
+@import "@vuepkg/calendar/style.css";
+
+@theme {
+  --color-brand: #16a34a;
+}
+
+:root {
+  --vp-color-primary: var(--color-brand);
+  --vp-calendar-radius: 0.75rem;
+}
+```
+
+**완전한 Tailwind 마크업**이 필요하면 `@vuepkg/calendar/headless` + 자체 UI.
+
+**로드맵:** scoped slot API 도입 시 일부 영역에 Tailwind class 전달 가능 — `docs/vue3-reviewer-backlog.md` § Critical (slot API) 참고.

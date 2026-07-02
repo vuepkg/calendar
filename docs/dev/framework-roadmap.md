@@ -40,7 +40,8 @@
 | **Controlled / emit-only** | 상태는 소비자가 소유, 컴포넌트는 표현+emit | ✅ (`v-model` + 핸들러) |
 | **CSS-variable 테마** | 런타임 JS 테마 엔진 없이 CSS 변수로 테마 | ✅ (Phase 1 완료) |
 | **Type-safe public API** | 모든 공개 타입 `types/` 단일 출처 | ✅ |
-| **Headless-friendly** | 로직(composable) / 표현(styled) 분리 가능 | ⚠️ 부분 (`useCalendar` 내부 전용) |
+| **Headless-friendly** | 로직(composable) / 표현(styled) 분리 가능 | ⚠️ 부분 (`@vuepkg/calendar/headless` 공개, slot API는 미구현) |
+| **Tailwind / shadcn-style class** | 소비자가 `class`로 내부 UI 커스터마이즈 | ❌ 미지원 — CSS 변수·headless가 현재 경로. 가이드: `apps/docs/guide/theming.md` § Tailwind. slot API는 1.0.0 전 과제 (`docs/vue3-reviewer-backlog.md`) |
 | **A11y by default** | role/aria/keyboard 기본 제공 | ✅ `@vuepkg/ui` 6종 모두 키보드·aria 완비 (`Popover`는 focus trap·Esc·외부클릭, `DataTable`은 row Enter/Space + aria-label) |
 
 ---

@@ -119,3 +119,83 @@ const scheduleTypeOptions = [
   { type: 'project', label: '프로젝트', color: '#0f766e', backgroundColor: '#ccfbf1' },
 ]
 ```
+
+## Tailwind CSS 프로젝트에서 사용하기
+
+Tailwind를 쓰는 앱과 **함께 사용할 수 있습니다.** 다만 shadcn-vue처럼 컴포넌트에 `class="bg-blue-500 rounded-lg"`를 붙여 **내부 UI까지 바로 바꾸는 방식은 지원하지 않습니다.**
+
+이 라이브러리의 공식 커스터마이징 경로는 **CSS 변수(`--vp-*`)** 와 **`scheduleTypeOptions`** 입니다. Tailwind는 이 토큰 값을 정하는 데 활용하는 것이 가장 자연스럽습니다.
+
+### 무엇이 되고, 무엇이 안 되는가
+
+| 시도 | 결과 |
+| ---- | ---- |
+| `<ScheduleCalendar class="m-4 shadow-xl" />` | 루트 컨테이너에 class가 합쳐짐. **margin·shadow** 등 라이브러리가 지정하지 않은 속성은 적용됨 |
+| `<ScheduleCalendar class="rounded-2xl border-gray-200" />` | 라이브러리 `scoped` CSS가 `border-radius`·`border`를 이미 지정 → **충돌·무시될 수 있음** |
+| 일정 칩·월간 셀·툴바에 Tailwind class | **불가** — slot·`class` prop 없음. 내부 마크업은 라이브러리 고정 |
+| `scheduleTypeOptions`의 `backgroundColor` | **인라인 style**로 적용 → Tailwind `bg-*`보다 우선 |
+
+### 권장: Tailwind 팔레트 → CSS 변수 연결
+
+`@vuepkg/calendar/style.css`는 theme·ui 스타일을 포함합니다. import 순서는 보통 Tailwind → 캘린더 순입니다.
+
+```css
+/* app.css — Tailwind v4 예시 */
+@import "tailwindcss";
+@import "@vuepkg/calendar/style.css";
+
+@theme {
+  --color-brand: #16a34a;
+  --color-brand-subtle: #dcfce7;
+}
+
+:root {
+  --vp-color-primary: var(--color-brand);
+  --vp-color-primary-subtle: var(--color-brand-subtle);
+  --vp-calendar-radius: 0.75rem; /* rounded-xl에 맞춤 */
+}
+```
+
+Tailwind v3를 쓰는 경우에도 동일한 원칙입니다. `:root`에서 `--vp-*`만 덮어쓰면 캘린더 전체 톤이 맞춰집니다.
+
+### 일정 색상과 Tailwind
+
+`scheduleTypeOptions`는 **hex/rgb 문자열**을 받습니다. Tailwind 색을 쓰려면 팔레트 값을 가져와 넣습니다.
+
+```ts
+// Tailwind 기본 blue-100 / blue-800 예시 (임의)
+const scheduleTypeOptions = [
+  { type: 'meeting', label: '회의', color: '#1e40af', backgroundColor: '#dbeafe' },
+]
+```
+
+### 루트 wrapper 패턴
+
+캘린더 **바깥** 레이아웃은 Tailwind로 자유롭게 꾸밀 수 있습니다.
+
+```vue
+<div class="h-screen p-4 flex flex-col">
+  <ScheduleCalendar
+    class="flex-1 min-h-0"
+    :schedules="schedules"
+    ...
+  />
+</div>
+```
+
+`ScheduleCalendar`에 넘긴 `class`는 루트 `.schedule-calendar`에 합쳐지지만, `height: 100%` 등 라이브러리 기본 레이아웃과 겹치는 속성은 주의하세요. **부모 높이 지정**은 여전히 필수입니다.
+
+### 완전한 Tailwind UI가 필요할 때: headless
+
+내부 요소마다 Tailwind 클래스를 쓰고 싶다면 [`@vuepkg/calendar/headless`](/api/use-calendar)로 로직만 가져와 **직접 마크업**을 구성하세요.
+
+```ts
+import { useCalendar, useScheduleCalendarHost } from '@vuepkg/calendar/headless'
+```
+
+`ScheduleCalendar` 스타일드 컴포넌트는 **빠른 통합**용, headless는 **디자인 시스템 완전 통제**용입니다.
+
+### 로드맵 (문서·기능)
+
+- **현재:** CSS 변수 + `scheduleTypeOptions` + headless
+- **예정:** scoped slot API(`#event`, `#day-cell` 등) — Tailwind class를 일부 영역에 직접 넘길 수 있게 하는 1.0.0 전 과제. 상세는 [리뷰 백로그](https://github.com/vuepkg/calendar/blob/main/docs/vue3-reviewer-backlog.md) 참고.

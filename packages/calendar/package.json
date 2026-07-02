@@ -112,10 +112,6 @@
       "limit": "8 kB"
     }
   ],
-  "dependencies": {
-    "@vuepkg/core": "workspace:*",
-    "@vuepkg/ui": "workspace:*"
-  },
   "devDependencies": {
     "@axe-core/playwright": "^4.12.1",
     "@eslint/js": "^10.0.1",
@@ -126,6 +122,8 @@
     "@vue/eslint-config-typescript": "^14.8.0",
     "@vue/test-utils": "^2.4.11",
     "@vue/tsconfig": "^0.9.1",
+    "@vuepkg/core": "workspace:*",
+    "@vuepkg/ui": "workspace:*",
     "eslint": "^10.4.1",
     "eslint-plugin-vue": "^10.9.2",
     "globals": "^17.6.0",

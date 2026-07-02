@@ -15,7 +15,7 @@
 | **Phase 2** `@vuepkg/ui` | 7 | 7 | **100%** | F2-6 취소 제외, F2-7은 F4-3에서 완료 |
 | **Phase 3** DX & 생태계 | 5 | 7 | **71%** | F3-4·F3-7 잔여 |
 | **Phase 4** 도메인 고도화 | 8 | 12 | **67%** | F4-8 보류 포함; 활성만 보면 8/11 = **73%** |
-| **Staff Review (SRV)** | 20 | 21 | **95%** | P0 2/2·P1 5/5·P2 12/13·NIT 1/1. SRV-P2-12만 미착수 |
+| **Staff Review (SRV)** | 21 | 22 | **95%** | P0 3/3(SRV-P0-03 npm install 불가 버그 신규 발견·완료)·P1 5/5·P2 12/13·NIT 1/1. SRV-P2-12만 미착수 |
 | **OSS Review (REV)** | 5 | 21 | **24%** | Critical 2/4(REV-A1·REV-A2 완료)·High 1/6(F3-2 완료)·Medium 1/6(DOC-A1 완료)·Low 0/4·문서 1/1 |
 | **1.0.0 게이트 (Phase A)** | 4 | 4 | **100%** | REV-A1(slot API)·REV-A2(Schedule 모델)·F3-2(API 문서 자동화)·DOC-A1(문서 정합) 전부 완료 — **API freeze 준비 완료** |
 

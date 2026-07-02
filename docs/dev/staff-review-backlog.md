@@ -4,6 +4,8 @@
 > **리뷰 #2:** 2026-07-01 · Phase 0~4 현재 상태 (F4-5·F3-1·F4-11·`@vuepkg/calendar@0.2.1` 반영)  
 > **기준 문서:** [roadmap.md](./roadmap.md)  
 > **용도:** 에이전트·개발자가 항목별로 추적·재검증·수정할 때 사용하는 **단일 원장(ledger)**
+>
+> **⚠️ 2026-07-02: [SRV-P0-03](#srv-p0-03-npm-install-불가-workspace-프로토콜-유출) 발견·완료** — Phase 0(2026-06-28)부터 게시된 0.2.0~0.6.1 전 버전에서 `npm install @vuepkg/calendar`가 `EUNSUPPORTEDPROTOCOL`로 실패하던 CRITICAL 패키징 버그. pnpm 워크스페이스 내부 개발·CI에서는 재현되지 않아 장기간 미발견 상태였음 — 실제 tarball 설치 재현으로 확인 후 수정, 0.6.2로 재배포 예정.
 
 ---
 
@@ -50,6 +52,7 @@
 | -- | -------- | -------- | ---- | ---- | --------- |
 | [SRV-P0-01](#srv-p0-01-query-change-payload-정확성) | MAJOR | 런타임 | `query-change`가 navigate/view-change 시 stale `date`/`view`를 emit할 수 있음 | **완료** | `ScheduleCalendar.vue` override + spec 보강 (2026-06-30) |
 | [SRV-P0-02](#srv-p0-02-e2e-ci-편입) | MAJOR | 테스트/운영 | Playwright 142건이 CI에 없음 | **완료** | 기능 E2E 134건 CI 편입; 시각 회귀 8건은 `test:e2e:visual` + 수동 workflow로 분리 (2026-06-30) |
+| [SRV-P0-03](#srv-p0-03-npm-install-불가-workspace-프로토콜-유출) | **CRITICAL** | 패키징 | `packages/calendar/package.json`의 `dependencies`에 `@vuepkg/core`/`@vuepkg/ui`가 `workspace:*`로 남아 npm에 그대로 게시 — 실제 소비자가 `npm install @vuepkg/calendar` 시 `EUNSUPPORTEDPROTOCOL`로 설치 자체가 실패 | **완료** | `devDependencies`로 이동 (2026-07-02). Phase 0(2026-06-28)부터 게시된 0.2.0~0.6.1 전 버전 영향 — pnpm 워크스페이스 내부에서는 항상 정상 동작해 발견되지 않았음 |
 
 ### P1 — Phase 4 착수 전 권장
 
@@ -110,6 +113,28 @@
 **수정 방향:** 기능 E2E 134건은 `test:e2e:ci`로 CI 편입. 시각 회귀 8건은 OS·Chromium 렌더링 flaky로 CI 제외 — `test:e2e:visual` + `visual-regression.yml` (workflow_dispatch). 로컬 push 전 `pnpm verify:push` (lint + typecheck + vitest).
 
 **검증:** ✅ CI: lint → typecheck → test(429) → build → size-limit → `test:e2e:ci`(137). Node 24.
+
+---
+
+### SRV-P0-03: npm install 불가 — workspace 프로토콜 유출
+
+**위치:** `packages/calendar/package.json` `dependencies`
+
+**문제:** `dependencies: { "@vuepkg/core": "workspace:*", "@vuepkg/ui": "workspace:*" }`가 그대로 npm 레지스트리에 게시됨. `workspace:*`는 pnpm/yarn 워크스페이스 전용 프로토콜이라 일반 `npm install`이 이해하지 못하고, 설령 이해하더라도 `@vuepkg/core`/`@vuepkg/ui`는 `private: true`라 애초에 npm에 존재하지 않음. 사용자 관점 재현:
+
+```
+$ npm install @vuepkg/calendar
+npm error code EUNSUPPORTEDPROTOCOL
+npm error Unsupported URL Type "workspace:": workspace:*
+```
+
+`vite.lib.config.ts`의 `rollupOptions.external`이 `['vue']`뿐이라 `@vuepkg/core`/`@vuepkg/ui`는 이미 `dist/index.js`·`dist/headless.js`에 완전히 번들링되어 있음 — 즉 런타임에는 애초에 필요 없는 순수 빌드타임 의존성인데 `dependencies`로 잘못 선언되어 있었음. `git log -S`로 확인 결과 Phase 0(커밋 `c37f254`, 2026-06-28)부터 존재 — **0.2.0부터 0.6.1까지 게시된 모든 버전이 영향받음.** pnpm 워크스페이스 안에서 개발·테스트·CI를 전부 수행하다 보니 `workspace:*`가 항상 정상 해석되어 아무도 발견하지 못함 — "외부 소비자로서 `npm install` 재현" 테스트가 파이프라인에 전혀 없었던 것이 근본 원인.
+
+**수정:** `@vuepkg/core`/`@vuepkg/ui`를 `dependencies` → `devDependencies`로 이동. pnpm 워크스페이스 심볼릭 링크는 `devDependencies`에서도 동일하게 생성되어 로컬 빌드는 영향 없음. `devDependencies`는 npm/pnpm/yarn이 다운스트림 설치 시 절대 설치하지 않으므로 게시된 패키지에서 이 필드가 남아있어도(정보성으로만 표시) 소비자 설치에 영향 없음.
+
+**검증:** ✅ `npm pack` → 완전히 격리된 임시 디렉터리에서 `npm install <tarball> vue` 성공 확인, `require('@vuepkg/calendar/headless')`로 런타임 스모크 테스트(모든 export 정상 로드, `useCalendar` 함수 확인) 통과. `pnpm install`·`pnpm turbo run lint typecheck test build:lib` 전체 재검증 통과 (2026-07-02).
+
+**후속 조치 제안:** CI에 "packed tarball을 격리된 디렉터리에 설치 후 스모크 테스트" 단계를 추가하면 이 클래스의 버그를 릴리즈 전에 자동으로 잡을 수 있음 — 아직 미착수, 향후 세션 후보로 기록.
 
 ---
 

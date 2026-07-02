@@ -1,5 +1,12 @@
 # @vuepkg/calendar
 
+## 0.6.0
+
+### Minor Changes
+
+- 80e9cf5: Generalize the `Schedule` type for non-HR domains (REV-A2): `participantId` and `participantName` are now optional, and a new `meta?: Record<string, unknown>` field lets consumers attach domain data (room bookings, patient info, reservation refs, ...) without a participant. `filterSchedulesByScope('my', ...)` excludes participant-less schedules instead of throwing; chip/bar tooltips and the List view's Participant column gracefully omit participant text when absent instead of rendering the literal string `"undefined"`. `ScheduleDraft`/`ScheduleFormModal` (the built-in CRUD form) are unchanged and still require selecting a participant — this only widens the `Schedule` display/read model.
+- 80e9cf5: Add scoped slot API — `toolbar`, `day-cell`, `event`, `month-overflow-item` (REV-A1). All four slots are non-breaking: when unused, `ScheduleCalendar` renders exactly the same markup as before. `event` covers month chips, month/week/day all-day bars, and week/day timed blocks (source values reuse the existing `ScheduleClickSource` union). Click/DnD/keyboard interaction wrappers always stay owned by the library — slots only replace the presentational content inside them, so custom `event`/`day-cell` content doesn't affect drag-and-drop or roving-tabindex keyboard navigation. See `docs/dev/rfc/REV-A1-slot-api.md` for the design rationale and `docs/dev/architecture.md#scoped-slots-rev-a1-2026-07-02` for the slot props reference.
+
 ## 0.5.0
 
 ### Minor Changes

@@ -9,13 +9,12 @@
 
 ## 다음 로드맵 개선 세션 — 문서 점검 체크리스트
 
-> **2026-07-02 갱신 완료** — [roadmap-progress.md](./dev/roadmap-progress.md)에 달성률·Phase A/B/C 반영됨.
+> **2026-07-02 갱신 완료** — [roadmap.md](./dev/roadmap.md)에 달성률·Phase A/B/C 반영됨.
+> **2026-07-02 문서 통합** — `roadmap-progress.md`·`framework-roadmap.md`가 `roadmap.md`로 병합되어 삭제됨. 아래 표·이하 링크를 `roadmap.md` 기준으로 갱신.
 
 | 문서 | 역할 | 상태 |
 | ---- | ---- | ---- |
-| `docs/dev/roadmap-progress.md` | **달성률 정본** | ✅ 신규 (2026-07-02) |
-| `docs/dev/framework-roadmap.md` | 전략·Phase | ✅ §0.4 달성률·Phase A/B/C |
-| `docs/dev/roadmap.md` | 기능 백로그 | ✅ 대시보드·우선순위 갱신 |
+| `docs/dev/roadmap.md` | **정본** — 전략·Phase 정의·달성률·백로그 | ✅ 통합 (2026-07-02) |
 | `docs/vue3-reviewer-backlog.md` | OSS 리뷰 원장 | ✅ 본 문서 |
 | `docs/dev/staff-review-backlog.md` | 코드 결함 원장 | ⏳ REV-A* 로드맵 흡수 후 중복 정리 |
 | `apps/docs/guide/theming.md` | 소비자 정본 | ✅ Tailwind § |
@@ -23,13 +22,13 @@
 | `README.md` | npm 첫인상 | ✅ 테마 링크 (2026-07-02) |
 | `apps/docs/guide/introduction.md` | 포지셔닝 | ✅ 스타일·로드맵 링크 (2026-07-02) |
 
-**로드맵 Phase A/B/C (확정):** [roadmap-progress.md § 앞으로의 개발 방향](./dev/roadmap-progress.md#앞으로의-개발-방향-2026-07-02-확정)
+**로드맵 Phase A/B/C (확정):** [roadmap.md § Phase A/B/C — 다음 개발 방향](./dev/roadmap.md#2-phase-abc--다음-개발-방향-2026-07-02-확정)
 
 ---
 
 ## Critical
 
-> **로드맵 ID:** REV-A1 ~ REV-A4 → [roadmap-progress.md Phase A/B](./dev/roadmap-progress.md)
+> **로드맵 ID:** REV-A1·REV-A2(Phase A) · REV-B2·REV-B3(Phase B, severity는 Critical) → [roadmap.md Phase A/B](./dev/roadmap.md#2-phase-abc--다음-개발-방향-2026-07-02-확정)
 
 - [ ] **REV-A1 / `ScheduleCalendar` slot API 부재**
   - `packages/calendar/src/components/calendar/**` 전체에 `<slot>`이 0건. 이벤트 칩·툴바·셀·All Day 바·List 행 렌더링을 소비자가 교체할 수 없음.
@@ -112,7 +111,7 @@
   - 문서 사이트는 있으나 즉시 fork 가능한 데모 부재. 전환율 저하.
   - **조치:** Vite + `@vuepkg/calendar` 최소 StackBlitz, 예약 SaaS 시나리오.
 
-- [x] **DOC-01 / Tailwind 연동 가이드** — `apps/docs/guide/theming.md` § Tailwind (2026-07-02). 로드맵: [roadmap-progress.md](./dev/roadmap-progress.md)
+- [x] **DOC-01 / Tailwind 연동 가이드** — `apps/docs/guide/theming.md` § Tailwind (2026-07-02). 로드맵: [roadmap.md](./dev/roadmap.md)
 
 ---
 
@@ -169,7 +168,7 @@
 - **내부 요소:** slot 0건 → Tailwind utility를 prop으로 넘길 경로 없음. `scheduleTypeOptions`는 **인라인 color/backgroundColor**.
 - **Tailwind 프로젝트 정석:** `@theme` 또는 팔레트 hex → `:root { --vp-* }` 매핑. 문서화됨 (`apps/docs/guide/theming.md`).
 - **완전 Tailwind UI:** `@vuepkg/calendar/headless` + 소비자 마크업.
-- **로드맵 정합:** `framework-roadmap.md` §0.1 "Tailwind/shadcn 친화적"은 **목표 상태** — slot API 완료 전까지는 "CSS 변수 친화 + headless"로 문구 조정 권장.
+- **로드맵 정합:** `roadmap.md` §1.1 "Tailwind/shadcn 친화적"은 **목표 상태** — slot API 완료 전까지는 "CSS 변수 친화 + headless"로 문구 조정 권장.
 
 ---
 

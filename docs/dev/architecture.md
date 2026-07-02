@@ -601,7 +601,7 @@ pnpm --filter @vuepkg/core run build:lib
 
 ## 12. 향후 개선
 
-**달성률·다음 착수 순서:** [`roadmap-progress.md`](roadmap-progress.md) (정본) · [`roadmap.md`](roadmap.md)
+**달성률·다음 착수 순서:** [`roadmap.md`](roadmap.md) (정본)
 
 | 영역 | 핵심 항목 (2026-07-02) |
 | ---- | ---------------------- |

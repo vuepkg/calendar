@@ -283,7 +283,7 @@ const schedule: Schedule = {
 
 - **기본:** `import '@vuepkg/calendar/style.css'` 후 CSS 변수(`--vp-*`)로 테마 — [문서 사이트 테마 가이드](https://vuepkg.github.io/calendar/guide/theming.html)
 - **Tailwind:** 유틸리티 class를 컴포넌트에 직접 붙여 내부 UI를 바꾸는 방식은 **미지원**. CSS 변수 연동 또는 [`@vuepkg/calendar/headless`](#headless-서브패스) 사용 — [Tailwind §](https://vuepkg.github.io/calendar/guide/theming.html#tailwind-css-프로젝트에서-사용하기)
-- **로드맵·달성률:** [docs/dev/roadmap-progress.md](./docs/dev/roadmap-progress.md)
+- **로드맵·달성률:** [docs/dev/roadmap.md](./docs/dev/roadmap.md)
 
 ---
 

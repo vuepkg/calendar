@@ -2,7 +2,7 @@
 
 > **리뷰 #1:** 2026-06-30 · Phase 0~2 기준  
 > **리뷰 #2:** 2026-07-01 · Phase 0~4 현재 상태 (F4-5·F3-1·F4-11·`@vuepkg/calendar@0.2.1` 반영)  
-> **기준 문서:** [framework-roadmap.md](./framework-roadmap.md)  
+> **기준 문서:** [roadmap.md](./roadmap.md)  
 > **용도:** 에이전트·개발자가 항목별로 추적·재검증·수정할 때 사용하는 **단일 원장(ledger)**
 
 ---
@@ -27,7 +27,7 @@
 | ---- | -- |
 | 최종 판정 | **CHANGES REQUIRED** (0.4.x 배포·운영 가능, **1.0.0 전** Phase A 정리 필요) |
 | 품질 점수 | **7 / 10** |
-| 로드맵 달성률 | Phase 0~4 **82%** · SRV **95%** — [roadmap-progress.md](./roadmap-progress.md) |
+| 로드맵 달성률 | Phase 0~4 **82%** · SRV **95%** — [roadmap.md](./roadmap.md) |
 
 **한 줄 요약:** P0·P1·P2(12/13) 완료. OSS 리뷰 REV 항목은 Phase A/B로 로드맵 흡수. **다음 1순위: REV-A1 slot API.**
 
@@ -127,7 +127,7 @@
 
 ### SRV-P1-02: dts/CSS alias 분리
 
-**위치:** `packages/calendar/vite.lib.config.ts`, `packages/calendar/vite.config.ts`, `turbo.json`, [framework-roadmap.md §1.5](./framework-roadmap.md)
+**위치:** `packages/calendar/vite.lib.config.ts`, `packages/calendar/vite.config.ts`, `turbo.json`, [roadmap.md §6.1](./roadmap.md#61-알려진-기술-부채-추적)
 
 **문제:** `vite.lib.config.ts`의 `@vuepkg/core`/`@vuepkg/ui` alias가 원시 소스(`../core/src`, `../ui/src`)를 직접 가리켜, `vite-plugin-dts`가 일부 비공개 컴포넌트 `.d.ts`(예: `MonthOverflowPopover.vue.d.ts`)에 `'../../../../core/src'` 같은 깨진 상대경로를 남겼다.
 
@@ -371,6 +371,5 @@
 
 ## 참고 문서
 
-- [framework-roadmap.md](./framework-roadmap.md) — Phase 4 종착점·기술 부채 §1.5
-- [roadmap.md](./roadmap.md) — 기능 백로그 IMP-*
+- [roadmap.md](./roadmap.md) — 비전·Phase 정의·달성률·기술 부채
 - [architecture.md](./architecture.md) — emit-only·테스트·빌드

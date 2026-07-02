@@ -29,7 +29,7 @@
 | `@vuepkg/calendar/headless` | 내부 UI까지 Tailwind로 직접 그릴 때 |
 | slot API | 🚧 1.0.0 전 예정 (REV-A1) — shadcn식 class 전달 |
 
-상세: [테마 커스터마이징](/guide/theming) · 로드맵: [GitHub roadmap-progress](https://github.com/vuepkg/calendar/blob/main/docs/dev/roadmap-progress.md)
+상세: [테마 커스터마이징](/guide/theming) · 로드맵: [GitHub roadmap](https://github.com/vuepkg/calendar/blob/main/docs/dev/roadmap.md)
 
 ## 지원 범위
 

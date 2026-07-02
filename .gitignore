@@ -29,15 +29,6 @@ test-results
 # Turborepo cache
 .turbo
 
-# Internal development docs (not for public repo)
-docs/qa/
-docs/dev/refactor-log.md
-docs/dev/comparison-toast-ui-calendar.md
-docs/dev/changelog.md
-docs/dev/componentization-backlog.md
-docs/dev/improvement-backlog.md
-docs/guide/onboarding.md
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

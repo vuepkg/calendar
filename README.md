@@ -256,11 +256,15 @@ const schedule: Schedule = {
 | `listFilterDate` | `Date \| null` | `null` | List 뷰 날짜 필터 |
 | `scheduleTypeOptions` | `ScheduleTypeOption[]` | 기본 3종 | 커스텀 일정 타입 정의 |
 | `fetchPublicHolidays` | `boolean` | `false` | 한국 공공 API 공휴일 opt-in |
+| `publicHolidayServiceKey` | `string` | — | 공공데이터포털 인증키 (proxy/BFF 사용 시 생략) |
 | `hideToolbar` | `boolean` | `false` | 툴바 숨김 (뷰 고정 임베딩용) |
+| `monthWeekCount` | `2 \| 3 \| 6` | `6` | 월간 뷰 표시 주 수 — `2`\|`3`이면 선택 날짜 기준 축소 뷰 |
 | `weekdayLabels` | `string[]` | `['SUN', ..., 'SAT']` | 월간 뷰 요일 헤더 라벨 (일~토 순서 7개) |
 | `startHour` | `number` | `0` | Week/Day 시간 그리드 시작 시각 (0~23) |
 | `endHour` | `number` | `23` | Week/Day 시간 그리드 종료 시각 (0~23) |
 | `locale` | `string` | — | `Intl.DateTimeFormat` locale (예: `'ko-KR'`). 월간 요일 헤더·Week/Day 요일 라벨 자동 현지화. `weekdayLabels`가 우선 |
+
+> 전체 Props/v-model/Emits/Slots 표(자동 생성, F3-2): [문서 사이트 API 레퍼런스](https://vuepkg.github.io/calendar/api/schedule-calendar.html)
 
 ## Emits
 
@@ -271,18 +275,41 @@ const schedule: Schedule = {
 | `navigate` | `CalendarNavigatePayload` | ‹ › · Today 네비 |
 | `schedule-click` | `CalendarScheduleClickPayload` | 일정 클릭 |
 | `time-slot-select` | `CalendarTimeSlotSelectPayload` | Week/Day 빈 셀 클릭 (1시간 단위) |
+| `schedule-move` | `CalendarScheduleMovePayload` | Week/Day 이벤트 드래그 이동 확정 |
+| `schedule-resize` | `CalendarScheduleResizePayload` | Week/Day 이벤트 드래그 리사이즈 확정 |
 | `overflow-click` | `CalendarOverflowClickPayload` | 월간 +N 클릭 |
 | `list-filter-clear` | — | List 날짜 필터 해제 |
 | `query-change` | `ScheduleQueryChangePayload` | 범위·필터 변경 (API 조회용) |
 
 > `useScheduleCalendarHost`를 사용하면 위 이벤트가 자동으로 연결됩니다. `v-on="calendarListeners"`만 추가하면 됩니다.
 
+## Slots
+
+`ScheduleCalendar`는 4개 scoped slot을 제공합니다 — 미사용 시 기본 마크업이 그대로 렌더되는 non-breaking 추가입니다.
+
+| Slot | Props | 설명 |
+| ---- | ----- | ---- |
+| `toolbar` | `{ currentView, views, onSelect }` | 뷰 전환 UI 전체 교체 |
+| `day-cell` | `{ cell, getTypeStyle, onScheduleClick, onOpenOverflow }` | 월간 셀 내부 콘텐츠 교체 (`role="gridcell"` 셸은 유지) |
+| `event` | `{ schedule, source, typeStyle, compact?, showParticipant?, onSelect? }` | 칩·All Day 바·시간 그리드 블록 콘텐츠 교체 |
+| `month-overflow-item` | `{ schedule, isHighlighted, onSelect }` | 월간 `+N` 팝오버 항목 콘텐츠 교체 |
+
+```vue
+<ScheduleCalendar v-model:view="view" v-model:date="date" :schedules="schedules">
+  <template #event="{ schedule, typeStyle, onSelect }">
+    <button class="my-chip" :style="typeStyle" @click="onSelect?.()">{{ schedule.title }}</button>
+  </template>
+</ScheduleCalendar>
+```
+
+상세: [architecture.md § Scoped Slots](./docs/dev/architecture.md#scoped-slots-rev-a1-2026-07-02)
+
 ---
 
 ## 테마 · Tailwind
 
 - **기본:** `import '@vuepkg/calendar/style.css'` 후 CSS 변수(`--vp-*`)로 테마 — [문서 사이트 테마 가이드](https://vuepkg.github.io/calendar/guide/theming.html)
-- **Tailwind:** 유틸리티 class를 컴포넌트에 직접 붙여 내부 UI를 바꾸는 방식은 **미지원**. CSS 변수 연동 또는 [`@vuepkg/calendar/headless`](#headless-서브패스) 사용 — [Tailwind §](https://vuepkg.github.io/calendar/guide/theming.html#tailwind-css-프로젝트에서-사용하기)
+- **Tailwind:** [`#event`/`#day-cell`/`#toolbar`/`#month-overflow-item` scoped slot](#slots)으로 해당 영역의 마크업을 Tailwind 콘텐츠로 직접 교체할 수 있습니다(List 행은 아직). 마크업 전체를 직접 그리려면 [`@vuepkg/calendar/headless`](#headless-서브패스) 사용 — [Tailwind §](https://vuepkg.github.io/calendar/guide/theming.html#tailwind-css-프로젝트에서-사용하기)
 - **로드맵·달성률:** [docs/dev/roadmap.md](./docs/dev/roadmap.md)
 
 ---

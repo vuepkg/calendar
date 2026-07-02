@@ -17,6 +17,7 @@
 - **Controlled / emit-only**: 상태는 소비자가 소유, 컴포넌트는 표현+emit만. 서버 저장·낙관적 업데이트·권한 기반 뷰 제어에 완벽 적합.
 - **Zero dependency**: `vue` peer 외 런타임 의존성 없음. CDN 없이 `npm install` 한 줄.
 - **CSS-variable 테마**: 런타임 JS 테마 엔진 없음. `--vp-color-primary` 한 줄로 브랜드 컬러 변경. Tailwind 프로젝트는 [테마 가이드 § Tailwind](/guide/theming#tailwind-css-프로젝트에서-사용하기) 참고.
+- **Scoped slot**: `#event`/`#day-cell`/`#toolbar`/`#month-overflow-item`로 칩·셀·툴바 마크업을 Tailwind 등으로 직접 교체 가능(REV-A1).
 - **Headless**: `@vuepkg/calendar/headless`로 로직만 가져와 자체 UI(Tailwind 등) 구성 가능.
 - **Modern DX**: TypeScript-first, Composition API native, tree-shakeable.
 
@@ -27,7 +28,7 @@
 | CSS 변수 (`--vp-*`) | `ScheduleCalendar` 그대로 쓰며 브랜드 톤만 맞출 때 |
 | `scheduleTypeOptions` | 일정 유형별 색상 |
 | `@vuepkg/calendar/headless` | 내부 UI까지 Tailwind로 직접 그릴 때 |
-| slot API | 🚧 1.0.0 전 예정 (REV-A1) — shadcn식 class 전달 |
+| scoped slot (`#event` 등) | ✅ 칩·셀·툴바·overflow 항목만 Tailwind로 교체할 때 (REV-A1, List 행 제외) |
 
 상세: [테마 커스터마이징](/guide/theming) · 로드맵: [GitHub roadmap](https://github.com/vuepkg/calendar/blob/main/docs/dev/roadmap.md)
 
@@ -43,8 +44,8 @@
 | 공휴일 자동 조회 (공공데이터포털) | ✅ |
 | 2주/3주 월간 뷰 변형 | ✅ |
 | Dark mode | ✅ |
+| scoped slot API (Tailwind/shadcn) | ✅ (REV-A1) |
 | Timeline / Resource Scheduler 뷰 | 🚧 Phase C (F4-6) |
-| scoped slot API (Tailwind/shadcn) | 🚧 Phase A (REV-A1) |
 | 타임존 지원 | 🚧 보류 (F4-8) |
 
 ## 번들 사이즈

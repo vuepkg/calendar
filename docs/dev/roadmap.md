@@ -16,8 +16,8 @@
 | **Phase 3** DX & 생태계 | 5 | 7 | **71%** | F3-4·F3-7 잔여 |
 | **Phase 4** 도메인 고도화 | 8 | 12 | **67%** | F4-8 보류 포함; 활성만 보면 8/11 = **73%** |
 | **Staff Review (SRV)** | 20 | 21 | **95%** | P0 2/2·P1 5/5·P2 12/13·NIT 1/1. SRV-P2-12만 미착수 |
-| **OSS Review (REV)** | 4 | 21 | **19%** | Critical 2/4(REV-A1·REV-A2 완료)·High 1/6(F3-2 완료)·Medium 0/6·Low 0/4·문서 1/1 |
-| **1.0.0 게이트 (Phase A)** | 3 | 4 | **75%** | REV-A1(slot API)·REV-A2(Schedule 모델)·F3-2(API 문서 자동화) 완료 — DOC-A1만 잔여 |
+| **OSS Review (REV)** | 5 | 21 | **24%** | Critical 2/4(REV-A1·REV-A2 완료)·High 1/6(F3-2 완료)·Medium 1/6(DOC-A1 완료)·Low 0/4·문서 1/1 |
+| **1.0.0 게이트 (Phase A)** | 4 | 4 | **100%** | REV-A1(slot API)·REV-A2(Schedule 모델)·F3-2(API 문서 자동화)·DOC-A1(문서 정합) 전부 완료 — **API freeze 준비 완료** |
 
 > 이전 버전 문서들의 수치 불일치 기록: `roadmap-progress.md`는 SRV를 19/20, REV를 1/18로 표기했으나 각 문서 자체의 세부 표를 합산하면 20/21·1/21이 맞습니다(§7 갱신 이력 참고). 본 문서가 정정된 단일 수치입니다.
 
@@ -36,11 +36,11 @@
 | -------- | ---- | ---- |
 | npm 배포·CI·문서 사이트 | ✅ 달성 | 0.4.0 운영 중 |
 | 핵심 캘린더 기능 (4뷰·DnD·반복·CRUD) | ✅ 달성 | F4-1~5 |
-| API 안정화 (slot·이벤트 모델) | ❌ 미착수 | **1.0.0 게이트** |
-| 엔터프라이즈 신뢰 (SSR·대량 데이터) | ❌ 미착수 | F3-4·F4-7 |
-| 차별화 뷰 (Timeline) | ❌ 미착수 | F4-6 |
+| API 안정화 (slot·이벤트 모델) | ✅ 달성 (2026-07-02) | **Phase A 4/4 완료** |
+| 엔터프라이즈 신뢰 (SSR·대량 데이터) | ❌ 미착수 | F3-4·F4-7 (Phase B) |
+| 차별화 뷰 (Timeline) | ❌ 미착수 | F4-6 (Phase C) |
 
-**1.0.0 준비도 (가중 추정): 58%** — 인프라·핵심 기능은 높으나, API 일반화·확장성·생태계 마무리가 남음.
+**1.0.0 준비도 (가중 추정): 72%** — 인프라·핵심 기능·API 일반화까지 완료. 남은 건 엔터프라이즈 신뢰성(SSR·virtualization, Phase B)과 차별화 뷰(Timeline, Phase C).
 
 ### 품질·운영 지표 (코드베이스 실측)
 
@@ -102,9 +102,9 @@ Phase 0~2(2026-06-30 완료)에서 calendar 내부의 재사용 가능한 primit
 | ~~1~~ | ~~REV-A1~~ | scoped **slot API** (`event`, `day-cell`, `toolbar`, `month-overflow-item`) — ✅ **완료 (2026-07-02)**, [RFC](./rfc/REV-A1-slot-api.md), `src/types/slots.ts` 4종, Vitest 9건 추가(299건), size-limit 18.9/20KB(94%) | REV Critical | ~~🔴~~ |
 | ~~2~~ | ~~REV-A2~~ | **`Schedule` 이벤트 모델 일반화** (`participant*` optional, `meta`) — ✅ **완료 (2026-07-02)**, `ScheduleDraft`/`ScheduleFormModal`은 변경 없음(참가자 필수 유지), Vitest 6건 추가(305건) | REV Critical | ~~🟡~~ |
 | ~~3~~ | ~~F3-2~~ | `vue-component-meta` 문서 자동화 — ✅ **완료 (2026-07-02)**, `scripts/generate-api-docs.mjs` → `apps/docs/api/_generated/`, VitePress `@include`, CI `docs:api:check` drift 게이트 | F3 | ~~🟡~~ |
-| 4 | DOC-A1 | README·introduction Tailwind/headless 한 줄 정합 | REV Medium | 🟢 |
+| ~~4~~ | ~~DOC-A1~~ | README·introduction Tailwind/headless 문구 정합 — ✅ **완료 (2026-07-02)**, README Props/Emits 누락 항목(`publicHolidayServiceKey`/`monthWeekCount`/`schedule-move`/`schedule-resize`) 및 `## Slots` 섹션 신규 추가도 함께 발견·수정 | REV Medium | ~~🟢~~ |
 
-**목표:** shadcn/Tailwind adopters가 "CSS 변수 또는 slot"으로 커스터마이즈 가능. API freeze 선언 전 필수.
+**목표:** shadcn/Tailwind adopters가 "CSS 변수 또는 slot"으로 커스터마이즈 가능. API freeze 선언 전 필수. **→ Phase A 4/4 달성, 1.0.0 API 게이트 통과.**
 
 ### Phase B — 엔터프라이즈 신뢰
 
@@ -231,6 +231,7 @@ Phase 0~2(2026-06-30 완료)에서 calendar 내부의 재사용 가능한 primit
 
 | 항목 | 내용 | 완료일 |
 | ---- | ---- | ------ |
+| [DOC-A1] README·introduction 문구 정합 | README.md의 "Tailwind 미지원" 문구를 실제(REV-A1 slot) 기준으로 정정, `apps/docs/guide/introduction.md`의 slot API "🚧 예정" 표기 2건을 "✅"로 정정. 부수적으로 README Props 표에서 `publicHolidayServiceKey`/`monthWeekCount` 누락, Emits 표에서 `schedule-move`/`schedule-resize`(F4-4 DnD) 누락, `## Slots` 섹션 자체가 없던 것을 발견해 함께 추가 — **Phase A 4/4 완료, 1.0.0 API 게이트 통과** | 2026-07-02 |
 | [F3-2] `vue-component-meta` API 문서 자동화 | `packages/calendar/scripts/generate-api-docs.mjs`가 `ScheduleCalendar.vue`(유일한 공개 컴포넌트)에서 props/v-model/emits/slots를 추출해 `apps/docs/api/_generated/schedule-calendar-api.md` 생성, `schedule-calendar.md`가 VitePress `<!--@include:-->`로 흡수. `apps/docs`의 `build`/`dev`가 항상 재생성 후 실행. CI(`docs:api:check`)가 재생성 결과와 커밋된 파일의 `git diff`로 drift 차단. `defineEmits<ExternalInterface>()` 패턴은 vue-component-meta가 JSDoc을 못 따라가는 한계 확인 — emit 설명 10개만 스크립트 내 정적 맵 보강(payload 타입·존재 여부는 100% 자동). props/slots는 `defineProps`/`defineSlots`에 JSDoc 보강 후 완전 자동 추출 | 2026-07-02 |
 | [REV-A2] `Schedule` 이벤트 모델 일반화 | `participantId`/`participantName` optional화 + `meta?: Record<string, unknown>` 추가. `filterSchedulesByScope`는 참가자 없는 일정을 "my" scope에서 안전하게 제외, `ScheduleEventChip`/`AllDayBar`의 `:title`이 `"(undefined)"`를 출력하던 잠재 버그를 함께 수정. `ScheduleDraft`/`ScheduleFormModal`(내장 CRUD 폼)은 참가자 필수 유지 — 별도 Medium 항목(폼 i18n·도메인 결합)으로 분리. Vitest 6건 추가(299→305), 기능 E2E 95건 무변경 통과, size-limit 18.94/20KB(95%) | 2026-07-02 |
 | [REV-A1] scoped slot API | `toolbar`/`day-cell`/`event`/`month-overflow-item` 4개 slot. `ScheduleCalendar`가 유일한 공개 API 표면이라 `defineSlots`로 타입 노출, 나머지는 동적/명시적 forwarding으로 최대 4단계(`ScheduleCalendar→WeekView→TimedGrid→TimedGridDayColumn`) 전달. 클릭/DnD/키보드 인터랙션 래퍼는 항상 라이브러리가 소유하고 슬롯은 안쪽 표현 콘텐츠만 교체 — 미사용 시 기존 마크업과 100% 동일. Vitest 9건 추가(290→299), 기능 E2E 95건 무변경 통과, size-limit 18.4→18.9/20KB(92%→94%) | 2026-07-02 |

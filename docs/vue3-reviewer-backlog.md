@@ -4,6 +4,8 @@
 > **리뷰어:** vue3-oss-reviewer (심층 코드·아키텍처·OSS 채택성 점검)  
 > **대상:** `@vuepkg/calendar@0.4.0` 모노레포 전체  
 > **기준:** `.cursor/rules/vue3-oss-reviewer.mdc`, `docs/dev/staff-review-backlog.md` (리뷰 #2 이후 delta)
+>
+> **🎉 2026-07-02: Phase A(1.0.0 API 게이트) 4/4 완료** — REV-A1(slot API)·REV-A2(Schedule 모델 일반화)·F3-2(API 문서 자동화)·DOC-A1(문서 정합) 전부 완료. 아래 Critical 2건·Medium 1건은 완료 표기로 갱신됨. Architecture/DX 점수(§ OSS Readiness Score)는 이 갱신 시점 기준 재평가 전이므로 참고용으로만 보세요 — 실제로는 slot·Schedule 모델 공백이 해소되어 더 높아야 합니다.
 
 ---
 

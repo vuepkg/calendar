@@ -1,5 +1,13 @@
 # @vuepkg/docs
 
+## 0.0.4
+
+### Patch Changes
+
+- Updated dependencies [01f7963]
+- Updated dependencies [7b4493f]
+  - @vuepkg/calendar@0.5.0
+
 ## 0.0.3
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @vuepkg/calendar
 
+## 0.5.0
+
+### Minor Changes
+
+- 7b4493f: Add `@vuepkg/calendar/headless` subpath export — import `useCalendar`, `useTimeSlotSelection`, `useScheduleDrag`, `usePublicHolidays`, `useScheduleCalendarHost`, schedule/recurrence utilities, and all public types without pulling in the `ScheduleCalendar`/`ScheduleFormModal` Vue components or their bundled logic. The main entry re-exports the same names, so existing imports from `@vuepkg/calendar` are unaffected.
+
+### Patch Changes
+
+- 01f7963: Fix broken relative import paths (e.g. `'../../../../core/src'`) that `vite-plugin-dts` left in some internal component `.d.ts` files. The library build now resolves `@vuepkg/core`/`@vuepkg/ui` through their real built packages instead of aliasing raw source, so generated types use clean package imports (e.g. `import { RectBounds } from '@vuepkg/core'`). No change to the public API or bundled CSS.
+
 ## 0.4.0
 
 ### Minor Changes
